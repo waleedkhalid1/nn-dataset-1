@@ -13,5 +13,5 @@ For examples, see the models in the Dataset directory.
 
 ## Environment
 
-In addition to pip/conda usage, all versions of this project are compatible with <strong>AI Linux</strong> and can be run inside a docker image <strong>abrainone/ai-linux</strong> with command: <br/> 
+In addition to pip/conda package managers, all versions of this project are compatible with <strong>AI Linux</strong> and can be run inside a docker image <strong>abrainone/ai-linux</strong> with command: <br/> 
 <strong> docker run -v /a/mm:&#x003C;nn-dataset path&#x003E; abrainone/ai-linux bash -c "PYTHONPATH=/a/mm python determine_accuracies.py" </strong>
