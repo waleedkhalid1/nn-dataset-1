@@ -15,3 +15,15 @@ For examples, see the models in the Dataset directory.
 
 In addition to pip/conda package managers, all versions of this project are compatible with <a href='https://hub.docker.com/r/abrainone/ai-linux' target='_blank'>AI Linux</a> and can be run inside a Docker image <strong>abrainone/ai-linux</strong> with command: <br/> 
 <strong> docker run -v /a/mm:&#x003C;nn-dataset path&#x003E; abrainone/ai-linux bash -c "PYTHONPATH=/a/mm python determine_accuracies.py" </strong>
+
+## Citation
+
+If you use the Neural Network Dataset in your research, please cite:
+```bibtex
+@misc{nn-dataset,
+  author       = {Goodarzi, Arash and Kochnev, Roman and Bentyn, Zofia and Ignatov, Dmitry},
+  title        = {Neural Network Dataset},
+  howpublished = {\url{https://github.com/ABrain-One/nn-dataset}},
+  year         = {2024},
+}
+```
