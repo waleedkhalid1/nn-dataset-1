@@ -18,7 +18,7 @@ In addition to pip/conda package managers, all versions of this project are comp
 
 ## Citation
 
-If you use the Neural Network Dataset in your research, please cite:
+If you find Neural Network Dataset to be useful for your research, please consider citing:
 ```bibtex
 @misc{nn-dataset,
   author       = {Goodarzi, Arash and Kochnev, Roman and Bentyn, Zofia and Ignatov, Dmitry},
