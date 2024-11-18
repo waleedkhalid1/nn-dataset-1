@@ -27,3 +27,7 @@ If you find Neural Network Dataset to be useful for your research, please consid
   year         = {2024},
 }
 ```
+
+## License
+
+The Neural Network Dataset is MIT licensed. See the [LICENSE](LICENSE) for details.
