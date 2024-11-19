@@ -2,7 +2,7 @@ Most of borrowed artificial neural network models are subject to <a href="https:
 
 MIT License
 
-Copyright (c) 2024 ABrain-One
+Copyright (c) 2024 ABrain One
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
