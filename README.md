@@ -1,5 +1,5 @@
 # Neural Network Dataset
-The original version of this dataset was created by the team of <strong>Arash Torabi Goodarzi, Roman Kochnev</strong> and <strong>Zofia Antonina Bentyn</strong>.
+The original version of this dataset was created by the team of <strong>Arash Torabi Goodarzi, Roman Kochnev</strong> and <strong>Zofia Antonina Bentyn</strong> at the University of Würzburg.
 
 ## Contribution
 
@@ -21,7 +21,7 @@ In addition to pip/conda package managers, all versions of this project are comp
 If you find Neural Network Dataset to be useful for your research, please consider citing:
 ```bibtex
 @misc{nn-dataset,
-  author       = {Goodarzi, Arash and Kochnev, Roman and Bentyn, Zofia and Ignatov, Dmitry},
+  author       = {Goodarzi, Arash and Kochnev, Roman and Bentyn, Zofia and Ignatov, Dmitry and Timofte, Radu},
   title        = {Neural Network Dataset},
   howpublished = {\url{https://github.com/ABrain-One/nn-dataset}},
   year         = {2024},
