@@ -3,7 +3,7 @@ The original version of this dataset was created by the team of <strong>Arash To
 
 ## Contribution
 
-To Add more models to the dataset, the following criteria must be met.
+To add more models to the dataset, the following criteria must be met.
 1. Each Model must be saved in a separated directory inside the initially provided directory named "Dataset", next to other already provided models.
 2. The code for each model must be provided in the respective directory in a python file named "code.py"
 3. The main class for each model must be named "Net".
