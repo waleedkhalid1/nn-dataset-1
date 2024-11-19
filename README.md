@@ -30,4 +30,4 @@ If you find Neural Network Dataset to be useful for your research, please consid
 
 ## License
 
-The Neural Network Dataset is MIT licensed. See the [LICENSE](LICENSE) for details.
+The Neural Network Dataset is MIT licensed. See the [LICENSE](LICENSE.md) for details.
