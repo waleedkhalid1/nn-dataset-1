@@ -30,4 +30,4 @@ If you find Neural Network Dataset to be useful for your research, please consid
 
 ## License
 
-The Neural Network Dataset is distributed under the following license: [LICENSE](LICENSE.md).
+The Neural Network Dataset is distributed under the following adapted license: [LICENSE](LICENSE.md).
