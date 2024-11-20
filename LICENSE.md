@@ -1,5 +1,3 @@
-Most of borrowed artificial neural network models are subject to <a href="https://opensource.org/license/bsd-3-clause">BSD 3-Clause License</a>. Other code is provided under the following license:
-
 MIT License
 
 Copyright (c) 2024 ABrain One
