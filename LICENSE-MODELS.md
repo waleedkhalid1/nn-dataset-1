@@ -1,8 +1,8 @@
 BSD 3-Clause License
 
-Copyright (c) Soumith Chintala 2016 for the following models and all derivatives generated from them in the folder Dataset: AlexNet, ConvNeXt, DenseNet, EfficientNet, GoogLeNet, InceptionV3, MNASNet, MaxVit, MobileNetV2, MobileNetV3, RegNet, ResNet, ShuffleNet, SqueezeNet, SwinTransformer, VGG, VisionTransformer.
+Copyright (c) Soumith Chintala 2016 for the following neural network models and all derivatives generated from them: AlexNet, ConvNeXt, DenseNet, EfficientNet, GoogLeNet, InceptionV3, MNASNet, MaxVit, MobileNetV2, MobileNetV3, RegNet, ResNet, ShuffleNet, SqueezeNet, SwinTransformer, VGG, VisionTransformer.
 
-Copyright (c) ABrain One 2024 for all other models in the folder Dataset.
+Copyright (c) ABrain One 2024 for all other neural network models.
 
 All rights reserved.
 
