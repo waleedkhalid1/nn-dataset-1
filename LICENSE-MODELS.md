@@ -1,6 +1,7 @@
 BSD 3-Clause License
 
-Copyright (c) ABrain One 2024, 
+Copyright (c) 2024 ABrain One, 
+
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
