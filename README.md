@@ -28,6 +28,8 @@ If you find Neural Network Dataset to be useful for your research, please consid
 }
 ```
 
-## License
+## Licenses
 
-The Neural Network Dataset is distributed under the [adapted license](LICENSE.md).
+To support inherited licensing restrictions and to simplify use, this project is distributed under two licenses:
+1. All models of artificial neural networks, including those created by large language models, are released under the [BSD 3-Clause License](LICENSE-MODELS.md)
+2. All other code in this project is released under the [MIT License](LICENSE.md).
