@@ -1,6 +1,7 @@
 MIT License
 
-Copyright (c) ABrain One 2024</br> 
+Copyright (c) ABrain One 2024.
+
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
