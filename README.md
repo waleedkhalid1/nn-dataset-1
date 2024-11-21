@@ -30,6 +30,6 @@ If you find Neural Network Dataset to be useful for your research, please consid
 
 ## Licenses
 
-To comply with inherited licensing restrictions, this project is distributed under two licenses:
+To comply with inherited licensing restrictions, this project is distributed under following licenses:
 1. All models of artificial neural networks, including those created by large language models, under the [BSD 3-Clause License](LICENSE-MODELS.md).
 2. Other code under the [MIT License](LICENSE.md).
