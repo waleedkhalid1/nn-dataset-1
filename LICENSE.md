@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2024, ABrain One
+Copyright (c) 2024- ABrain One
 
 All rights reserved.
 
