@@ -30,6 +30,8 @@ If you find Neural Network Dataset to be useful for your research, please consid
 
 ## Licenses
 
-To comply with inherited licensing restrictions, this project is distributed under following licenses:
-1. All models of artificial neural networks, including those created by large language models, under the [BSD 3-Clause License](LICENSE-MODELS.md).
-2. Other code under the [MIT License](LICENSE.md).
+To comply with inherited licensing restrictions, this project is distributed under the terms of the following licenses:
+1. Python code of neural networks models (NNMs):
+   1.1 for Quantum NNMs under the following [MIT License](MIT-LICENSE-MODELS.md).
+   1.2 for other NNMs under the [BSD 3-Clause License](BSD-LICENSE-MODELS.md).
+3. Other code under the following [MIT License](LICENSE.md).
