@@ -32,7 +32,7 @@ If you find Neural Network Dataset to be useful for your research, please consid
 
 To comply with inherited licensing restrictions, this project is distributed under the terms of the following licenses:
  <ul>
-<li> Python code of neural network models (NNs): 
+<li> Python code of neural networks (NNs): 
    <ul>
  <li>for Quantum NNs under the following <a href="MIT-LICENSE-NNs.md">MIT License</a>.</li>
  <li>for other NNs under the <a href="BSD-LICENSE-NNs.md">BSD 3-Clause License</a>.</li>
