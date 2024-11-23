@@ -28,6 +28,8 @@ If you find Neural Network Dataset to be useful for your research, please consid
 }
 ```
 
+For feedback: <b>AI-Linux<big>&#65312;</big>ABrain.one</b> (no response guaranteed)
+
 ## Licenses
 
 To comply with inherited licensing restrictions, this project is distributed under the terms of the following licenses:
