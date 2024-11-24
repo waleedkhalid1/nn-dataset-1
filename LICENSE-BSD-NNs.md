@@ -4,7 +4,7 @@ The python code of the neural network models AlexNet, ConvNeXt, DenseNet, Effici
 Copyright (c) 2016 Soumith Chintala 
 
 All neural network models not subject to other licenses:<br/>
-Copyright (c) 2024- ABrain One<br/>
+Copyright (c) 2024- ABrain One and contributors<br/>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
