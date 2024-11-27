@@ -31,11 +31,10 @@ If you find Neural Network Dataset to be useful for your research, please consid
 ## Licenses
 
 To comply with inherited licensing restrictions, this project is distributed under the terms of the following licenses:
- <ul>
-<li> Python code of neural networks (NNs): 
-   <ul>
+<ul>
+<li> Python code of neural networks (NNs): <ul>
  <li>for Quantum NNs under the corresponding <a href="doc/licenses/LICENSE-MIT-NNs.md">MIT License</a></li>
  <li>for other NNs under the <a href="doc/licenses/LICENSE-BSD-NNs.md">BSD 3-Clause License</a></li>
 </ul></li>
- <li>All other files and assets in this project are subject to the <a href="LICENSE.md">MIT License</a>.</li> 
- </ul>
+<li>All other files and assets in this project are subject to the <a href="LICENSE.md">MIT License</a>.</li> 
+</ul>
