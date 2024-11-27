@@ -1,4 +1,4 @@
-## Guidelines for Contributions
+## Contribution Guidelines
 
 <ul>
  <li> A good code is a simple code understandable without comments.</li>
