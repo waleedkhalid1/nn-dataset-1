@@ -1,5 +1,6 @@
 MIT License
 
+The python code of the Quantum neural network models:<br/>
 Copyright (c) 2021-2023 TorchQuantum Authors<br/>
 All rights reserved.
 
