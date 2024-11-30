@@ -3,8 +3,8 @@ The original version of this dataset was created by the team of <strong>Arash To
 
 ## Contribution
 
-To add more models to the dataset, the following criteria must be met.
-1. Each Model must be saved in a separated directory inside the initially provided directory named "Dataset", next to other already provided models.
+To add more neural network models to the dataset, the following criteria must be met.
+1. Each model must be saved in a separated directory inside the initially provided directory named "Dataset", next to other already provided models.
 2. The code for each model must be provided in the respective directory in a python file named "code.py"
 3. The main class for each model must be named "Net".
 4. The required arguments to initialize the "Net" class must be stored in a list inside a separate python file named "args.py" next to "code.py". If no arguments are needed, provide an empty python list in the "args.py" file.
@@ -31,11 +31,7 @@ If you find Neural Network Dataset to be useful for your research, please consid
 ## Licenses
 
 To comply with inherited licensing restrictions, this project is distributed under the terms of the following licenses:
- <ul>
-<li> Python code of neural networks (NNs): 
-   <ul>
- <li>for Quantum NNs under the corresponding <a href="doc/licenses/LICENSE-MIT-NNs.md">MIT License</a></li>
- <li>for other NNs under the <a href="doc/licenses/LICENSE-BSD-NNs.md">BSD 3-Clause License</a></li>
-</ul></li>
- <li>All other files and assets in this project are subject to the <a href="LICENSE.md">MIT License</a>.</li> 
- </ul>
+<ul>
+<li> Python code of different neural network models under the <a href="Doc/Licenses/LICENSE-MIT-NNs.md">MIT</a> or <a href="Doc/Licenses/LICENSE-BSD-NNs.md">BSD 3-Clause</a> License</li>
+<li> all other files and assets in this project are subject to the <a href="LICENSE.md">MIT License</a></li> 
+</ul>
