@@ -33,5 +33,5 @@ If you find Neural Network Dataset to be useful for your research, please consid
 This project is distributed under the following licensing terms:
 <ul>
 <li> Python code of neural network models adopted from other projects under the legacy <a href="Doc/Licenses/LICENSE-MIT-NNs.md">MIT</a> or <a href="Doc/Licenses/LICENSE-BSD-NNs.md">BSD 3-Clause</a> License</li>
-<li> all neural network models not eligible for the above licenses, all other files and assets in this project are subject to the <a href="LICENSE.md">MIT License</a></li> 
+<li> all neural network models not eligible for the above licenses, as well as all other files and assets in this project, are subject to the <a href="LICENSE.md">MIT License</a></li> 
 </ul>
