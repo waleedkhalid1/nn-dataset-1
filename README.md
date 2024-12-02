@@ -1,5 +1,5 @@
 # Neural Network Dataset
-The original version of this dataset was created by the team of <strong>Arash Torabi Goodarzi, Roman Kochnev</strong> and <strong>Zofia Antonina Bentyn</strong> at the Computer Vision Laboratory, University of Würzburg, Germany.
+The original version of this dataset was created by <strong>Arash Torabi Goodarzi, Roman Kochnev</strong> and <strong>Zofia Antonina Bentyn</strong> at the Computer Vision Laboratory, University of Würzburg, Germany.
 
 ## Contribution
 
@@ -14,7 +14,7 @@ For examples, see the models in the Dataset directory.
 ## Environment
 
 In addition to pip/conda package managers, all versions of this project are compatible with <a href='https://hub.docker.com/r/abrainone/ai-linux' target='_blank'>AI Linux</a> and can be run inside a Docker image: <br/> 
-<strong> docker run -v /a/mm:&#x003C;nn-dataset path&#x003E; abrainone/ai-linux bash -c "PYTHONPATH=/a/mm python determine_accuracies.py" </strong>
+<strong> docker run -v /a/mm:&#x003C;nn-dataset path&#x003E; abrainone/ai-linux bash -c "PYTHONPATH=/a/mm python train.py" </strong>
 
 ## Citation
 
@@ -30,8 +30,8 @@ If you find Neural Network Dataset to be useful for your research, please consid
 
 ## Licenses
 
-To comply with inherited licensing restrictions, this project is distributed under the terms of the following licenses:
+This project is distributed under the following licensing terms:
 <ul>
-<li> Python code of different neural network models under the <a href="Doc/Licenses/LICENSE-MIT-NNs.md">MIT</a> or <a href="Doc/Licenses/LICENSE-BSD-NNs.md">BSD 3-Clause</a> License</li>
-<li> all other files and assets in this project are subject to the <a href="LICENSE.md">MIT License</a></li> 
+<li> Python code of neural network models adopted from other projects under the legacy <a href="Doc/Licenses/LICENSE-MIT-NNs.md">MIT</a> or <a href="Doc/Licenses/LICENSE-BSD-NNs.md">BSD 3-Clause</a> License</li>
+<li> all neural network models not covered by the above licenses, as well as all other files and assets in this project, are subject to the <a href="LICENSE.md">MIT License</a></li> 
 </ul>
