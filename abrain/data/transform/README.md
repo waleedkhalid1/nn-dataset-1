@@ -1,1 +1,1 @@
-## Package for data transformation and normalization algorithms
+## Package for Data Transformation and Normalization Algorithms
