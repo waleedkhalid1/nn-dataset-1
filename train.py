@@ -3,25 +3,21 @@ import json
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset
-import torchvision
-import torchvision.transforms as transforms
 from torchvision.models import inception_v3
-from datasets import load_dataset
 from tqdm import tqdm
 import optuna
 
 
 class TrainModel:
-    def __init__(self, model_source_package, train_dataset, test_dataset, lr: float, momentum: float, batch_size: int, task_type='image_classification', manual_args=None):
+    def __init__(self, model_source_package, train_dataset, test_dataset, lr: float, momentum: float, batch_size: int, manual_args=None):
         """
-        Universal class for training CV and Text Generation models.
+        Universal class for training CV, Text Generation and other models.
         :param model_source_package: Path to the model's package (string).
         :param train_dataset: Dataset for training.
         :param test_dataset: Dataset for testing.
         :param lr: Learning rate.
         :param momentum: Momentum for SGD.
         :param batch_size: Mini-batch size.
-        :param task_type: Task type.
         :param manual_args: List of manual arguments for model initialization if args.py is not available.
         """
         self.train_dataset = train_dataset
@@ -30,7 +26,6 @@ class TrainModel:
         self.lr = lr
         self.momentum = momentum
         self.batch_size = max(2, batch_size)
-        self.task_type = task_type
         self.args = None
 
         if torch.cuda.is_available():
@@ -53,7 +48,6 @@ class TrainModel:
                     __import__(model_source_package + ".code", fromlist=["Net"]),
                     "Net"
                 )
-
                 # Try loading arguments from args.py
                 try:
                     self.args = getattr(
@@ -175,83 +169,56 @@ class TrainModel:
 
 
 class DatasetLoader:
-    _handlers = {}
-
     @staticmethod
-    def register_handler(task, dataset_name):
+    def load_dataset(loader_path, transform_path=None, **kwargs):
         """
-        Decorator for registering dataset handlers for a specific task and dataset name.
+        Dynamically load dataset and transformation based on the provided paths.
+        :param loader_path: Path to the dataset loader (e.g., 'ab.loader.cifar10.loader').
+        :param transform_path: Path to the dataset transformation (e.g., 'ab.transform.normalization_cifar10.transform').
+        :param kwargs: Additional parameters for the loader and transform.
+        :return: Train and test datasets.
         """
-        def decorator(handler):
-            DatasetLoader._handlers[(task, dataset_name)] = handler
-            return handler
-        return decorator
+        # Dynamically load the transform function if provided
+        transform = None
+        if transform_path:
+            transform_module, transform_func = transform_path.rsplit('.', 1)
+            transform = getattr(__import__(transform_module, fromlist=[transform_func]), transform_func)(**kwargs)
 
-    @staticmethod
-    def load_dataset(task, dataset_name, **kwargs):
-        """
-        Load dataset based on task and dataset name.
-        :param task: Task type (e.g., 'image_classification', 'text_generation').
-        :param dataset_name: Dataset name (e.g., 'CIFAR10', 'Wikitext').
-        :param kwargs: Additional parameters for the dataset loader.
-        :return: Train and test datasets or other necessary objects.
-        """
-        handler = DatasetLoader._handlers.get((task, dataset_name))
-        if handler is None:
-            raise ValueError(f"No handler registered for task '{task}' and dataset '{dataset_name}'")
-        return handler(**kwargs)
+        # Dynamically load the loader function
+        loader_module, loader_func = loader_path.rsplit('.', 1)
+        loader = getattr(__import__(loader_module, fromlist=[loader_func]), loader_func)
 
-@DatasetLoader.register_handler('image_classification', 'CIFAR10')
-def load_cifar10(transform=None, download=False):
-    if transform is None:
-        transform = transforms.Compose([
-            transforms.Resize(299),
-            transforms.CenterCrop(299),
-            transforms.ToTensor(),
-            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
-        ])
-    train_set = torchvision.datasets.CIFAR10(root='data', train=True, transform=transform, download=True)
-    test_set = torchvision.datasets.CIFAR10(root='data', train=False, transform=transform, download=True)
-    return train_set, test_set
-
-@DatasetLoader.register_handler('text_generation', 'Wikitext')
-def load_wikitext(dataset_name="Salesforce/wikitext", config="wikitext-2-raw-v1", seq_length=100):
-    dataset = load_dataset(dataset_name, config)
-    data = "\n".join(dataset["train"]["text"]).lower()
-    text_dataset = TextDatasetPreparation(data, seq_length)
-    return text_dataset, text_dataset
+        # Call the loader function with the dynamically loaded transform
+        return loader(transform=transform, **kwargs)
 
 
-class TextDatasetPreparation(Dataset):
+def parse_model_config(directory_name):
     """
-    A dataset class for preparing character-level text data for tasks like text generation.
-    :param text_data: Input text as a single string.
-    :param seq_length: Length of each input sequence (default: 25).
-    :return: Pairs of input and target sequences as tensors.
+    Parse the model configuration to extract task, dataset, and optional transformation.
+    :param directory_name: Name of the directory (e.g., "image_classification-cifar10-normalization_cifar10").
+    :return: Parsed task, dataset name, and transformation name (if any).
     """
-    def __init__(self, text_data: str, seq_length: int = 25):
-        self.chars = sorted(list(set(text_data)))
-        self.data_size, self.vocab_size = len(text_data), len(self.chars)
-        self.idx_to_char = {i: ch for i, ch in enumerate(self.chars)}
-        self.char_to_idx = {ch: i for i, ch in enumerate(self.chars)}
-        self.seq_length = seq_length
-        self.X = self.string_to_vector(text_data)
+    if directory_name == "__pycache__":
+        raise ValueError("Ignored directory '__pycache__'.")
 
-    def __len__(self) -> int:
-        return int(len(self.X) / self.seq_length - 1)
+    parts = directory_name.split('-')
+    task = parts[0]
+    dataset_name = parts[1]
+    transform_name = parts[2] if len(parts) > 2 else None
+    return task, dataset_name, transform_name
 
-    def __getitem__(self, index) -> tuple:
-        start_idx = index * self.seq_length
-        end_idx = (index + 1) * self.seq_length
-        X = torch.tensor(self.X[start_idx:end_idx]).float()
-        y = torch.tensor(self.X[start_idx + 1:end_idx + 1]).float()
-        return X, y
 
-    def string_to_vector(self, name: str) -> list[int]:
-        return [self.char_to_idx[ch] for ch in name]
-
-    def vector_to_string(self, vector: list[int]) -> str:
-        return ''.join([self.idx_to_char[i] for i in vector])
+def get_model_config(model_name):
+    """
+    Get the name of the first subfolder inside the given model_name directory.
+    :param model_name: Path to the model directory.
+    :return: Name of the subfolder or None if no subfolders exist.
+    """
+    for item in os.listdir(model_name):
+        subfolder_path = os.path.join(model_name, item)
+        if os.path.isdir(subfolder_path):
+            return item  # Return the name of the subfolder
+    return None  # If no subfolders are found
 
 
 def ensure_directory_exists(model_dir):
@@ -265,12 +232,12 @@ def ensure_directory_exists(model_dir):
         os.makedirs(directory)
 
 
-def save_results(model_name, study, task, n_epochs, n_optuna_trials):
+def save_results(model_name, study, config, n_epochs, n_optuna_trials):
     """
-    Save Optuna study results for a given model.
+    Save Optuna study results for a given model in JSON-format.
     :param model_name: Model name.
     :param study: Optuna study object.
-    :param task: Task type.
+    :param config: Task type.
     :param n_epochs: Number of epochs.
     :param n_optuna_trials: Number of trials.
     """
@@ -281,7 +248,7 @@ def save_results(model_name, study, task, n_epochs, n_optuna_trials):
         "momentum": float(study.best_trial.params["momentum"])
     }
 
-    model_dir = f"./Dataset/{model_name}/{task}/{n_epochs}/"
+    model_dir = f"./Dataset/{model_name}/{config}/{n_epochs}/"
     ensure_directory_exists(model_dir)
 
     # Save best_trial.json
@@ -313,10 +280,9 @@ def save_results(model_name, study, task, n_epochs, n_optuna_trials):
     print(f"Trials for {model_name} saved at {model_dir}")
 
 
-def main(task, model_names, n_epochs, n_optuna_trials=100, dataset_params=None, manual_args=None):
+def main(model_names='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, manual_args=None):
     """
     Main function for training models using Optuna optimization.
-    :param task: Task type ('image_classification' or 'text_generation').
     :param model_names: List of model names or 'all' to include all models in the directory.
     :param n_epochs: Number of epochs for training.
     :param n_optuna_trials: Number of Optuna trials.
@@ -325,16 +291,37 @@ def main(task, model_names, n_epochs, n_optuna_trials=100, dataset_params=None, 
     if dataset_params is None:
         dataset_params = {}
 
-    # if all models
+    # if 'all' models
     if model_names == "all":
         model_names = [
             model for model in os.listdir("./Dataset")
             if os.path.isdir(os.path.join("./Dataset", model))
         ]
 
-    # If the specified models are selected
     for model_name in model_names:
-        print(f"\nStarting training for model: {model_name}")
+        # Parse config from the subdirectory name
+        config = get_model_config(os.path.join("./Dataset", model_name))
+        if config is None:
+            print(f"Skipping model '{model_name}': no subdirectory found.")
+            continue
+        try:
+            task, dataset_name, transform_name = parse_model_config(config)
+        except (ValueError, IndexError) as e:
+            print(f"Skipping model '{model_name}': failed to parse directory name '{config}'. Error: {e}")
+            continue
+
+        print(f"\nStarting training for model: {model_name}, Task: {task}, Dataset: {dataset_name}, Transform: {transform_name}")
+
+        # Paths for loader and transform
+        loader_path = f"ab.loader.{dataset_name}.loader"
+        transform_path = f"ab.transform.{transform_name}.transform" if transform_name else None
+
+        # Load dataset
+        try:
+            train_set, test_set = DatasetLoader.load_dataset(loader_path, transform_path, **dataset_params)
+        except Exception as e:
+            print(f"Skipping model '{model_name}': failed to load dataset. Error: {e}")
+            continue
 
         # Configure Optuna for the current model
         def objective(trial):
@@ -342,7 +329,7 @@ def main(task, model_names, n_epochs, n_optuna_trials=100, dataset_params=None, 
             momentum = trial.suggest_float('momentum', 0.01, 0.99, log=True)
             batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
 
-            print(f"Initializing ModelEvaluator with lr = {lr}, momentum = {momentum}, batch_size = {batch_size}")
+            print(f"Initialize training with lr = {lr}, momentum = {momentum}, batch_size = {batch_size}")
 
             if task == 'image_classification':
                 trainer = TrainModel(
@@ -352,7 +339,6 @@ def main(task, model_names, n_epochs, n_optuna_trials=100, dataset_params=None, 
                     lr=lr,
                     momentum=momentum,
                     batch_size=batch_size,
-                    task_type=task,
                     manual_args=manual_args.get(model_name) if manual_args else None
                 )
             elif task == 'text_generation':
@@ -373,7 +359,6 @@ def main(task, model_names, n_epochs, n_optuna_trials=100, dataset_params=None, 
                     lr=lr,
                     momentum=momentum,
                     batch_size=batch_size,
-                    task_type=task,
                     manual_args=manual_args.get(model_name) if manual_args else None
                 )
             else:
@@ -387,39 +372,15 @@ def main(task, model_names, n_epochs, n_optuna_trials=100, dataset_params=None, 
         study.optimize(objective, n_trials=n_optuna_trials)
 
         # Save results
-        save_results(model_name, study, task, n_epochs, n_optuna_trials)
+        save_results(model_name, study, config, n_epochs, n_optuna_trials)
 
 
 if __name__ == "__main__":
     # Training parameters
-    task = 'image_classification'  # or 'text_generation'
-    model_names = "all"  # Iterating over all models in the ./Dataset directory
+    model_names = "all" # Iterating over all models in the ./Dataset directory
     # model_names = ["ResNet", "DenseNet"] # Or select the only models you need
-    dataset_name = 'CIFAR10'  # Specify the dataset to use
-    n_model_epochs = 1
-    n_optuna_trials = 2
-
-    # Dataset parameters for image classification task
-    dataset_params = {
-        'transform': transforms.Compose([
-            transforms.Resize(299),
-            transforms.CenterCrop(299),
-            transforms.ToTensor(),
-            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
-        ]),
-        'download': True
-    }
-
-    # Dataset parameters for text generation task
-    # dataset_params = {
-    #     'dataset_name': "Salesforce/wikitext",
-    #     'config': "wikitext-2-raw-v1",
-    #     'seq_length': 100
-    # }
-
-    # Load the dataset
-    train_set, test_set = DatasetLoader.load_dataset(task, dataset_name, **dataset_params)
+    n_model_epochs = 2
+    n_optuna_trials = 100
 
     # Run training with Optuna
-    main(task, model_names, n_model_epochs, n_optuna_trials, {'train_set': train_set, 'test_set': test_set})
-
+    main(model_names, n_model_epochs, n_optuna_trials)
