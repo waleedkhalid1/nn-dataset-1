@@ -1,4 +1,4 @@
-License for DeepSeek open-source Large Language Models V2
+License for DeepSeek open-source large language models V2
 
 DEEPSEEK LICENSE AGREEMENT
 
