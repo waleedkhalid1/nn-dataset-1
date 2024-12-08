@@ -7,11 +7,46 @@ import numpy as np
 import os
 import tqdm
 
+import zipfile
+import requests
+coco_ann_url = 'http://images.cocodataset.org/annotations/annotations_trainval2017.zip'
 class COCOSegDataset(torch.utils.data.Dataset):
-    def __init__(self, root, annFile, transform=transforms.Compose([transforms.ToTensor()]), limit_classes:bool=False, num_limit:int = 100, enable_list:bool=False, cat_list=[], resize = (128,128)
-        , preprocess:bool=True, leastPix:int = 1000):
-        self.coco = COCO(annFile)
-        self.root = root
+    def __init__(self, root:os.path, spilt="val", transform=None, limit_classes=False, num_limit = 100, enable_list=False, cat_list=[], resize = (480,480)
+        , preprocess=True):
+        valid_split = ["train","val"]
+        if spilt in valid_split:
+            try:
+                self.coco = COCO(os.path.join(root,f"annotations\\instances_{spilt}2017.json"))
+            except:
+                # annFile doesn't exist, download the annotation file to root.
+                print("Annotation file doesn't exists! Downloading")
+                if not os.path.exists(root):
+                    os.mkdir(root)
+                filepath = os.path.join(root,"annotations_trainval2017.zip")
+                response = requests.get(coco_ann_url, stream=True)
+
+                # Sizes in bytes.
+                total_size = int(response.headers.get("content-length", 0))
+                block_size = 1024
+                if response.status_code == 200:
+                    with tqdm.tqdm(total=total_size, unit="B", unit_scale=True) as progress_bar:
+                        with open(filepath, "wb") as file:
+                            for data in response.iter_content(block_size):
+                                progress_bar.update(len(data))
+                                file.write(data)
+                else:
+                    raise Exception("No annotation file found and failed to download")
+                print("Extracting")
+                with zipfile.ZipFile(filepath, 'r') as zip_ref:
+                    zip_ref.extractall(root)
+                print("Annotation file extraction complete")
+                self.coco = COCO(os.path.join(root,"annotations\\instances_val2017.json"))
+        else:
+            raise Exception(f"Invalid spilt: {spilt}")
+
+        self.root = os.path.join(root,spilt+"2017")
+        if not os.path.exists(self.root):
+            os.mkdir(self.root)
         self.transform = transform
         self.num_classes = len(self.coco.getCatIds())
         self.masks = []
@@ -22,7 +57,7 @@ class COCOSegDataset(torch.utils.data.Dataset):
         self.cat_list = cat_list
         if preprocess:
             self.ids = []
-            self.__preprocess__(list(self.coco.imgs.keys()), least_pix=leastPix)
+            self.__preprocess__(list(self.coco.imgs.keys()), least_pix=1000)
         else:
             self.ids = list(self.coco.imgs.keys())
 
@@ -31,7 +66,20 @@ class COCOSegDataset(torch.utils.data.Dataset):
         img_id = self.ids[index]
         image_info = coco.loadImgs(img_id)[0]
         path = image_info['file_name']
-        image = Image.open(os.path.join(self.root, path)).convert('RGB') # Read RGB image
+        try:
+            image = Image.open(os.path.join(self.root, path)).convert('RGB') # Read RGB image
+        except:
+            ## Image doesn't exists, download from coco_url
+            ## This process is quite time consuming and should be avoided later
+            response = requests.get(image_info["coco_url"])
+            file_Path = os.path.join(self.root,path)
+            if response.status_code == 200:
+                with open(file_Path, 'wb') as file:
+                    file.write(response.content)
+                image = Image.open(os.path.join(self.root, path)).convert('RGB')
+            else:
+                raise Exception(f"No image found for {path} and failed to download")
+            
         
         # Create mask
         ann_ids = coco.getAnnIds(imgIds=img_id)
@@ -60,7 +108,7 @@ class COCOSegDataset(torch.utils.data.Dataset):
             mask = self.transform(mask).long()
         return image, mask[0]
 
-    def __preprocess__(self,ids,least_pix:int=1000): #Filter out empty samples
+    def __preprocess__(self,ids,least_pix:int=1000): #Filter out bad samples
         coco = self.coco
         tbar = tqdm.trange(len(ids))
         for i in tbar:
