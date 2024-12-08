@@ -11,7 +11,7 @@ import zipfile
 import requests
 coco_ann_url = 'http://images.cocodataset.org/annotations/annotations_trainval2017.zip'
 class COCOSegDataset(torch.utils.data.Dataset):
-    def __init__(self, root:os.path, spilt="val", transform=None, limit_classes=False, num_limit = 100, enable_list=False, cat_list=[], resize = (480,480)
+    def __init__(self, root:os.path, spilt="val", transform=None, limit_classes=False, num_limit = 100, enable_list=False, cat_list=[], resize = (256,256)
         , preprocess=True):
         valid_split = ["train","val"]
         if spilt in valid_split:
