@@ -1,11 +1,6 @@
 # Neural Network Dataset
 The original version of this dataset was created by <strong>Arash Torabi Goodarzi, Roman Kochnev</strong> and <strong>Zofia Antonina Bentyn</strong> at the Computer Vision Laboratory, University of Würzburg, Germany.
 
-<!--
-## Pip installation
-pip install git+https://github.com/ABrain-One/nn-dataset
--->
-
 ## Contribution
 
 To add more neural network models to the dataset, the following criteria must be met.
@@ -15,6 +10,11 @@ To add more neural network models to the dataset, the following criteria must be
 4. The required arguments to initialize the "Net" class must be stored in a list inside a separate python file named "args.py" next to "code.py". If no arguments are needed, provide an empty python list in the "args.py" file.
 
 For examples, see the models in the Dataset directory.
+
+<!--
+## Installation with pip
+pip install git+https://github.com/ABrain-One/nn-dataset
+-->
 
 ## Environment
 
