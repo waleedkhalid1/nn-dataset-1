@@ -11,7 +11,7 @@ import zipfile
 import requests
 coco_ann_url = 'http://images.cocodataset.org/annotations/annotations_trainval2017.zip'
 class COCOSegDataset(torch.utils.data.Dataset):
-    def __init__(self, root:os.path, spilt="val", transform=None, limit_classes=False, num_limit = 100, enable_list=False, cat_list=[], resize = (256,256)
+    def __init__(self, root:os.path, spilt="val", transform=transforms.Compose([transforms.ToTensor()]), limit_classes=False, num_limit = 100, enable_list=False, cat_list=[], resize = (256,256)
         , preprocess=True):
         valid_split = ["train","val"]
         if spilt in valid_split:
@@ -103,9 +103,8 @@ class COCOSegDataset(torch.utils.data.Dataset):
                 mask[:, :] += (mask == 0) * (((np.sum(m, axis=2)) > 0) * c).astype(np.uint8)
         image = image.resize(size=self.resize, resample=Image.BILINEAR)
         mask = Image.fromarray(mask).resize(size=self.resize, resample=Image.NEAREST)
-        if self.transform is not None:
-            image = self.transform(image)
-            mask = self.transform(mask).long()
+        image = self.transform(image)
+        mask = self.transform(mask).long()
         return image, mask[0]
 
     def __preprocess__(self,ids,least_pix:int=1000): #Filter out bad samples

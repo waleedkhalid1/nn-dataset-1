@@ -59,15 +59,12 @@ def make_layers(cfg: List[Union[str, int]], batch_norm: bool = False) -> nn.Sequ
             in_channels = v
     return nn.Sequential(*layers)
 
-
 vgg_cfgs: Dict[str, List[Union[str, int]]] = {
     "A": [64, "M", 128, "M", 256, 256, "M", 512, 512, "M", 512, 512, "M"],
     "B": [64, 64, "M", 128, 128, "M", 256, 256, "M", 512, 512, "M", 512, 512, "M"],
     "D": [64, 64, "M", 128, 128, "M", 256, 256, 256, "M", 512, 512, 512, "M", 512, 512, 512, "M"],
     "E": [64, 64, "M", 128, 128, "M", 256, 256, 256, 256, "M", 512, 512, 512, 512, "M", 512, 512, 512, 512, "M"],
 }
-
-vgg16_url = 'https://download.pytorch.org/models/vgg16-397923af.pth'
 
 class FCNHead(nn.Sequential):
     def __init__(self, in_channels: int, channels: int) -> None:
@@ -90,13 +87,6 @@ class Net(nn.Module):
 
         features = list(backbone.features.children())
         self.backbone = backbone.features
-        '''
-        100 padding for 2 reasons:
-            1) support very small input size
-            2) allow cropping in order to match size of different layers' feature maps
-        Note that the cropped part corresponds to a part of the 100 padding
-        Spatial information of different layers' feature maps cannot be align exactly because of cropping, which is bad
-        '''
 
         self.features3 = nn.Sequential(*features[: 17])
         self.features4 = nn.Sequential(*features[17: 24])

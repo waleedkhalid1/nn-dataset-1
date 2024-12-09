@@ -110,6 +110,7 @@ class TrainModel:
             if hasattr(self.model, 'exclusive'):
                 for module in self.model.exclusive:
                     params_list.append({'params': getattr(self.model, module).parameters(), 'lr': self.lr * 10})
+            optimizer = torch.optim.SGD(params_list, lr=self.lr, momentum=self.momentum)
         else:
             criterion = torch.nn.CrossEntropyLoss().to(self.device)
             optimizer = torch.optim.SGD(self.model.parameters(), lr=self.lr, momentum=self.momentum)
@@ -246,7 +247,7 @@ def load_wikitext(dataset_name="Salesforce/wikitext", config="wikitext-2-raw-v1"
     return text_dataset, text_dataset
 
 @DatasetLoader.register_handler('image_segmentation', 'COCOSeg')
-def load_cocos(path="./cocos",resize=(128,128)):
+def load_cocos(path="./cocos",resize=(128,128), **kwargs):
     from DataLoader.CocoDataset import COCOSegDataset
     train_set = COCOSegDataset(root=path,spilt="train",enable_list=True,cat_list=CLASS_LIST,resize=resize,preprocess=True)
     val_set = COCOSegDataset(root=path,spilt="val",enable_list=True,cat_list=CLASS_LIST,resize=resize,preprocess=True)
@@ -379,7 +380,6 @@ def batch_intersection_union(output, target, nclass):
     area_lab = torch.histc(target.cpu(), bins=nbins, min=mini, max=maxi)
     area_union = area_pred + area_lab - area_inter
     assert torch.sum(area_inter > area_union).item() == 0, "Intersection area should be smaller than Union area"
-    print(f"{area_inter}")
     return area_inter.float(), area_union.float()
 
 def save_results(model_name, study, task, n_epochs, n_optuna_trials):
@@ -455,9 +455,14 @@ def main(task, model_names, n_epochs, n_optuna_trials=100, dataset_params=None, 
 
         # Configure Optuna for the current model
         def objective(trial):
-            lr = trial.suggest_float('lr', 1e-4, 1, log=False)
-            momentum = trial.suggest_float('momentum', 0.01, 0.99, log=True)
-            batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
+            if task == 'image_segmentation':
+                lr = trial.suggest_float('lr', 1e-5, 1e-3, log=False)
+                momentum = trial.suggest_float('momentum', 0.8, 0.99, log=True)
+                batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
+            else:
+                lr = trial.suggest_float('lr', 1e-4, 1, log=False)
+                momentum = trial.suggest_float('momentum', 0.01, 0.99, log=True)
+                batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
 
             print(f"Initializing ModelEvaluator with lr = {lr}, momentum = {momentum}, batch_size = {batch_size}")
 
