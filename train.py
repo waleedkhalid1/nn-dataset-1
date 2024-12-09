@@ -415,7 +415,7 @@ def main(model_names='all', n_epochs=1, n_optuna_trials=100, dataset_params=None
         # Configure Optuna for the current model
         def objective(trial):
             if task == 'image_segmentation':
-                lr = trial.suggest_float('lr', 1e-5, 1e-3, log=False)
+                lr = trial.suggest_float('lr', 1e-4, 1e-2, log=False)
                 momentum = trial.suggest_float('momentum', 0.8, 0.99, log=True)
                 batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
             else:
