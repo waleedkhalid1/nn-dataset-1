@@ -12,9 +12,8 @@ import requests
 coco_ann_url = 'http://images.cocodataset.org/annotations/annotations_trainval2017.zip'
 
 def loader(path="./cocos",resize=(128,128), **kwargs):
-    CLASS_LIST = [] if kwargs.get('class_list')==None else kwargs.get('class_list')
-    train_set = COCOSegDataset(root=path,spilt="train",class_list=CLASS_LIST,num_limit=10000,resize=resize,preprocess=True)
-    val_set = COCOSegDataset(root=path,spilt="val",class_list=CLASS_LIST,num_limit=10000,resize=resize,preprocess=True)
+    train_set = COCOSegDataset(root=path,spilt="train",resize=resize,preprocess=True,**kwargs)
+    val_set = COCOSegDataset(root=path,spilt="val",resize=resize,preprocess=True,**kwargs)
     return train_set, val_set
 
 
