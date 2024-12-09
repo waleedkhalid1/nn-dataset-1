@@ -12,15 +12,33 @@ import requests
 coco_ann_url = 'http://images.cocodataset.org/annotations/annotations_trainval2017.zip'
 
 def loader(path="./cocos",resize=(128,128), **kwargs):
-    from ...train import CLASS_LIST
-    train_set = COCOSegDataset(root=path,spilt="train",enable_list=True,cat_list=CLASS_LIST,resize=resize,preprocess=True)
-    val_set = COCOSegDataset(root=path,spilt="val",enable_list=True,cat_list=CLASS_LIST,resize=resize,preprocess=True)
+    CLASS_LIST = [] if kwargs.get('class_list')==None else kwargs.get('class_list')
+    train_set = COCOSegDataset(root=path,spilt="train",class_list=CLASS_LIST,num_limit=10000,resize=resize,preprocess=True)
+    val_set = COCOSegDataset(root=path,spilt="val",class_list=CLASS_LIST,num_limit=10000,resize=resize,preprocess=True)
     return train_set, val_set
 
 
 class COCOSegDataset(torch.utils.data.Dataset):
-    def __init__(self, root:os.path, spilt="val", transform=transforms.Compose([transforms.ToTensor()]), limit_classes=False, num_limit = 100, enable_list=False, cat_list=[], resize = (128,128)
-        , preprocess=True):
+    def __init__(self, root:os.path, spilt="val", transform=transforms.Compose([transforms.ToTensor()]), class_limit = None, num_limit = None, class_list=None, resize = (128,128)
+        , preprocess=True, least_pix=1000, **kwargs):
+        """Read datas from COCOS and generate 2D masks.
+
+        Parameters
+        ----------
+        path : Path towards cocos root directory. It should be structured as default.
+        spilt : str `"train"` or `"val"`.
+        transform : transform towards the image. For resizing, please use `resize` parameter,
+          for torch transforms might have issues transforming masks.
+        class_limit : Limit class index from 0 to the value. Set to `None` for no limit.
+        num_limit : Limit maximum number of images to use. Only works with `preprocess`.
+        class_list : Limit class index within the list. Set to `None` for no limit,
+          It will ignore the `class_limit` parameter.
+        resize : tuple (h,w) to resize the image and its mask. Uses Image from PIL to avoid
+          artifacts on the mask
+        preprocess : Set true to allow preprocess that filter out all images with mask that
+          have lesser than `least_pix` pixels.
+        least_pix : filter out thersold of preprocess.
+        """
         valid_split = ["train","val"]
         if spilt in valid_split:
             try:
@@ -59,13 +77,14 @@ class COCOSegDataset(torch.utils.data.Dataset):
         self.num_classes = len(self.coco.getCatIds())
         self.masks = []
         self.resize = resize
-        self.limit_classes = limit_classes
+        self.limit_classes = class_limit
         self.num_limit = num_limit
-        self.enable_list = enable_list
-        self.cat_list = cat_list
+        self.class_list = class_list
+        self.no_missing_img = False
+        self.mask_transform = transforms.Compose([transforms.ToTensor()])
         if preprocess:
             self.ids = []
-            self.__preprocess__(list(self.coco.imgs.keys()), least_pix=1000)
+            self.__preprocess__(list(self.coco.imgs.keys()), least_pix=least_pix)
         else:
             self.ids = list(self.coco.imgs.keys())
 
@@ -79,6 +98,9 @@ class COCOSegDataset(torch.utils.data.Dataset):
         except:
             ## Image doesn't exists, download from coco_url
             ## This process is quite time consuming and should be avoided later
+            if self.no_missing_img:
+                print("Failed to read image(s). Download will be performed thereafter, but it can significantly slowdown processing.")
+                self.no_missing_img= True
             response = requests.get(image_info["coco_url"])
             if response.status_code == 200:
                 with open(file_Path, 'wb') as file:
@@ -96,11 +118,11 @@ class COCOSegDataset(torch.utils.data.Dataset):
             rle = cocmask.frPyObjects(ann['segmentation'], image_info["height"], image_info["width"])
             m = cocmask.decode(rle)
             cat = ann['category_id']
-            if not self.enable_list and not self.limit_classes:
+            if self.class_list==None and self.limit_classes==None:
                 c = cat
-            elif self.enable_list and cat in self.cat_list:
-                c = self.cat_list.index(cat)
-            elif self.limit_classes and ann['category_id'] <= self.num_limit:
+            elif not self.class_list==None and cat in self.class_list:
+                c = self.class_list.index(cat)
+            elif not self.limit_classes==None and ann['category_id'] <= self.limit_classes:
                 c = cat
             else:
                 continue
@@ -111,13 +133,16 @@ class COCOSegDataset(torch.utils.data.Dataset):
         image = image.resize(size=self.resize, resample=Image.BILINEAR)
         mask = Image.fromarray(mask).resize(size=self.resize, resample=Image.NEAREST)
         image = self.transform(image)
-        mask = self.transform(mask).long()
+        mask = self.mask_transform(mask).long()
         return image, mask[0]
 
     def __preprocess__(self,ids,least_pix:int=1000): #Filter out bad samples
         coco = self.coco
         tbar = tqdm.trange(len(ids))
         for i in tbar:
+            if not self.num_limit==None and len(self.ids)+1>self.num_limit:
+                print("num_limit exceeded, abort preprocess")
+                break
             img_id = ids[i]
             image_info = coco.loadImgs(img_id)[0]
             ann_ids = coco.getAnnIds(imgIds=img_id)
@@ -127,11 +152,11 @@ class COCOSegDataset(torch.utils.data.Dataset):
                 rle = cocmask.frPyObjects(ann['segmentation'], image_info["height"], image_info["width"])
                 m = cocmask.decode(rle)
                 cat = ann['category_id']
-                if not self.enable_list and not self.limit_classes:
+                if self.class_list==None and self.limit_classes==None:
                     c = cat
-                elif self.enable_list and cat in self.cat_list:
-                    c = self.cat_list.index(cat)
-                elif self.limit_classes and ann['category_id'] <= self.num_limit:
+                elif not self.class_list==None and cat in self.class_list:
+                    c = self.class_list.index(cat)
+                elif not self.limit_classes==None and ann['category_id'] <= self.limit_classes:
                     c = cat
                 else:
                     continue
@@ -143,6 +168,9 @@ class COCOSegDataset(torch.utils.data.Dataset):
                 self.ids.append(img_id)
                 file_Path = os.path.join(self.root,image_info['file_name'])
                 if not os.path.exists(file_Path):
+                    if self.no_missing_img:
+                        print("Noticed missing image(s). Download will be performed thereafter, but it can significantly slowdown processing.")
+                        self.no_missing_img= True
                     response = requests.get(image_info["coco_url"])
                     if response.status_code == 200:
                         with open(file_Path, 'wb') as file:
