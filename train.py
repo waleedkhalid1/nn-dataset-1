@@ -401,6 +401,10 @@ def main(model_names='all', n_epochs=1, n_optuna_trials=100, dataset_params=None
         loader_path = f"ab.loader.{dataset_name}.loader"
         transform_path = f"ab.transform.{transform_name}.transform" if transform_name else None
 
+        # apply class filter with cocos
+        if task=="image_segmentation":
+            dataset_params['class_list']=CLASS_LIST
+            dataset_params['path']="./cocos"
         # Load dataset
         try:
             train_set, test_set = DatasetLoader.load_dataset(loader_path, transform_path, **dataset_params)
