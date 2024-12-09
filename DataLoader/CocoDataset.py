@@ -16,7 +16,7 @@ class COCOSegDataset(torch.utils.data.Dataset):
         valid_split = ["train","val"]
         if spilt in valid_split:
             try:
-                self.coco = COCO(os.path.join(root,f"annotations\\instances_{spilt}2017.json"))
+                self.coco = COCO(os.path.join(root,"annotations",f"instances_{spilt}2017.json"))
             except:
                 # annFile doesn't exist, download the annotation file to root.
                 print("Annotation file doesn't exists! Downloading")
@@ -40,7 +40,7 @@ class COCOSegDataset(torch.utils.data.Dataset):
                 with zipfile.ZipFile(filepath, 'r') as zip_ref:
                     zip_ref.extractall(root)
                 print("Annotation file extraction complete")
-                self.coco = COCO(os.path.join(root,"annotations\\instances_val2017.json"))
+                self.coco = COCO(os.path.join(root,"annotations",f"instances_{spilt}2017.json"))
         else:
             raise Exception(f"Invalid spilt: {spilt}")
 
@@ -65,20 +65,19 @@ class COCOSegDataset(torch.utils.data.Dataset):
         coco = self.coco
         img_id = self.ids[index]
         image_info = coco.loadImgs(img_id)[0]
-        path = image_info['file_name']
+        file_Path = os.path.join(self.root,image_info['file_name'])
         try:
-            image = Image.open(os.path.join(self.root, path)).convert('RGB') # Read RGB image
+            image = Image.open(file_Path).convert('RGB') # Read RGB image
         except:
             ## Image doesn't exists, download from coco_url
             ## This process is quite time consuming and should be avoided later
             response = requests.get(image_info["coco_url"])
-            file_Path = os.path.join(self.root,path)
             if response.status_code == 200:
                 with open(file_Path, 'wb') as file:
                     file.write(response.content)
-                image = Image.open(os.path.join(self.root, path)).convert('RGB')
+                image = Image.open(file_Path).convert('RGB')
             else:
-                raise Exception(f"No image found for {path} and failed to download")
+                raise Exception(f"No image found for {image_info['file_name']} and failed to download")
             
         
         # Create mask
@@ -134,6 +133,14 @@ class COCOSegDataset(torch.utils.data.Dataset):
                     mask[:, :] += (mask == 0) * (((np.sum(m, axis=2)) > 0) * c).astype(np.uint8)
             if (mask > 0).sum() > least_pix:
                 self.ids.append(img_id)
+                file_Path = os.path.join(self.root,image_info['file_name'])
+                if not os.path.exists(file_Path):
+                    response = requests.get(image_info["coco_url"])
+                    if response.status_code == 200:
+                        with open(file_Path, 'wb') as file:
+                            file.write(response.content)
+                    else:
+                        raise Exception(f"Failed to download image:{image_info['file_name']}")
             tbar.set_description(f"Accepted {len(self.ids)} of {i+1} images.")
 
     def __len__(self):
