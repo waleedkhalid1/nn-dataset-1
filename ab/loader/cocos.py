@@ -10,8 +10,16 @@ import tqdm
 import zipfile
 import requests
 coco_ann_url = 'http://images.cocodataset.org/annotations/annotations_trainval2017.zip'
+
+def loader(path="./cocos",resize=(128,128), **kwargs):
+    from ...train import CLASS_LIST
+    train_set = COCOSegDataset(root=path,spilt="train",enable_list=True,cat_list=CLASS_LIST,resize=resize,preprocess=True)
+    val_set = COCOSegDataset(root=path,spilt="val",enable_list=True,cat_list=CLASS_LIST,resize=resize,preprocess=True)
+    return train_set, val_set
+
+
 class COCOSegDataset(torch.utils.data.Dataset):
-    def __init__(self, root:os.path, spilt="val", transform=transforms.Compose([transforms.ToTensor()]), limit_classes=False, num_limit = 100, enable_list=False, cat_list=[], resize = (256,256)
+    def __init__(self, root:os.path, spilt="val", transform=transforms.Compose([transforms.ToTensor()]), limit_classes=False, num_limit = 100, enable_list=False, cat_list=[], resize = (128,128)
         , preprocess=True):
         valid_split = ["train","val"]
         if spilt in valid_split:

@@ -17,7 +17,7 @@ NUM_CLASSES = len(CLASS_LIST)
 
 
 class TrainModel:
-    def __init__(self, model_source_package, train_dataset, test_dataset, lr: float, momentum: float, batch_size: int, manual_args=None):
+    def __init__(self, model_source_package, train_dataset, test_dataset, lr: float, momentum: float, batch_size: int, manual_args=None, **kwargs):
         """
         Universal class for training CV, Text Generation and other models.
         :param model_source_package: Path to the model's package (string).
@@ -35,6 +35,7 @@ class TrainModel:
         self.momentum = momentum
         self.batch_size = max(2, batch_size)
         self.args = None
+        self.task = kwargs.get('task_type')
 
         if torch.cuda.is_available():
             self.device = torch.device("cuda")
@@ -96,7 +97,7 @@ class TrainModel:
         test_loader = torch.utils.data.DataLoader(
             self.test_dataset, batch_size=self.batch_size, shuffle=False, num_workers=2
         )
-        if task=="image_segmentation":
+        if self.task=="image_segmentation":
             params_list = []
             criterion = torch.nn.CrossEntropyLoss(ignore_index=-1).to(self.device)
             if hasattr(self.model, 'backbone'):
@@ -149,8 +150,8 @@ class TrainModel:
         total = 0
         correct = 0
         with torch.no_grad():
-            if task=="image_segmentation":
-                matric = SegmentationMetric(NUM_CLASSES)
+            if self.task=="image_segmentation":
+                mIoU = MetricMIoU(NUM_CLASSES)
             for data in test_loader:
                 inputs, labels = data
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
@@ -172,10 +173,10 @@ class TrainModel:
 
                     outputs = torch.cat(outputs, dim=0)
                     targets = torch.cat(targets, dim=0)
-                elif task=="image_segmentation":
+                elif self.task=="image_segmentation": # Image Segmentation uses mIoU
                     outputs = self.forward_pass(inputs)
                     targets = labels
-                    matric.update(outputs,targets)
+                    mIoU.update(outputs,targets)
                 else:  # For other models
                     outputs = self.forward_pass(inputs)
                     targets = labels
@@ -185,8 +186,8 @@ class TrainModel:
                 correct += (predicted == targets).sum().item()
 
         accuracy = correct / total
-        if task=="image_segmentation":
-            _,accuracy = matric.get()
+        if self.task=="image_segmentation":
+            accuracy = mIoU.get()
         return accuracy
 
     def get_args(self):
@@ -215,13 +216,6 @@ class DatasetLoader:
 
         # Call the loader function with the dynamically loaded transform
         return loader(transform=transform, **kwargs)
-
-@DatasetLoader.register_handler('image_segmentation', 'COCOSeg')
-def load_cocos(path="./cocos",resize=(128,128), **kwargs):
-    from DataLoader.CocoDataset import COCOSegDataset
-    train_set = COCOSegDataset(root=path,spilt="train",enable_list=True,cat_list=CLASS_LIST,resize=resize,preprocess=True)
-    val_set = COCOSegDataset(root=path,spilt="val",enable_list=True,cat_list=CLASS_LIST,resize=resize,preprocess=True)
-    return train_set, val_set
 
 def parse_model_config(directory_name):
     """
@@ -262,12 +256,12 @@ def ensure_directory_exists(model_dir):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-class SegmentationMetric(object):
-    """Computes pixAcc and mIoU metric scores
+class MetricMIoU(object):
+    """Computes mIoU metric scores
     """
 
     def __init__(self, nclass):
-        super(SegmentationMetric, self).__init__()
+        super(MetricMIoU, self).__init__()
         self.nclass = nclass
         self.reset()
 
@@ -281,55 +275,29 @@ class SegmentationMetric(object):
         preds : 'NumpyArray' or list of `NumpyArray`
             Predicted values.
         """
+        inter, union = batch_intersection_union(preds, labels, self.nclass)
 
-        def evaluate_worker(self, pred, label):
-            correct, labeled = batch_pix_accuracy(pred, label)
-            inter, union = batch_intersection_union(pred, label, self.nclass)
-
-            self.total_correct += correct
-            self.total_label += labeled
-            if self.total_inter.device != inter.device:
-                self.total_inter = self.total_inter.to(inter.device)
-                self.total_union = self.total_union.to(union.device)
-            self.total_inter += inter
-            self.total_union += union
-
-        if isinstance(preds, torch.Tensor):
-            evaluate_worker(self, preds, labels)
-        elif isinstance(preds, (list, tuple)):
-            for (pred, label) in zip(preds, labels):
-                evaluate_worker(self, pred, label)
+        if self.total_inter.device != inter.device:
+            self.total_inter = self.total_inter.to(inter.device)
+            self.total_union = self.total_union.to(union.device)
+        self.total_inter += inter
+        self.total_union += union
 
     def get(self):
         """Gets the current evaluation result.
 
         Returns
         -------
-        metrics : tuple of float
-            pixAcc and mIoU
+        mIoU
         """
-        pixAcc = 1.0 * self.total_correct / (2.220446049250313e-16 + self.total_label)  # remove np.spacing(1)
         IoU = 1.0 * self.total_inter / (2.220446049250313e-16 + self.total_union)
         mIoU = IoU.mean().item()
-        return pixAcc, mIoU
+        return mIoU
 
     def reset(self):
         """Resets the internal evaluation result to initial state."""
         self.total_inter = torch.zeros(self.nclass)
         self.total_union = torch.zeros(self.nclass)
-        self.total_correct = 0
-        self.total_label = 0
-
-def batch_pix_accuracy(output, target):
-    """PixAcc"""
-    # inputs are numpy array, output 4D, target 3D
-    predict = torch.argmax(output.long(), 1) + 1
-    target = target.long() + 1
-
-    pixel_labeled = torch.sum(target > 0).item()
-    pixel_correct = torch.sum((predict == target) * (target > 0)).item()
-    assert pixel_correct <= pixel_labeled, "Correct area should be smaller than Labeled"
-    return pixel_correct, pixel_labeled
 
 def batch_intersection_union(output, target, nclass):
     """mIoU"""
