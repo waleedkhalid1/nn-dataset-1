@@ -20,7 +20,7 @@ In addition to pip/conda package managers, all versions of this project are comp
 
 If you find Neural Network Dataset to be useful for your research, please consider citing:
 ```bibtex
-@misc{nn-dataset,
+@misc{ABrain-One.NN-dataset,
   author       = {Goodarzi, Arash and Kochnev, Roman and Bentyn, Zofia and Ignatov, Dmitry and Timofte, Radu},
   title        = {Neural Network Dataset},
   howpublished = {\url{https://github.com/ABrain-One/nn-dataset}},
