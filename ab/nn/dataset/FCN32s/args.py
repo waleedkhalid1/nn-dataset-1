@@ -2,7 +2,7 @@ from typing import Dict, List
 
 from torch import nn
 
-from ab.nn.dataset.FCN32s.code import ResNet, Bottleneck, FCNHead, VGG, make_layers, vgg_cfgs
+from .code import ResNet, Bottleneck, FCNHead, VGG, make_layers, vgg_cfgs  # Relative import, or will cause error by location of trainer
 
 backbones: Dict[str, List[nn.Module]] = {
     "ResNet50": [ResNet(Bottleneck, [3, 4, 6, 3], num_classes = 100, replace_stride_with_dilation=[False, True, True]),FCNHead(2048, 21)],

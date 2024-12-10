@@ -1,7 +1,5 @@
-from typing import Dict, List, Optional, Union
-from ab.nn.dataset.DeepLabV3.code import Bottleneck, FCNHead, ResNet, DeepLabHead
-
-from torch import nn
+from typing import Dict
+from .code import Bottleneck, ResNet, DeepLabHead  # Relative import, or will cause error by location of trainer
 
 
 backbones: Dict[str, dict] = {
