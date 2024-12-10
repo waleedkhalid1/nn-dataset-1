@@ -11,7 +11,7 @@ CLASS_LIST = [0, 1, 2, 16, 9, 44, 6, 3, 17, 62, 21, 67, 18, 19, 4,
                 5, 64, 20, 63, 7, 72]
 NUM_CLASSES = len(CLASS_LIST)
 
-
+IMAGE_SEGMENTATION_MODELS = ['unet','fcn8s','fcn16s','fcn32s','deeplabv3','lraspp']
 
 
 class TrainModel:
@@ -392,35 +392,13 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
                 print(f"Skipping config '{sub_config}': failed to parse. Error: {e}")
                 continue
 
-<<<<<<< HEAD:train.py
-        # apply class filter with cocos
-        if task=="image_segmentation":
-            dataset_params['class_list']=CLASS_LIST
-            dataset_params['path']="./cocos"
-        # Load dataset
-        try:
-            train_set, test_set = DatasetLoader.load_dataset(loader_path, transform_path, **dataset_params)
-        except Exception as e:
-            print(f"Skipping model '{model_name}': failed to load dataset. Error: {e}")
-            continue
-
-        # Configure Optuna for the current model
-        def objective(trial):
-            if task == 'image_segmentation':
-                lr = trial.suggest_float('lr', 1e-4, 1e-2, log=False)
-                momentum = trial.suggest_float('momentum', 0.8, 0.99, log=True)
-                batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
-            else:
-                lr = trial.suggest_float('lr', 1e-4, 1, log=False)
-                momentum = trial.suggest_float('momentum', 0.01, 0.99, log=True)
-                batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
-=======
             print(f"\nStarting training for model: {model_name}, Task: {task}, Dataset: {dataset_name}, Transform: {transform_name}")
-
+            if task=="image_segmentation":
+                dataset_params['class_list']=CLASS_LIST
+                dataset_params['path']="./cocos"
             # Paths for loader and transform
             loader_path = f"loader.{dataset_name}.loader"
             transform_path = f"transform.{transform_name}.transform" if transform_name else None
->>>>>>> 646ad0bf5992b8ef55439b9b691760e06b2af02d:ab/nn/train.py
 
             # Load dataset
             try:
@@ -431,9 +409,14 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
 
             # Configure Optuna for the current model
             def objective(trial):
-                lr = trial.suggest_float('lr', 1e-4, 1, log=False)
-                momentum = trial.suggest_float('momentum', 0.01, 0.99, log=True)
-                batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
+                if task == 'image_segmentation':
+                    lr = trial.suggest_float('lr', 1e-4, 1e-2, log=False)
+                    momentum = trial.suggest_float('momentum', 0.8, 0.99, log=True)
+                    batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
+                else:
+                    lr = trial.suggest_float('lr', 1e-4, 1, log=False)
+                    momentum = trial.suggest_float('momentum', 0.01, 0.99, log=True)
+                    batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
 
                 print(f"Initialize training with lr = {lr}, momentum = {momentum}, batch_size = {batch_size}")
 
@@ -467,35 +450,19 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
                         batch_size=batch_size,
                         manual_args=manual_args.get(model_name) if manual_args else None
                     )
-                else:
-                    raise ValueError(f"Unsupported task type: {task}")
-
-<<<<<<< HEAD:train.py
-                trainer = TrainModel(
-                    model_source_package=f"Dataset.{model_name}",
-                    train_dataset=train_set,
-                    test_dataset=test_set,
-                    lr=lr,
-                    momentum=momentum,
-                    batch_size=batch_size,
-                    manual_args=manual_args.get(model_name) if manual_args else None
-                )
-            elif task == 'image_segmentation':
-                trainer = TrainModel(
-                    model_source_package=f"Dataset.{model_name}",
-                    train_dataset=train_set,
-                    test_dataset=test_set,
-                    lr=lr,
-                    momentum=momentum,
-                    batch_size=batch_size,
-                    task_type=task,
-                    manual_args=manual_args.get(model_name) if manual_args else None
-                )
-            else:
-                raise ValueError(f"Unsupported task type: {task}")
-=======
+                elif task == 'image_segmentation':
+                    if not model_name.lower() in IMAGE_SEGMENTATION_MODELS:
+                        raise ValueError(f"Unsupported task type: {task}")
+                    trainer = TrainModel(
+                        model_source_package=f"dataset.{model_name}",
+                        train_dataset=train_set,
+                        test_dataset=test_set,
+                        lr=lr,
+                        momentum=momentum,
+                        batch_size=batch_size,
+                        manual_args=manual_args.get(model_name) if manual_args else None
+                    )
                 return trainer.evaluate(n_epochs)
->>>>>>> 646ad0bf5992b8ef55439b9b691760e06b2af02d:ab/nn/train.py
 
             # Launch Optuna for the current model
             study_name = f"{model_name}_study"

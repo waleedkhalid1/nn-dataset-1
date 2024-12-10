@@ -1,5 +1,5 @@
 from typing import Dict, List, Optional, Union
-from .code import Bottleneck, FCNHead, ResNet, DeepLabHead
+from ab.nn.dataset.DeepLabV3.code import Bottleneck, FCNHead, ResNet, DeepLabHead
 
 from torch import nn
 
