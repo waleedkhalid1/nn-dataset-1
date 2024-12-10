@@ -6,8 +6,6 @@ import torch
 from torch import nn, Tensor
 import torch.nn.functional as F
 
-from torchvision.models._api import WeightsEnum
-from torchvision.models._utils import _ovewrite_named_param
 
 class Net(nn.Module):
     def __init__(self, backbone: nn.Module, classifier: nn.Module, **kwargs) -> None:
@@ -268,25 +266,6 @@ class ResNet(nn.Module):
 
     def forward(self, x: Tensor) -> Tensor:
         return self._forward_impl(x)
-
-
-def _resnet(
-    block: Type[Union[BasicBlock, Bottleneck]],
-    layers: List[int],
-    weights: Optional[WeightsEnum],
-    progress: bool,
-    **kwargs: Any,
-) -> ResNet:
-    if weights is not None:
-        _ovewrite_named_param(kwargs, "num_classes", len(weights.meta["categories"]))
-
-    model = ResNet(block, layers, **kwargs)
-
-    if weights is not None:
-        model.load_state_dict(weights.get_state_dict(progress=progress, check_hash=True))
-
-    return model
-
 
 
 class VGG(nn.Module):
