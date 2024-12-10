@@ -460,6 +460,7 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
                         lr=lr,
                         momentum=momentum,
                         batch_size=batch_size,
+                        task_type='image_segmentation',
                         manual_args=manual_args.get(model_name) if manual_args else None
                     )
                 return trainer.evaluate(n_epochs)
