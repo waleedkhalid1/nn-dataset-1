@@ -4,6 +4,10 @@ The python code of AlexNet, ConvNeXt, DenseNet, EfficientNet, GoogLeNet, Incepti
 Copyright (c) 2016 Soumith Chintala<br/>
 All rights reserved.
 
+The python code of DeepLabV3, LRASPP, FCN32s models:<br/>
+Copyright (c) Soumith Chintala 2016, 
+All rights reserved.
+
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
 
