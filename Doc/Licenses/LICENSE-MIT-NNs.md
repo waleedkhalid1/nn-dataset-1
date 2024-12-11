@@ -1,15 +1,15 @@
 MIT License
 
-The python code of the Quantum neural network models:<br/>
-Copyright (c) 2021-2023 TorchQuantum Authors<br/>
-All rights reserved.
-
 The python code of the DeepSeek large language models:<br/>
 Copyright (c) 2023 DeepSeek<br/>
 All rights reserved.
 
+The python code of ComplexNN model:<br/>
+Copyright (c) 2019 Sébastien M. P.<br/>
+All rights reserved.
+
 The python code of FCN8s, FCN16s, FCN32s models:<br/>
-Copyright (c) 2017 - 2019 Kentaro Wada.<br/>
+Copyright (c) 2017 - 2019 Kentaro Wada<br/>
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
