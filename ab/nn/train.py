@@ -4,10 +4,18 @@ import torch
 import torch.nn as nn
 from tqdm import tqdm
 import optuna
+import numpy as np
+
+# Reduce COCOS classes:
+CLASS_LIST = [0, 1, 2, 16, 9, 44, 6, 3, 17, 62, 21, 67, 18, 19, 4,
+                5, 64, 20, 63, 7, 72]
+NUM_CLASSES = len(CLASS_LIST)
+
+IMAGE_SEGMENTATION_MODELS = ['unet','fcn8s','fcn16s','fcn32s','deeplabv3','lraspp']
 
 
 class TrainModel:
-    def __init__(self, model_source_package, train_dataset, test_dataset, lr: float, momentum: float, batch_size: int, manual_args=None):
+    def __init__(self, model_source_package, train_dataset, test_dataset, lr: float, momentum: float, batch_size: int, manual_args=None, **kwargs):
         """
         Universal class for training CV, Text Generation and other models.
         :param model_source_package: Path to the model's package (string).
@@ -25,6 +33,7 @@ class TrainModel:
         self.momentum = momentum
         self.batch_size = max(2, batch_size)
         self.args = None
+        self.task = kwargs.get('task_type')
 
         if torch.cuda.is_available():
             self.device = torch.device("cuda")
@@ -86,9 +95,18 @@ class TrainModel:
         test_loader = torch.utils.data.DataLoader(
             self.test_dataset, batch_size=self.batch_size, shuffle=False, num_workers=2
         )
-
-        criterion = torch.nn.CrossEntropyLoss().to(self.device)
-        optimizer = torch.optim.SGD(self.model.parameters(), lr=self.lr, momentum=self.momentum)
+        if self.task=="image_segmentation":
+            params_list = []
+            criterion = torch.nn.CrossEntropyLoss(ignore_index=-1).to(self.device)
+            if hasattr(self.model, 'backbone'):
+                params_list.append({'params': self.model.backbone.parameters(), 'lr': self.lr})
+            if hasattr(self.model, 'exclusive'):
+                for module in self.model.exclusive:
+                    params_list.append({'params': getattr(self.model, module).parameters(), 'lr': self.lr * 10})
+            optimizer = torch.optim.SGD(params_list, lr=self.lr, momentum=self.momentum)
+        else:
+            criterion = torch.nn.CrossEntropyLoss().to(self.device)
+            optimizer = torch.optim.SGD(self.model.parameters(), lr=self.lr, momentum=self.momentum)
 
         # Training loop
         for _ in tqdm(range(num_epochs), desc="Training"):
@@ -130,6 +148,8 @@ class TrainModel:
         total = 0
         correct = 0
         with torch.no_grad():
+            if self.task=="image_segmentation":
+                mIoU = MetricMIoU(NUM_CLASSES)
             for data in test_loader:
                 inputs, labels = data
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
@@ -151,6 +171,10 @@ class TrainModel:
 
                     outputs = torch.cat(outputs, dim=0)
                     targets = torch.cat(targets, dim=0)
+                elif self.task=="image_segmentation": # Image Segmentation uses mIoU
+                    outputs = self.forward_pass(inputs)
+                    targets = labels
+                    mIoU.update(outputs,targets)
                 else:  # For other models
                     outputs = self.forward_pass(inputs)
                     targets = labels
@@ -160,6 +184,8 @@ class TrainModel:
                 correct += (predicted == targets).sum().item()
 
         accuracy = correct / total
+        if self.task=="image_segmentation":
+            accuracy = mIoU.get()
         return accuracy
 
     def get_args(self):
@@ -189,7 +215,6 @@ class DatasetLoader:
         # Call the loader function with the dynamically loaded transform
         return loader(transform=transform, **kwargs)
 
-
 def parse_model_config(directory_name):
     """
     Parse the model configuration to extract task, dataset, and optional transformation.
@@ -214,6 +239,66 @@ def ensure_directory_exists(model_dir):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
+class MetricMIoU(object):
+    """Computes mIoU metric scores
+    """
+
+    def __init__(self, nclass):
+        super(MetricMIoU, self).__init__()
+        self.nclass = nclass
+        self.reset()
+
+    def update(self, preds, labels):
+        """Updates the internal evaluation result.
+
+        Parameters
+        ----------
+        labels : 'NumpyArray' or list of `NumpyArray`
+            The labels of the data.
+        preds : 'NumpyArray' or list of `NumpyArray`
+            Predicted values.
+        """
+        inter, union = batch_intersection_union(preds, labels, self.nclass)
+
+        if self.total_inter.device != inter.device:
+            self.total_inter = self.total_inter.to(inter.device)
+            self.total_union = self.total_union.to(union.device)
+        self.total_inter += inter
+        self.total_union += union
+
+    def get(self):
+        """Gets the current evaluation result.
+
+        Returns
+        -------
+        mIoU
+        """
+        IoU = 1.0 * self.total_inter / (2.220446049250313e-16 + self.total_union)
+        mIoU = IoU.mean().item()
+        return mIoU
+
+    def reset(self):
+        """Resets the internal evaluation result to initial state."""
+        self.total_inter = torch.zeros(self.nclass)
+        self.total_union = torch.zeros(self.nclass)
+
+def batch_intersection_union(output, target, nclass):
+    """mIoU"""
+    # inputs are numpy array, output 4D, target 3D
+    mini = 1
+    maxi = nclass
+    nbins = nclass
+    predict = torch.argmax(output, 1) + 1
+    target = target.float() + 1
+
+    predict = predict.float() * (target > 0).float()
+    intersection = predict * (predict == target).float()
+    area_inter = torch.histc(intersection.cpu(), bins=nbins, min=mini, max=maxi)
+    area_pred = torch.histc(predict.cpu(), bins=nbins, min=mini, max=maxi)
+    area_lab = torch.histc(target.cpu(), bins=nbins, min=mini, max=maxi)
+    area_union = area_pred + area_lab - area_inter
+    assert torch.sum(area_inter > area_union).item() == 0, "Intersection area should be smaller than Union area"
+    return area_inter.float(), area_union.float()
 
 def save_results(config_model_name, study, n_epochs, n_optuna_trials):
     """
@@ -308,7 +393,9 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
                 continue
 
             print(f"\nStarting training for model: {model_name}, Task: {task}, Dataset: {dataset_name}, Transform: {transform_name}")
-
+            if task=="image_segmentation":
+                dataset_params['class_list']=CLASS_LIST
+                dataset_params['path']="./cocos"
             # Paths for loader and transform
             loader_path = f"loader.{dataset_name}.loader"
             transform_path = f"transform.{transform_name}.transform" if transform_name else None
@@ -322,9 +409,14 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
 
             # Configure Optuna for the current model
             def objective(trial):
-                lr = trial.suggest_float('lr', 1e-4, 1, log=False)
-                momentum = trial.suggest_float('momentum', 0.01, 0.99, log=True)
-                batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
+                if task == 'image_segmentation':
+                    lr = trial.suggest_float('lr', 1e-4, 1e-2, log=False)
+                    momentum = trial.suggest_float('momentum', 0.8, 0.99, log=True)
+                    batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
+                else:
+                    lr = trial.suggest_float('lr', 1e-4, 1, log=False)
+                    momentum = trial.suggest_float('momentum', 0.01, 0.99, log=True)
+                    batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
 
                 print(f"Initialize training with lr = {lr}, momentum = {momentum}, batch_size = {batch_size}")
 
@@ -358,9 +450,19 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
                         batch_size=batch_size,
                         manual_args=manual_args.get(model_name) if manual_args else None
                     )
-                else:
-                    raise ValueError(f"Unsupported task type: {task}")
-
+                elif task == 'image_segmentation':
+                    if not model_name.lower() in IMAGE_SEGMENTATION_MODELS:
+                        raise ValueError(f"Unsupported task type: {task}")
+                    trainer = TrainModel(
+                        model_source_package=f"dataset.{model_name}",
+                        train_dataset=train_set,
+                        test_dataset=test_set,
+                        lr=lr,
+                        momentum=momentum,
+                        batch_size=batch_size,
+                        task_type='image_segmentation',
+                        manual_args=manual_args.get(model_name) if manual_args else None
+                    )
                 return trainer.evaluate(n_epochs)
 
             # Launch Optuna for the current model

@@ -8,6 +8,10 @@ The python code of the DeepSeek large language models:<br/>
 Copyright (c) 2023 DeepSeek<br/>
 All rights reserved.
 
+The python code of FCN8s, FCN16s, FCN32s models:<br/>
+Copyright (c) 2017 - 2019 Kentaro Wada.<br/>
+All rights reserved.
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
