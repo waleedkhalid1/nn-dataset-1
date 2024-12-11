@@ -25,7 +25,7 @@ In addition to pip/conda package managers, all versions of this project are comp
 
 If you find Neural Network Dataset to be useful for your research, please consider citing:
 ```bibtex
-@misc{ABrain-One.NN-dataset,
+@misc{ABrain-One.NN-Dataset,
   author       = {Goodarzi, Arash and Kochnev, Roman and Bentyn, Zofia and Ignatov, Dmitry and Timofte, Radu},
   title        = {Neural Network Dataset},
   howpublished = {\url{https://github.com/ABrain-One/nn-dataset}},
@@ -44,4 +44,4 @@ This project is distributed under the following licensing terms:
 <li> all neural network models and their weights not covered by the above licenses, as well as all other files and assets in this project, are subject to the <a href="LICENSE.md">MIT license</a></li> 
 </ul>
 
-#### The Idea of Dr. Dmitry Ignatov
+#### The idea of Dr. Dmitry Ignatov
