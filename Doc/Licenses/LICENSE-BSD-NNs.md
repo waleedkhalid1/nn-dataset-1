@@ -1,11 +1,7 @@
 BSD 3-Clause License
 
-The python code of AlexNet, ConvNeXt, DenseNet, EfficientNet, GoogLeNet, InceptionV3, MNASNet, MaxVit, MobileNetV2, MobileNetV3, RegNet, ResNet, ShuffleNet, SqueezeNet, SwinTransformer, VGG, and VisionTransformer  models:<br/>
+The python code of AlexNet, ConvNeXt, DeepLabV3, DenseNet, EfficientNet, FCN32s, GoogLeNet, InceptionV3, LRASPP, MNASNet, MaxVit, MobileNetV2, MobileNetV3, RegNet, ResNet, ShuffleNet, SqueezeNet, SwinTransformer, VGG, VisionTransformer models:<br/>
 Copyright (c) 2016 Soumith Chintala<br/>
-All rights reserved.
-
-The python code of DeepLabV3, LRASPP, FCN32s models:<br/>
-Copyright (c) Soumith Chintala 2016, 
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
