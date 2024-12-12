@@ -11,9 +11,6 @@ CLASS_LIST = [0, 1, 2, 16, 9, 44, 6, 3, 17, 62, 21, 67, 18, 19, 4,
               5, 64, 20, 63, 7, 72]
 NUM_CLASSES = len(CLASS_LIST)
 
-IMAGE_SEGMENTATION_MODELS = ['unet', 'fcn8s', 'fcn16s', 'fcn32s', 'deeplabv3', 'lraspp']
-
-
 class TrainModel:
     def __init__(self, model_source_package, train_dataset, test_dataset, lr: float, momentum: float, batch_size: int, manual_args=None, **kwargs):
         """
@@ -359,6 +356,21 @@ def save_results(config_model_name, study, n_epochs):
     print(f"Trials for {config_model_name} saved at {model_dir}")
 
 
+def trials_left(config_model_name, model_name, n_epochs, n_optuna_trials):
+    model_dir = f"stat/{config_model_name}/{n_epochs}/"
+    path = f"{model_dir}/trials.json"
+    n_passed_trials = 0
+    if os.path.exists(path):
+        with open(path, "r") as f:
+            trials = json.load(f)
+            n_passed_trials = len(trials)
+    n_trials_left = max(0, n_optuna_trials - n_passed_trials)
+    if n_passed_trials > 0 :
+        print(f"The {model_name} passed {n_passed_trials} trials, {n_trials_left} left.")
+    return n_trials_left
+
+
+
 def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, manual_args=None):
     """
     Main function for training models using Optuna optimization.
@@ -404,86 +416,88 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
                 print(f"Skipping config '{sub_config}': failed to parse. Error: {e}")
                 continue
 
-            print(f"\nStarting training for model: {model_name}, Task: {task}, Dataset: {dataset_name}, Transform: {transform_name}")
-            if task == "img_segmentation":
-                dataset_params['class_list'] = CLASS_LIST
-                dataset_params['path'] = "./data/cocos"
-            # Paths for loader and transform
-            loader_path = f"loader.{dataset_name}.loader"
-            transform_path = f"transform.{transform_name}.transform" if transform_name else None
+            n_optuna_trials_left = trials_left(config_name, model_name, n_epochs, n_optuna_trials)
+            if n_optuna_trials_left == 0:
+                print(f"The model {model_name} has already passed all trials for task: {task}, dataset: {dataset_name}, transform: {transform_name}, epochs: {n_epochs}")
+            else :
+                print(f"\nStarting training for the model: {model_name}, task: {task}, dataset: {dataset_name}, transform: {transform_name}, epochs: {n_epochs}")
+                if task == "img_segmentation":
+                    dataset_params['class_list'] = CLASS_LIST
+                    dataset_params['path'] = "./data/cocos"
+                # Paths for loader and transform
+                loader_path = f"loader.{dataset_name}.loader"
+                transform_path = f"transform.{transform_name}.transform" if transform_name else None
 
-            # Load dataset
-            try:
-                train_set, test_set = DatasetLoader.load_dataset(loader_path, transform_path, **dataset_params)
-            except Exception as e:
-                print(f"Skipping model '{model_name}': failed to load dataset. Error: {e}")
-                continue
+                # Load dataset
+                try:
+                    train_set, test_set = DatasetLoader.load_dataset(loader_path, transform_path, **dataset_params)
+                except Exception as e:
+                    print(f"Skipping model '{model_name}': failed to load dataset. Error: {e}")
+                    continue
 
-            # Configure Optuna for the current model
-            def objective(trial):
-                if task == 'img_segmentation':
-                    lr = trial.suggest_float('lr', 1e-4, 1e-2, log=False)
-                    momentum = trial.suggest_float('momentum', 0.8, 0.99, log=True)
-                    batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
-                else:
-                    lr = trial.suggest_float('lr', 1e-4, 1, log=False)
-                    momentum = trial.suggest_float('momentum', 0.01, 0.99, log=True)
-                    batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
-
-                print(f"Initialize training with lr = {lr}, momentum = {momentum}, batch_size = {batch_size}")
-
-                if task == 'img_classification':
-                    trainer = TrainModel(
-                        model_source_package=f"dataset.{model_name}",
-                        train_dataset=train_set,
-                        test_dataset=test_set,
-                        lr=lr,
-                        momentum=momentum,
-                        batch_size=batch_size,
-                        manual_args=manual_args.get(model_name) if manual_args else None
-                    )
-                elif task == 'txt_generation':
-                    # Dynamically import RNN or LSTM model
-                    if model_name.lower() == 'rnn':
-                        from dataset.RNN.code import Net as RNNNet
-                        model = RNNNet(1, 256, len(train_set.chars), batch_size)
-                    elif model_name.lower() == 'lstm':
-                        from dataset.LSTM.code import Net as LSTMNet
-                        model = LSTMNet(1, 256, len(train_set.chars), batch_size, num_layers=2)
+                # Configure Optuna for the current model
+                def objective(trial):
+                    if task == 'img_segmentation':
+                        lr = trial.suggest_float('lr', 1e-4, 1e-2, log=False)
+                        momentum = trial.suggest_float('momentum', 0.8, 0.99, log=True)
+                        batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
                     else:
-                        raise ValueError(f"Unsupported text generation model: {model_name}")
+                        lr = trial.suggest_float('lr', 1e-4, 1, log=False)
+                        momentum = trial.suggest_float('momentum', 0.01, 0.99, log=True)
+                        batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
 
-                    trainer = TrainModel(
-                        model_source_package=f"dataset.{model_name}",
-                        train_dataset=train_set,
-                        test_dataset=test_set,
-                        lr=lr,
-                        momentum=momentum,
-                        batch_size=batch_size,
-                        manual_args=manual_args.get(model_name) if manual_args else None
-                    )
-                elif task == 'img_segmentation':
-                    if not model_name.lower() in IMAGE_SEGMENTATION_MODELS:
-                        raise ValueError(f"Unsupported task type: {task}")
-                    trainer = TrainModel(
-                        model_source_package=f"dataset.{model_name}",
-                        train_dataset=train_set,
-                        test_dataset=test_set,
-                        lr=lr,
-                        momentum=momentum,
-                        batch_size=batch_size,
-                        task_type='img_segmentation',
-                        manual_args=manual_args.get(model_name) if manual_args else None
-                    )
-                return trainer.evaluate(n_epochs)
+                    print(f"Initialize training with lr = {lr}, momentum = {momentum}, batch_size = {batch_size}")
 
-            # Launch Optuna for the current model
-            study_name = f"{model_name}_study"
-            study = optuna.create_study(study_name=study_name, direction='maximize')
-            study.optimize(objective, n_trials=n_optuna_trials)
+                    if task == 'img_classification':
+                        trainer = TrainModel(
+                            model_source_package=f"dataset.{model_name}",
+                            train_dataset=train_set,
+                            test_dataset=test_set,
+                            lr=lr,
+                            momentum=momentum,
+                            batch_size=batch_size,
+                            manual_args=manual_args.get(model_name) if manual_args else None
+                        )
+                    elif task == 'txt_generation':
+                        # Dynamically import RNN or LSTM model
+                        if model_name.lower() == 'rnn':
+                            from dataset.RNN.code import Net as RNNNet
+                            model = RNNNet(1, 256, len(train_set.chars), batch_size)
+                        elif model_name.lower() == 'lstm':
+                            from dataset.LSTM.code import Net as LSTMNet
+                            model = LSTMNet(1, 256, len(train_set.chars), batch_size, num_layers=2)
+                        else:
+                            raise ValueError(f"Unsupported text generation model: {model_name}")
 
-            # Save results
-            save_results(sub_config, study, n_epochs)
+                        trainer = TrainModel(
+                            model_source_package=f"dataset.{model_name}",
+                            train_dataset=train_set,
+                            test_dataset=test_set,
+                            lr=lr,
+                            momentum=momentum,
+                            batch_size=batch_size,
+                            manual_args=manual_args.get(model_name) if manual_args else None
+                        )
+                    elif task == 'img_segmentation':
+                        trainer = TrainModel(
+                            model_source_package=f"dataset.{model_name}",
+                            train_dataset=train_set,
+                            test_dataset=test_set,
+                            lr=lr,
+                            momentum=momentum,
+                            batch_size=batch_size,
+                            task_type='img_segmentation',
+                            manual_args=manual_args.get(model_name) if manual_args else None
+                        )
+                    return trainer.evaluate(n_epochs)
+
+                # Launch Optuna for the current model
+                study_name = f"{model_name}_study"
+                study = optuna.create_study(study_name=study_name, direction='maximize')
+                study.optimize(objective, n_trials=n_optuna_trials_left)
+
+                # Save results
+                save_results(sub_config, study, n_epochs)
 
 
 if __name__ == "__main__":
@@ -493,6 +507,6 @@ if __name__ == "__main__":
     config = 'img_classification-cifar10-cifar10_complex-ComplexNet'  # For a particular configuration and model
 
     # Detects and saves performance metric values for a varying number of epochs
-    for n_epochs in [1, 2, 5]:
+    for epochs in [1, 2, 5]:
         # Run training with Optuna
-        main(config, n_epochs, 100)
+        main(config, epochs, 100)
