@@ -11,7 +11,7 @@ import zipfile
 import requests
 coco_ann_url = 'http://images.cocodataset.org/annotations/annotations_trainval2017.zip'
 
-def loader(path="./cocos",resize=(128,128), **kwargs):
+def loader(path="./data/cocos",resize=(128,128), **kwargs):
     train_set = COCOSegDataset(root=path,spilt="train",resize=resize,preprocess=True,**kwargs)
     val_set = COCOSegDataset(root=path,spilt="val",resize=resize,preprocess=True,**kwargs)
     return train_set, val_set

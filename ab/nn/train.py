@@ -183,10 +183,10 @@ class TrainModel:
                 total += targets.size(0)
                 correct += (predicted == targets).sum().item()
 
-        accuracy = correct / total
+        metric = correct / total
         if self.task=="img_segmentation":
-            accuracy = mIoU.get()
-        return accuracy
+            metric = mIoU.get()
+        return metric
 
     def get_args(self):
         return self.args
@@ -300,7 +300,7 @@ def batch_intersection_union(output, target, nclass):
     assert torch.sum(area_inter > area_union).item() == 0, "Intersection area should be smaller than Union area"
     return area_inter.float(), area_union.float()
 
-def save_results(config_model_name, study, n_epochs, n_optuna_trials):
+def save_results(config_model_name, study, n_epochs):
     """
     Save Optuna study results for a given model in JSON-format.
     :param config_model_name: Config (Task, Dataset, Normalization) and Model name.
@@ -322,7 +322,7 @@ def save_results(config_model_name, study, n_epochs, n_optuna_trials):
     with open(f"{model_dir}/best_trial.json", "w") as f:
         json.dump(best_trial, f, indent=4)
 
-    # Save all trials as optuna_<n_optuna_trials>.json
+    # Save all trials as trials.json
     trials_df = study.trials_dataframe()
     filtered_trials = trials_df[["value", "params_batch_size", "params_lr", "params_momentum"]]
 
@@ -395,7 +395,7 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
             print(f"\nStarting training for model: {model_name}, Task: {task}, Dataset: {dataset_name}, Transform: {transform_name}")
             if task=="img_segmentation":
                 dataset_params['class_list']=CLASS_LIST
-                dataset_params['path']="./cocos"
+                dataset_params['path']="./data/cocos"
             # Paths for loader and transform
             loader_path = f"loader.{dataset_name}.loader"
             transform_path = f"transform.{transform_name}.transform" if transform_name else None
@@ -430,7 +430,7 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
                         batch_size=batch_size,
                         manual_args=manual_args.get(model_name) if manual_args else None
                     )
-                elif task == 'text_generation':
+                elif task == 'txt_generation':
                     # Dynamically import RNN or LSTM model
                     if model_name.lower() == 'rnn':
                         from dataset.RNN.code import Net as RNNNet
@@ -471,7 +471,7 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
             study.optimize(objective, n_trials=n_optuna_trials)
 
             # Save results
-            save_results(sub_config, study, n_epochs, n_optuna_trials)
+            save_results(sub_config, study, n_epochs)
 
 
 

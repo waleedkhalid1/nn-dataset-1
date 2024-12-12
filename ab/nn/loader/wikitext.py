@@ -6,23 +6,23 @@ from datasets import load_dataset
 def loader(dataset_name="Salesforce/wikitext", config="wikitext-2-raw-v1", seq_length=100):
     dataset = load_dataset(dataset_name, config)
     data = "\n".join(dataset["train"]["text"]).lower()
-    text_dataset = TextDatasetPreparation(data, seq_length)
-    return text_dataset, text_dataset
+    txt_dataset = TextDatasetPreparation(data, seq_length)
+    return txt_dataset, txt_dataset
 
 class TextDatasetPreparation(Dataset):
     """
     A dataset class for preparing character-level text data for tasks like text generation.
-    :param text_data: Input text as a single string.
+    :param txt_data: Input text as a single string.
     :param seq_length: Length of each input sequence (default: 25).
     :return: Pairs of input and target sequences as tensors.
     """
-    def __init__(self, text_data: str, seq_length: int = 25):
-        self.chars = sorted(list(set(text_data)))
-        self.data_size, self.vocab_size = len(text_data), len(self.chars)
+    def __init__(self, txt_data: str, seq_length: int = 25):
+        self.chars = sorted(list(set(txt_data)))
+        self.data_size, self.vocab_size = len(txt_data), len(self.chars)
         self.idx_to_char = {i: ch for i, ch in enumerate(self.chars)}
         self.char_to_idx = {ch: i for i, ch in enumerate(self.chars)}
         self.seq_length = seq_length
-        self.X = self.string_to_vector(text_data)
+        self.X = self.string_to_vector(txt_data)
 
     def __len__(self) -> int:
         return int(len(self.X) / self.seq_length - 1)
