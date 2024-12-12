@@ -1,6 +1,7 @@
-torch~=2.3.0
-torchvision~=0.18.0
-tqdm~=4.66.4
-optuna~=4.0.0
-datasets~=3.1.0
-pycocotools
+--extra-index-url https://download.pytorch.org/whl/cu124
+torch~=2.5.1
+torchvision~=0.20.1
+tqdm~=4.67.1
+optuna~=4.1.0
+datasets~=3.2.0
+pycocotools~=2.0.8
