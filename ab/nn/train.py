@@ -8,10 +8,10 @@ import numpy as np
 
 # Reduce COCOS classes:
 CLASS_LIST = [0, 1, 2, 16, 9, 44, 6, 3, 17, 62, 21, 67, 18, 19, 4,
-                5, 64, 20, 63, 7, 72]
+              5, 64, 20, 63, 7, 72]
 NUM_CLASSES = len(CLASS_LIST)
 
-IMAGE_SEGMENTATION_MODELS = ['unet','fcn8s','fcn16s','fcn32s','deeplabv3','lraspp']
+IMAGE_SEGMENTATION_MODELS = ['unet', 'fcn8s', 'fcn16s', 'fcn32s', 'deeplabv3', 'lraspp']
 
 
 class TrainModel:
@@ -95,7 +95,7 @@ class TrainModel:
         test_loader = torch.utils.data.DataLoader(
             self.test_dataset, batch_size=self.batch_size, shuffle=False, num_workers=2
         )
-        if self.task=="img_segmentation":
+        if self.task == "img_segmentation":
             params_list = []
             criterion = torch.nn.CrossEntropyLoss(ignore_index=-1).to(self.device)
             if hasattr(self.model, 'backbone'):
@@ -148,7 +148,7 @@ class TrainModel:
         total = 0
         correct = 0
         with torch.no_grad():
-            if self.task=="img_segmentation":
+            if self.task == "img_segmentation":
                 mIoU = MetricMIoU(NUM_CLASSES)
             for data in test_loader:
                 inputs, labels = data
@@ -171,10 +171,10 @@ class TrainModel:
 
                     outputs = torch.cat(outputs, dim=0)
                     targets = torch.cat(targets, dim=0)
-                elif self.task=="img_segmentation": # Image Segmentation uses mIoU
+                elif self.task == "img_segmentation":  # Image Segmentation uses mIoU
                     outputs = self.forward_pass(inputs)
                     targets = labels
-                    mIoU.update(outputs,targets)
+                    mIoU.update(outputs, targets)
                 else:  # For other models
                     outputs = self.forward_pass(inputs)
                     targets = labels
@@ -184,7 +184,7 @@ class TrainModel:
                 correct += (predicted == targets).sum().item()
 
         metric = correct / total
-        if self.task=="img_segmentation":
+        if self.task == "img_segmentation":
             metric = mIoU.get()
         return metric
 
@@ -215,6 +215,7 @@ class DatasetLoader:
         # Call the loader function with the dynamically loaded transform
         return loader(transform=transform, **kwargs)
 
+
 def parse_model_config(directory_name):
     """
     Parse the model configuration to extract task, dataset, and optional transformation.
@@ -238,6 +239,7 @@ def ensure_directory_exists(model_dir):
     directory = os.path.dirname(model_dir)
     if not os.path.exists(directory):
         os.makedirs(directory)
+
 
 class MetricMIoU(object):
     """Computes mIoU metric scores
@@ -282,6 +284,7 @@ class MetricMIoU(object):
         self.total_inter = torch.zeros(self.nclass)
         self.total_union = torch.zeros(self.nclass)
 
+
 def batch_intersection_union(output, target, nclass):
     """mIoU"""
     # inputs are numpy array, output 4D, target 3D
@@ -300,6 +303,7 @@ def batch_intersection_union(output, target, nclass):
     assert torch.sum(area_inter > area_union).item() == 0, "Intersection area should be smaller than Union area"
     return area_inter.float(), area_union.float()
 
+
 def save_results(config_model_name, study, n_epochs):
     """
     Save Optuna study results for a given model in JSON-format.
@@ -317,10 +321,6 @@ def save_results(config_model_name, study, n_epochs):
 
     model_dir = f"stat/{config_model_name}/{n_epochs}/"
     ensure_directory_exists(model_dir)
-
-    # Save best_trial.json
-    with open(f"{model_dir}/best_trial.json", "w") as f:
-        json.dump(best_trial, f, indent=4)
 
     # Save all trials as trials.json
     trials_df = study.trials_dataframe()
@@ -341,8 +341,20 @@ def save_results(config_model_name, study, n_epochs):
     })
 
     trials_dict = filtered_trials.to_dict(orient='records')
-    with open(f"{model_dir}/trials.json", "w") as f:
+    path = f"{model_dir}/trials.json"
+    if os.path.exists(path):
+        with open(path, "r") as f:
+            previous_best = json.load(f)
+            trials_dict = previous_best + trials_dict
+            trials_dict = sorted(trials_dict, key=lambda x: x['accuracy'], reverse=True)
+
+    # Save trials.json
+    with open(path, "w") as f:
         json.dump(trials_dict, f, indent=4)
+
+    # Save best_trial.json
+    with open(f"{model_dir}/best_trial.json", "w") as f:
+        json.dump(trials_dict[0], f, indent=4)
 
     print(f"Trials for {config_model_name} saved at {model_dir}")
 
@@ -393,9 +405,9 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
                 continue
 
             print(f"\nStarting training for model: {model_name}, Task: {task}, Dataset: {dataset_name}, Transform: {transform_name}")
-            if task=="img_segmentation":
-                dataset_params['class_list']=CLASS_LIST
-                dataset_params['path']="./data/cocos"
+            if task == "img_segmentation":
+                dataset_params['class_list'] = CLASS_LIST
+                dataset_params['path'] = "./data/cocos"
             # Paths for loader and transform
             loader_path = f"loader.{dataset_name}.loader"
             transform_path = f"transform.{transform_name}.transform" if transform_name else None
@@ -474,12 +486,11 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
             save_results(sub_config, study, n_epochs)
 
 
-
 if __name__ == "__main__":
     # Config examples
     # config ='all' # For all configurations
     # config = 'img_classification-cifar10-cifar10_norm' # For a particular configuration for all models
-    config = 'img_classification-cifar10-cifar10_complex-ComplexNet' # For a particular configuration and model
+    config = 'img_classification-cifar10-cifar10_complex-ComplexNet'  # For a particular configuration and model
 
     # Detects and saves performance metric values for a varying number of epochs
     for n_epochs in [1, 2, 5]:
