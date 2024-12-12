@@ -341,7 +341,7 @@ def save_results(config_model_name, study, n_epochs, n_optuna_trials):
     })
 
     trials_dict = filtered_trials.to_dict(orient='records')
-    with open(f"{model_dir}/optuna_{n_optuna_trials}.json", "w") as f:
+    with open(f"{model_dir}/trials.json", "w") as f:
         json.dump(trials_dict, f, indent=4)
 
     print(f"Trials for {config_model_name} saved at {model_dir}")
