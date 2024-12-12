@@ -341,8 +341,8 @@ def save_results(config_model_name, study, n_epochs):
     path = f"{model_dir}/trials.json"
     if os.path.exists(path):
         with open(path, "r") as f:
-            previous_best = json.load(f)
-            trials_dict = previous_best + trials_dict
+            previous_trials = json.load(f)
+            trials_dict = previous_trials + trials_dict
             trials_dict = sorted(trials_dict, key=lambda x: x['accuracy'], reverse=True)
 
     # Save trials.json
