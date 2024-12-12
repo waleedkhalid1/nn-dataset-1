@@ -4,7 +4,7 @@ The python code of the DeepSeek large language models:<br/>
 Copyright (c) 2023 DeepSeek<br/>
 All rights reserved.
 
-The python code of ComplexNN model:<br/>
+The python code of ComplexNet model:<br/>
 Copyright (c) 2019 Sébastien M. P.<br/>
 All rights reserved.
 
