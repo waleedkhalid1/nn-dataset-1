@@ -95,7 +95,7 @@ class TrainModel:
         test_loader = torch.utils.data.DataLoader(
             self.test_dataset, batch_size=self.batch_size, shuffle=False, num_workers=2
         )
-        if self.task=="image_segmentation":
+        if self.task=="img_segmentation":
             params_list = []
             criterion = torch.nn.CrossEntropyLoss(ignore_index=-1).to(self.device)
             if hasattr(self.model, 'backbone'):
@@ -148,7 +148,7 @@ class TrainModel:
         total = 0
         correct = 0
         with torch.no_grad():
-            if self.task=="image_segmentation":
+            if self.task=="img_segmentation":
                 mIoU = MetricMIoU(NUM_CLASSES)
             for data in test_loader:
                 inputs, labels = data
@@ -171,7 +171,7 @@ class TrainModel:
 
                     outputs = torch.cat(outputs, dim=0)
                     targets = torch.cat(targets, dim=0)
-                elif self.task=="image_segmentation": # Image Segmentation uses mIoU
+                elif self.task=="img_segmentation": # Image Segmentation uses mIoU
                     outputs = self.forward_pass(inputs)
                     targets = labels
                     mIoU.update(outputs,targets)
@@ -184,7 +184,7 @@ class TrainModel:
                 correct += (predicted == targets).sum().item()
 
         accuracy = correct / total
-        if self.task=="image_segmentation":
+        if self.task=="img_segmentation":
             accuracy = mIoU.get()
         return accuracy
 
@@ -198,7 +198,7 @@ class DatasetLoader:
         """
         Dynamically load dataset and transformation based on the provided paths.
         :param loader_path: Path to the dataset loader (e.g., 'ab.loader.cifar10.loader').
-        :param transform_path: Path to the dataset transformation (e.g., 'ab.transform.normalization_cifar10.transform').
+        :param transform_path: Path to the dataset transformation (e.g., 'ab.transform.cifar10_norm.transform').
         :param kwargs: Additional parameters for the loader and transform.
         :return: Train and test datasets.
         """
@@ -218,7 +218,7 @@ class DatasetLoader:
 def parse_model_config(directory_name):
     """
     Parse the model configuration to extract task, dataset, and optional transformation.
-    :param directory_name: Name of the directory (e.g., "image_classification-cifar10-normalization_cifar10-AlexNet").
+    :param directory_name: Name of the directory (e.g., "img_classification-cifar10-cifar10_norm-AlexNet").
     :return: Parsed task, dataset name, and transformation name (if any).
     """
     parts = directory_name.split('-')
@@ -367,7 +367,7 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
             for sub_config in os.listdir("stat")
             if os.path.isdir(os.path.join("stat", sub_config))
         ]
-    elif len(config.split('-')) == 3:  # Partial configuration, e.g., 'image_classification-cifar10-normalization_cifar10'
+    elif len(config.split('-')) == 3:  # Partial configuration, e.g., 'img_classification-cifar10-cifar10_norm'
         # Collect models matching the given configuration prefix
         config_prefix = config + '-'
         sub_configs = [
@@ -375,7 +375,7 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
             for sub_config in os.listdir("stat")
             if sub_config.startswith(config_prefix) and os.path.isdir(os.path.join("stat", sub_config))
         ]
-    else:  # Specific configuration, e.g., 'image_classification-cifar10-normalization_cifar10-AlexNet'
+    else:  # Specific configuration, e.g., 'img_classification-cifar10-cifar10_norm-AlexNet'
         sub_configs = [config]
 
     print("Configurations found for training:")
@@ -393,7 +393,7 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
                 continue
 
             print(f"\nStarting training for model: {model_name}, Task: {task}, Dataset: {dataset_name}, Transform: {transform_name}")
-            if task=="image_segmentation":
+            if task=="img_segmentation":
                 dataset_params['class_list']=CLASS_LIST
                 dataset_params['path']="./cocos"
             # Paths for loader and transform
@@ -409,7 +409,7 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
 
             # Configure Optuna for the current model
             def objective(trial):
-                if task == 'image_segmentation':
+                if task == 'img_segmentation':
                     lr = trial.suggest_float('lr', 1e-4, 1e-2, log=False)
                     momentum = trial.suggest_float('momentum', 0.8, 0.99, log=True)
                     batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
@@ -420,7 +420,7 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
 
                 print(f"Initialize training with lr = {lr}, momentum = {momentum}, batch_size = {batch_size}")
 
-                if task == 'image_classification':
+                if task == 'img_classification':
                     trainer = TrainModel(
                         model_source_package=f"dataset.{model_name}",
                         train_dataset=train_set,
@@ -450,7 +450,7 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
                         batch_size=batch_size,
                         manual_args=manual_args.get(model_name) if manual_args else None
                     )
-                elif task == 'image_segmentation':
+                elif task == 'img_segmentation':
                     if not model_name.lower() in IMAGE_SEGMENTATION_MODELS:
                         raise ValueError(f"Unsupported task type: {task}")
                     trainer = TrainModel(
@@ -460,7 +460,7 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
                         lr=lr,
                         momentum=momentum,
                         batch_size=batch_size,
-                        task_type='image_segmentation',
+                        task_type='img_segmentation',
                         manual_args=manual_args.get(model_name) if manual_args else None
                     )
                 return trainer.evaluate(n_epochs)
@@ -476,12 +476,12 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
 
 
 if __name__ == "__main__":
-    # Training parameters
+    # Config examples
     # config ='all' # For all configurations
-    config = 'image_classification-cifar10-normalization_cifar10' # For a particular configuration for all models
-    # config = 'image_classification-cifar10-normalization_cifar10-ResNet' # For a particular configuration and model
-    n_model_epochs = 2
-    n_optuna_trials = 100
+    # config = 'img_classification-cifar10-cifar10_norm' # For a particular configuration for all models
+    config = 'img_classification-cifar10-cifar10_complex-ComplexNet' # For a particular configuration and model
 
-    # Run training with Optuna
-    main(config, n_model_epochs, n_optuna_trials)
+    # Detects and saves performance metric values for a varying number of epochs
+    for n_epochs in [1, 2, 5]:
+        # Run training with Optuna
+        main(config, n_epochs, 100)
