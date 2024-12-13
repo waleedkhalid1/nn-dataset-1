@@ -7,7 +7,6 @@ To add more neural network models to the dataset, the following criteria must be
 1. Each model must be saved in a separated directory inside the initially provided directory named "Dataset", next to other already provided models.
 2. The code for each model must be provided in the respective directory in a python file named "code.py"
 3. The main class for each model must be named "Net".
-4. The required arguments to initialize the "Net" class must be stored in a list inside a separate python file named "args.py" next to "code.py". If no arguments are needed, provide an empty python list in the "args.py" file.
 
 For examples, see the models in the Dataset directory.
 
