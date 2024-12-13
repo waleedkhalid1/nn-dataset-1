@@ -24,6 +24,7 @@ class Fire(nn.Module):
             [self.expand1x1_activation(self.expand1x1(x)), self.expand3x3_activation(self.expand3x3(x))], 1
         )
 
+args = []
 
 class Net(nn.Module):
     def __init__(self, version: str = "1_0", num_classes: int = 1000, dropout: float = 0.5) -> None:

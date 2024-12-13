@@ -79,6 +79,8 @@ class FCNHead(nn.Sequential):
 
         super().__init__(*layers)
 
+args = [21]
+
 class Net(nn.Module):
     def __init__(self, num_classes = 100, backbone:VGG = None, backbone_num_classes = None, init_weights=True, dropout=0.5, **kwargs):
         super(Net, self).__init__()

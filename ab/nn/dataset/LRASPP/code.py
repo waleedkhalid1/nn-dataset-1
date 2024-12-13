@@ -256,6 +256,8 @@ def mobilenet_v3_large(
     return _mobilenet_v3(inverted_residual_setting, last_channel, weights, progress, **kwargs)
 
 
+args = [MobileNetV3(*_mobilenet_v3_conf("mobilenet_v3_large"), num_classes = 100), None, None, 21]
+
 class Net(nn.Module):
     def __init__(
         self, backbone: MobileNetV3 | nn.Module, low_channels: int | None, high_channels: int | None, num_classes: int=100, inter_channels: int = 128, **kwargs

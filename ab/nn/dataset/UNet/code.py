@@ -62,6 +62,8 @@ class OutConv(nn.Module):
     def forward(self, x):
         return self.conv(x)
 
+args = [21]
+
 class Net(nn.Module):
     def __init__(self, num_classes, bilinear=False, **args):
         super(Net, self).__init__()

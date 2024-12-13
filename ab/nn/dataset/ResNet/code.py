@@ -132,6 +132,7 @@ class Bottleneck(nn.Module):
 
         return out
 
+args = [BasicBlock, [2, 2, 2, 2]]
 
 class Net(nn.Module):
     def __init__(

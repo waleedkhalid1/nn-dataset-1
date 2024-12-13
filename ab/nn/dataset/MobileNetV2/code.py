@@ -54,6 +54,7 @@ class InvertedResidual(nn.Module):
         else:
             return self.conv(x)
 
+args = []
 
 class Net(nn.Module):
     def __init__(

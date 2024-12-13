@@ -1,26 +1,9 @@
-from functools import partial
-from collections import OrderedDict
-from typing import Any, Callable, Dict, List, Optional, Sequence, Type, Union, cast
+from typing import Callable, Dict, List, Optional, Type, Union, cast
 
 import torch
-from torch import nn, Tensor
 import torch.nn.functional as F
+from torch import nn, Tensor
 
-
-class Net(nn.Module):
-    def __init__(self, backbone: nn.Module, classifier: nn.Module, **kwargs) -> None:
-        super().__init__()
-        self.backbone = backbone.features
-        self.classifier = classifier
-        self.__setattr__('exclusive',['classifier'])
-
-    def forward(self, x: Tensor) -> Dict[str, Tensor]:
-        input_shape = x.shape[-2:]
-        x = self.backbone(x)
-        x = self.classifier(x)
-        x = F.interpolate(x, size=input_shape, mode="bilinear", align_corners=False)
-
-        return x
 
 class FCNHead(nn.Sequential):
     def __init__(self, in_channels: int, channels: int) -> None:
@@ -327,3 +310,25 @@ vgg_cfgs: Dict[str, List[Union[str, int]]] = {
     "D": [64, 64, "M", 128, 128, "M", 256, 256, 256, "M", 512, 512, 512, "M", 512, 512, 512, "M"],
     "E": [64, 64, "M", 128, 128, "M", 256, 256, 256, 256, "M", 512, 512, 512, 512, "M", 512, 512, 512, 512, "M"],
 }
+
+backbones: Dict[str, List[nn.Module]] = {
+    "ResNet50": [ResNet(Bottleneck, [3, 4, 6, 3], num_classes = 100, replace_stride_with_dilation=[False, True, True]),FCNHead(2048, 21)],
+    "ResNet101": [ResNet(Bottleneck, [3, 4, 23, 3], num_classes = 100, replace_stride_with_dilation=[False, True, True]),FCNHead(2048, 21)],
+    "VGG16": [VGG(make_layers(vgg_cfgs["D"]),num_classes=100),FCNHead(512, 21)],
+}
+args = [*backbones["ResNet50"]]
+
+class Net(nn.Module):
+    def __init__(self, backbone: nn.Module, classifier: nn.Module, **kwargs) -> None:
+        super().__init__()
+        self.backbone = backbone.features
+        self.classifier = classifier
+        self.__setattr__('exclusive',['classifier'])
+
+    def forward(self, x: Tensor) -> Dict[str, Tensor]:
+        input_shape = x.shape[-2:]
+        x = self.backbone(x)
+        x = self.classifier(x)
+        x = F.interpolate(x, size=input_shape, mode="bilinear", align_corners=False)
+
+        return x

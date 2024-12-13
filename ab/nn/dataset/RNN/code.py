@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 
+args = [128, 256, 10]
 
 class Net(nn.Module):
     def __init__(self, input_size: int, hidden_size: int, output_size: int, batch_size: int, num_layers: int = 1) -> None:

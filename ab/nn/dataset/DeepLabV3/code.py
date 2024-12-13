@@ -6,41 +6,7 @@ import torch
 from torch import nn, Tensor
 import torch.nn.functional as F
 
-class Net(nn.Module):
-    __constants__ = ["aux_classifier"]
 
-    def __init__(self, backbone: nn.Module, classifier: nn.Module, aux_classifier: Optional[nn.Module] = None, **kwargs) -> None:
-        super(Net,self).__init__()
-        self.backbone = backbone
-        self.classifier = classifier
-        self.aux_classifier = aux_classifier
-        self.__setattr__('exclusive',['classifier'] if aux_classifier == None else ['classifier','aux_classifier'])
-
-    def forward(self, x: Tensor) -> Union[Dict[str, Tensor],Tensor]:
-        input_shape = x.shape[-2:]
-        c3,c4 = self.backbone_fw(x)
-        x = self.classifier(c4)
-        x = F.interpolate(x, size=input_shape, mode="bilinear", align_corners=False)
-
-        if self.aux_classifier is not None:
-            result = OrderedDict()
-            result["out"] = x
-            x = self.aux_classifier(c3)
-            x = F.interpolate(x, size=input_shape, mode="bilinear", align_corners=False)
-            result["aux"] = x
-            return result
-        return x
-    
-    def backbone_fw(self,x):
-        x = self.backbone.conv1(x)
-        x = self.backbone.bn1(x)
-        x = self.backbone.relu(x)
-        x = self.backbone.maxpool(x)
-        c1 = self.backbone.layer1(x)
-        c2 = self.backbone.layer2(c1)
-        c3 = self.backbone.layer3(c2)
-        c4 = self.backbone.layer4(c3)
-        return c3,c4
 
 class DeepLabHead(nn.Sequential):
     def __init__(self, in_channels: int, num_classes: int = 100, atrous_rates: Sequence[int] = (12, 24, 36)) -> None:
@@ -350,3 +316,50 @@ class ResNet(nn.Module):
 
     def forward(self, x: Tensor) -> Tensor:
         return self._forward_impl(x)
+
+
+backbones: Dict[str, dict] = {
+    "ResNet50": [ResNet(Bottleneck, [3, 4, 6, 3], num_classes=100, replace_stride_with_dilation=[False, True, True]),
+                 DeepLabHead(2048, 21), None],
+    "ResNet101": [ResNet(Bottleneck, [3, 4, 23, 3], num_classes=100, replace_stride_with_dilation=[False, True, True]),
+                  DeepLabHead(2048, 21), None],
+}
+args = [*backbones["ResNet50"]]
+
+
+class Net(nn.Module):
+    __constants__ = ["aux_classifier"]
+
+    def __init__(self, backbone: nn.Module, classifier: nn.Module, aux_classifier: Optional[nn.Module] = None,
+                 **kwargs) -> None:
+        super(Net, self).__init__()
+        self.backbone = backbone
+        self.classifier = classifier
+        self.aux_classifier = aux_classifier
+        self.__setattr__('exclusive', ['classifier'] if aux_classifier == None else ['classifier', 'aux_classifier'])
+
+    def forward(self, x: Tensor) -> Union[Dict[str, Tensor], Tensor]:
+        input_shape = x.shape[-2:]
+        c3, c4 = self.backbone_fw(x)
+        x = self.classifier(c4)
+        x = F.interpolate(x, size=input_shape, mode="bilinear", align_corners=False)
+
+        if self.aux_classifier is not None:
+            result = OrderedDict()
+            result["out"] = x
+            x = self.aux_classifier(c3)
+            x = F.interpolate(x, size=input_shape, mode="bilinear", align_corners=False)
+            result["aux"] = x
+            return result
+        return x
+
+    def backbone_fw(self, x):
+        x = self.backbone.conv1(x)
+        x = self.backbone.bn1(x)
+        x = self.backbone.relu(x)
+        x = self.backbone.maxpool(x)
+        c1 = self.backbone.layer1(x)
+        c2 = self.backbone.layer2(c1)
+        c3 = self.backbone.layer3(c2)
+        c4 = self.backbone.layer4(c3)
+        return c3, c4

@@ -1,10 +1,10 @@
-import os
 import json
+import os
+
+import optuna
 import torch
 import torch.nn as nn
 from tqdm import tqdm
-import optuna
-import numpy as np
 
 # Reduce COCOS classes:
 CLASS_LIST = [0, 1, 2, 16, 9, 44, 6, 3, 17, 62, 21, 67, 18, 19, 4,
@@ -12,7 +12,7 @@ CLASS_LIST = [0, 1, 2, 16, 9, 44, 6, 3, 17, 62, 21, 67, 18, 19, 4,
 NUM_CLASSES = len(CLASS_LIST)
 
 class TrainModel:
-    def __init__(self, model_source_package, train_dataset, test_dataset, lr: float, momentum: float, batch_size: int, manual_args=None, **kwargs):
+    def __init__(self, model_source_package, train_dataset, test_dataset, lr: float, momentum: float, batch_size: int, manual_args: list=None, **kwargs):
         """
         Universal class for training CV, Text Generation and other models.
         :param model_source_package: Path to the model's package (string).
@@ -21,7 +21,7 @@ class TrainModel:
         :param lr: Learning rate.
         :param momentum: Momentum for SGD.
         :param batch_size: Mini-batch size.
-        :param manual_args: List of manual arguments for model initialization if args.py is not available.
+        :param manual_args: List of manual arguments (if varies from original arguments).
         """
         self.train_dataset = train_dataset
         self.test_dataset = test_dataset
@@ -41,32 +41,31 @@ class TrainModel:
 
         # Load model
         if isinstance(model_source_package, str):
-            # Handle special case for InceptionV3
-            if "InceptionV3" in model_source_package:
-                from torchvision.models import inception_v3
-                self.model = inception_v3(aux_logits=False)  # Disable aux_logits for InceptionV3
-                print("Loaded InceptionV3 with aux_logits disabled.")
+            # Load the model class
+            model_class = getattr(
+                __import__(model_source_package + ".code", fromlist=["Net"]),
+                "Net"
+            )
+            # Try loading arguments from args.py
+            if manual_args is not None:
+                self.args = manual_args
             else:
-                # Load the model class
-                model_class = getattr(
-                    __import__(model_source_package + ".code", fromlist=["Net"]),
-                    "Net"
-                )
-                # Try loading arguments from args.py
                 try:
                     self.args = getattr(
-                        __import__(model_source_package + ".args", fromlist=["args"]),
+                        __import__(model_source_package + ".code", fromlist=["args"]),
                         "args"
                     )
                 except ImportError:
                     if manual_args:
                         self.args = manual_args
-                        print(f"No args.py found. Using manual_args: {self.args}")
+                        print(f"No args found. Using manual_args: {self.args}")
                     else:
-                        raise ValueError(f"Arguments required for {model_class.__name__} are missing. Please provide them manually via manual_args.")
+                        raise ValueError(f"Arguments required for {model_class.__name__} are missing. "
+                                         f"Please provide them manually via manual_args or add a variable named 'args' "
+                                         f"to the model code that stores the required arguments inside a list.")
 
-                # Initialize the model with arguments
-                self.model = model_class(*self.args)
+            # Initialize the model with arguments
+            self.model = model_class(*self.args)
 
         elif isinstance(model_source_package, torch.nn.Module):
             # If a pre-initialized model is passed
