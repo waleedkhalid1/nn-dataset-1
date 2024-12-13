@@ -7,9 +7,12 @@ import numpy as np
 import os
 import tqdm
 
-import zipfile
 import requests
-coco_ann_url = 'http://images.cocodataset.org/annotations/annotations_trainval2017.zip'
+
+from torchvision.datasets.utils import download_and_extract_archive
+
+coco_ann_url = "http://images.cocodataset.org/annotations/annotations_trainval2017.zip"
+coco_img_url = "http://images.cocodataset.org/zips/{}2017.zip"
 
 def loader(path="./data/cocos",resize=(128,128), **kwargs):
     train_set = COCOSegDataset(root=path,spilt="train",resize=resize,preprocess=True,**kwargs)
@@ -39,37 +42,19 @@ class COCOSegDataset(torch.utils.data.Dataset):
         least_pix : filter out thersold of preprocess.
         """
         valid_split = ["train","val"]
+        self.root = root
         if spilt in valid_split:
             try:
                 self.coco = COCO(os.path.join(root,"annotations",f"instances_{spilt}2017.json"))
             except:
                 # annFile doesn't exist, download the annotation file to root.
                 print("Annotation file doesn't exists! Downloading")
-                if not os.path.exists(root):
-                    os.mkdir(root)
-                filepath = os.path.join(root,"annotations_trainval2017.zip")
-                response = requests.get(coco_ann_url, stream=True)
-
-                # Sizes in bytes.
-                total_size = int(response.headers.get("content-length", 0))
-                block_size = 1024
-                if response.status_code == 200:
-                    with tqdm.tqdm(total=total_size, unit="B", unit_scale=True) as progress_bar:
-                        with open(filepath, "wb") as file:
-                            for data in response.iter_content(block_size):
-                                progress_bar.update(len(data))
-                                file.write(data)
-                else:
-                    raise Exception("No annotation file found and failed to download")
-                print("Extracting")
-                with zipfile.ZipFile(filepath, 'r') as zip_ref:
-                    zip_ref.extractall(root)
-                print("Annotation file extraction complete")
+                os.makedirs(root,exist_ok=True)
+                download_and_extract_archive(coco_ann_url, self.root, filename="annotations_trainval2017.zip")
+                print("Annotation file preparation complete")
                 self.coco = COCO(os.path.join(root,"annotations",f"instances_{spilt}2017.json"))
         else:
             raise Exception(f"Invalid spilt: {spilt}")
-
-        self.root = os.path.join(root,spilt+"2017")
         if not os.path.exists(self.root):
             os.mkdir(self.root)
         self.transform = transform
@@ -83,9 +68,10 @@ class COCOSegDataset(torch.utils.data.Dataset):
         self.mask_transform = transforms.Compose([transforms.ToTensor()])
         if preprocess:
             self.ids = []
-            self.__preprocess__(list(self.coco.imgs.keys()), least_pix=least_pix)
+            self.__preprocess__(list(self.coco.imgs.keys()),least_pix=least_pix,spilt=spilt)
         else:
             self.ids = list(self.coco.imgs.keys())
+        self.root = os.path.join(root,spilt+"2017")
 
     def __getitem__(self, index):
         coco = self.coco
@@ -106,7 +92,7 @@ class COCOSegDataset(torch.utils.data.Dataset):
                     file.write(response.content)
                 image = Image.open(file_Path).convert('RGB')
             else:
-                raise Exception(f"No image found for {image_info['file_name']} and failed to download")
+                raise RuntimeError(f"No image found for {image_info['file_name']} and failed to download")
             
         
         # Create mask
@@ -135,8 +121,15 @@ class COCOSegDataset(torch.utils.data.Dataset):
         mask = self.mask_transform(mask).long()
         return image, mask[0]
 
-    def __preprocess__(self,ids,least_pix:int=1000): #Filter out bad samples
+    def __preprocess__(self,ids,least_pix:int=1000,spilt='val'): #Filter out bad samples
         coco = self.coco
+        ## Test on first image to figure out if dataset itself exists
+        first_image_info = coco.loadImgs(ids[0])[0]
+        first_file_Path = os.path.join(self.root,spilt+"2017",first_image_info['file_name'])
+        if not os.path.exists(first_file_Path):
+            print("Image dataset doesn't exists! Downloading...")
+            download_and_extract_archive(coco_img_url.format(spilt), self.root, filename=f"{spilt}2017.zip") ## Download using torchvision download API
+            print("Image dataset preparation complete")
         tbar = tqdm.trange(len(ids))
         for i in tbar:
             if not self.num_limit==None and len(self.ids)+1>self.num_limit:
@@ -165,17 +158,6 @@ class COCOSegDataset(torch.utils.data.Dataset):
                     mask[:, :] += (mask == 0) * (((np.sum(m, axis=2)) > 0) * c).astype(np.uint8)
             if (mask > 0).sum() > least_pix:
                 self.ids.append(img_id)
-                file_Path = os.path.join(self.root,image_info['file_name'])
-                if not os.path.exists(file_Path):
-                    if self.no_missing_img:
-                        print("Noticed missing image(s). Download will be performed thereafter, but it can significantly slowdown processing.")
-                        self.no_missing_img= True
-                    response = requests.get(image_info["coco_url"])
-                    if response.status_code == 200:
-                        with open(file_Path, 'wb') as file:
-                            file.write(response.content)
-                    else:
-                        raise Exception(f"Failed to download image:{image_info['file_name']}")
             tbar.set_description(f"Accepted {len(self.ids)} of {i+1} images.")
 
     def __len__(self):
