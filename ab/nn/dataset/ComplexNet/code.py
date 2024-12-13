@@ -250,6 +250,7 @@ class ComplexLinear(Module):
     def forward(self, input):
         return apply_complex(self.fc_r, self.fc_i, input)
 
+args = []
 
 class Net(nn.Module):
     def __init__(self):

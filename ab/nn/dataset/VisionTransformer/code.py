@@ -135,6 +135,14 @@ class Encoder(nn.Module):
         input = input + self.pos_embedding
         return self.ln(self.layers(self.dropout(input)))
 
+args = [
+    299,
+    13,
+    12,
+    12,
+    768,
+    3072
+]
 
 class Net(nn.Module):
     """Vision Transformer as per https://arxiv.org/abs/2010.11929."""

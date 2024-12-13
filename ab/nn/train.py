@@ -21,7 +21,7 @@ class TrainModel:
         :param lr: Learning rate.
         :param momentum: Momentum for SGD.
         :param batch_size: Mini-batch size.
-        :param manual_args: List of manual arguments for model initialization if args.py is not available.
+        :param manual_args: List of manual arguments (if varies from original arguments).
         """
         self.train_dataset = train_dataset
         self.test_dataset = test_dataset
@@ -55,7 +55,7 @@ class TrainModel:
                 # Try loading arguments from args.py
                 try:
                     self.args = getattr(
-                        __import__(model_source_package + ".args", fromlist=["args"]),
+                        __import__(model_source_package + ".code", fromlist=["args"]),
                         "args"
                     )
                 except ImportError:

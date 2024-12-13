@@ -72,19 +72,9 @@ def _get_depths(alpha: float) -> List[int]:
     depths = [32, 16, 24, 40, 80, 96, 192, 320]
     return [_round_to_multiple_of(depth * alpha, 8) for depth in depths]
 
+args = [0.75]
 
 class Net(torch.nn.Module):
-    """MNASNet, as described in https://arxiv.org/abs/1807.11626. This
-    implements the B1 variant of the model.
-    >>> model = Net(1.0, num_classes=1000)
-    >>> x = torch.rand(1, 3, 224, 224)
-    >>> y = model(x)
-    >>> y.dim()
-    2
-    >>> y.nelement()
-    1000
-    """
-
     # Version 2 adds depth scaling in the initial stages of the network.
     _version = 2
 

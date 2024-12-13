@@ -253,6 +253,7 @@ class BlockParams:
         stage_widths = [int(w_bot / b) for w_bot, b in zip(ws_bot, bottleneck_ratios)]
         return stage_widths, group_widths_min
 
+args = [BlockParams.from_init_params(depth=16, w_0=48, w_a=27.89, w_m=2.09, group_width=8, se_ratio=0.25)]
 
 class Net(nn.Module):
     def __init__(

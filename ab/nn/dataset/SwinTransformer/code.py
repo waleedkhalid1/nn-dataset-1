@@ -478,6 +478,13 @@ class SwinTransformerBlockV2(SwinTransformerBlock):
         x = x + self.stochastic_depth(self.norm2(self.mlp(x)))
         return x
 
+args = [
+    [4, 4],
+    96,
+    [2, 2, 6, 2],
+    [3, 6, 12, 24],
+    [7, 7]
+]
 
 class Net(nn.Module):
     """

@@ -13,6 +13,7 @@ InceptionOutputs.__annotations__ = {"logits": Tensor, "aux_logits": Optional[Ten
 # _InceptionOutputs set here for backwards compat
 _InceptionOutputs = InceptionOutputs
 
+args = []
 
 class Net(nn.Module):
     def __init__(

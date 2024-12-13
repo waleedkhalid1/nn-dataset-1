@@ -67,6 +67,14 @@ class CNBlockConfig:
         s += ")"
         return s.format(**self.__dict__)
 
+args = [
+    [
+        CNBlockConfig(96, 192, 3),
+        CNBlockConfig(192, 384, 3),
+        CNBlockConfig(384, 768, 27),
+        CNBlockConfig(768, None, 3),
+    ]
+]
 
 class Net(nn.Module):
     def __init__(
