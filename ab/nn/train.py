@@ -41,32 +41,26 @@ class TrainModel:
 
         # Load model
         if isinstance(model_source_package, str):
-            # Handle special case for InceptionV3
-            if "InceptionV3" in model_source_package:
-                from torchvision.models import inception_v3
-                self.model = inception_v3(aux_logits=False)  # Disable aux_logits for InceptionV3
-                print("Loaded InceptionV3 with aux_logits disabled.")
-            else:
-                # Load the model class
-                model_class = getattr(
-                    __import__(model_source_package + ".code", fromlist=["Net"]),
-                    "Net"
+            # Load the model class
+            model_class = getattr(
+                __import__(model_source_package + ".code", fromlist=["Net"]),
+                "Net"
+            )
+            # Try loading arguments from args.py
+            try:
+                self.args = getattr(
+                    __import__(model_source_package + ".code", fromlist=["args"]),
+                    "args"
                 )
-                # Try loading arguments from args.py
-                try:
-                    self.args = getattr(
-                        __import__(model_source_package + ".code", fromlist=["args"]),
-                        "args"
-                    )
-                except ImportError:
-                    if manual_args:
-                        self.args = manual_args
-                        print(f"No args.py found. Using manual_args: {self.args}")
-                    else:
-                        raise ValueError(f"Arguments required for {model_class.__name__} are missing. Please provide them manually via manual_args.")
+            except ImportError:
+                if manual_args:
+                    self.args = manual_args
+                    print(f"No args found. Using manual_args: {self.args}")
+                else:
+                    raise ValueError(f"Arguments required for {model_class.__name__} are missing. Please provide them manually via manual_args.")
 
-                # Initialize the model with arguments
-                self.model = model_class(*self.args)
+            # Initialize the model with arguments
+            self.model = model_class(*self.args)
 
         elif isinstance(model_source_package, torch.nn.Module):
             # If a pre-initialized model is passed
