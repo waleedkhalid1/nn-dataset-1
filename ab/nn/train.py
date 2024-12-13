@@ -12,7 +12,7 @@ CLASS_LIST = [0, 1, 2, 16, 9, 44, 6, 3, 17, 62, 21, 67, 18, 19, 4,
 NUM_CLASSES = len(CLASS_LIST)
 
 class TrainModel:
-    def __init__(self, model_source_package, train_dataset, test_dataset, lr: float, momentum: float, batch_size: int, manual_args=None, **kwargs):
+    def __init__(self, model_source_package, train_dataset, test_dataset, lr: float, momentum: float, batch_size: int, manual_args: list=None, **kwargs):
         """
         Universal class for training CV, Text Generation and other models.
         :param model_source_package: Path to the model's package (string).
@@ -47,17 +47,20 @@ class TrainModel:
                 "Net"
             )
             # Try loading arguments from args.py
-            try:
-                self.args = getattr(
-                    __import__(model_source_package + ".code", fromlist=["args"]),
-                    "args"
-                )
-            except ImportError:
-                if manual_args:
-                    self.args = manual_args
-                    print(f"No args found. Using manual_args: {self.args}")
-                else:
-                    raise ValueError(f"Arguments required for {model_class.__name__} are missing. Please provide them manually via manual_args.")
+            if manual_args is not None:
+                self.args = manual_args
+            else:
+                try:
+                    self.args = getattr(
+                        __import__(model_source_package + ".code", fromlist=["args"]),
+                        "args"
+                    )
+                except ImportError:
+                    if manual_args:
+                        self.args = manual_args
+                        print(f"No args found. Using manual_args: {self.args}")
+                    else:
+                        raise ValueError(f"Arguments required for {model_class.__name__} are missing. Please provide them manually via manual_args.")
 
             # Initialize the model with arguments
             self.model = model_class(*self.args)
