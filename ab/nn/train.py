@@ -60,7 +60,7 @@ class TrainModel:
                         self.args = manual_args
                         print(f"No args found. Using manual_args: {self.args}")
                     else:
-                        raise ValueError(f"Arguments required for {model_class.__name__} are missing. Please provide them manually via manual_args.")
+                        raise ValueError(f"Arguments required for {model_class.__name__} are missing. Please provide them manually via manual_args or add a variable named 'args' to the model code that stores the required arguments inside a list.")
 
             # Initialize the model with arguments
             self.model = model_class(*self.args)
