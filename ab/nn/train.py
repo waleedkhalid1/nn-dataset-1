@@ -1,10 +1,10 @@
-import os
 import json
+import os
+
+import optuna
 import torch
 import torch.nn as nn
 from tqdm import tqdm
-import optuna
-import numpy as np
 
 # Reduce COCOS classes:
 CLASS_LIST = [0, 1, 2, 16, 9, 44, 6, 3, 17, 62, 21, 67, 18, 19, 4,
