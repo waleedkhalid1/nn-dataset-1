@@ -9,7 +9,6 @@ from tqdm import tqdm
 # Reduce COCOS classes:
 CLASS_LIST = [0, 1, 2, 16, 9, 44, 6, 3, 17, 62, 21, 67, 18, 19, 4,
               5, 64, 20, 63, 7, 72]
-NUM_CLASSES = len(CLASS_LIST)
 
 class TrainModel:
     def __init__(self, model_source_package, train_dataset, test_dataset, lr: float, momentum: float, batch_size: int, manual_args: list=None, **kwargs):
@@ -145,6 +144,7 @@ class TrainModel:
         correct = 0
         with torch.no_grad():
             if self.task == "img_segmentation":
+                NUM_CLASSES = len(CLASS_LIST)
                 mIoU = MetricMIoU(NUM_CLASSES)
             for data in test_loader:
                 inputs, labels = data
@@ -342,8 +342,8 @@ def save_results(config_model_name, study, n_epochs):
         with open(path, "r") as f:
             previous_trials = json.load(f)
             trials_dict = previous_trials + trials_dict
-            trials_dict = sorted(trials_dict, key=lambda x: x['accuracy'], reverse=True)
 
+    trials_dict = sorted(trials_dict, key=lambda x: x['accuracy'], reverse=True)
     # Save trials.json
     with open(path, "w") as f:
         json.dump(trials_dict, f, indent=4)
