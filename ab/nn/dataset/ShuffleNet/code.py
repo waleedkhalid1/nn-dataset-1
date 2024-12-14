@@ -82,7 +82,6 @@ class InvertedResidual(nn.Module):
 
         return out
 
-args = [[4, 8, 4], [24, 116, 232, 464, 1024]]
 
 class Net(nn.Module):
     def __init__(
