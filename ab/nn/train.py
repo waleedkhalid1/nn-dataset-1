@@ -50,22 +50,15 @@ class TrainModel:
             if manual_args is not None:
                 self.args = manual_args
             else:
-                try:
-                    self.args = getattr(
-                        __import__(model_source_package + ".code", fromlist=["args"]),
-                        "args"
-                    )
-                except ImportError:
-                    if manual_args:
-                        self.args = manual_args
-                        print(f"No args found. Using manual_args: {self.args}")
-                    else:
-                        raise ValueError(f"Arguments required for {model_class.__name__} are missing. "
-                                         f"Please provide them manually via manual_args or add a variable named 'args' "
-                                         f"to the model code that stores the required arguments inside a list.")
+                self.args = []
 
             # Initialize the model with arguments
-            self.model = model_class(*self.args)
+            try:
+                self.model = model_class(*self.args)
+            except TypeError:
+                raise ValueError(f"Arguments required for {model_class.__name__} are missing. "
+                                 f"Please provide them manually via manual_args or add default arguments "
+                                 f"to the model code.")
 
         elif isinstance(model_source_package, torch.nn.Module):
             # If a pre-initialized model is passed
