@@ -1,11 +1,9 @@
-from functools import partial
 from collections import OrderedDict
-from typing import Any, Callable, Dict, List, Optional, Sequence, Type, Union
+from typing import Callable, Dict, List, Optional, Sequence, Type, Union
 
 import torch
 from torch import nn, Tensor
 import torch.nn.functional as F
-
 
 
 class DeepLabHead(nn.Sequential):

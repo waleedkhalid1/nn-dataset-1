@@ -9,17 +9,14 @@ from torch import nn, Tensor
 InceptionOutputs = namedtuple("InceptionOutputs", ["logits", "aux_logits"])
 InceptionOutputs.__annotations__ = {"logits": Tensor, "aux_logits": Optional[Tensor]}
 
-# Script annotations failed with _GoogleNetOutputs = namedtuple ...
-# _InceptionOutputs set here for backwards compat
 _InceptionOutputs = InceptionOutputs
 
-args = [1000, False, False, None, None, 0.5]
 
 class Net(nn.Module):
     def __init__(
         self,
         num_classes: int = 1000,
-        aux_logits: bool = True,
+        aux_logits: bool = False,
         transform_input: bool = False,
         inception_blocks: Optional[List[Callable[..., nn.Module]]] = None,
         init_weights: Optional[bool] = None,
@@ -29,12 +26,6 @@ class Net(nn.Module):
         if inception_blocks is None:
             inception_blocks = [BasicConv2d, InceptionA, InceptionB, InceptionC, InceptionD, InceptionE, InceptionAux]
         if init_weights is None:
-            warnings.warn(
-                "The default weight initialization of inception_v3 will be changed in future releases of "
-                "torchvision. If you wish to keep the old behavior (which leads to long initialization times"
-                " due to scipy/scipy#11299), please set init_weights=True.",
-                FutureWarning,
-            )
             init_weights = True
         if len(inception_blocks) != 7:
             raise ValueError(f"length of inception_blocks should be 7 instead of {len(inception_blocks)}")

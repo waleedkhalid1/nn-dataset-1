@@ -14,7 +14,6 @@ GoogLeNetOutputs.__annotations__ = {"logits": Tensor, "aux_logits2": Optional[Te
 # _GoogLeNetOutputs set here for backwards compat
 _GoogLeNetOutputs = GoogLeNetOutputs
 
-args = []
 
 class Net(nn.Module):
     __constants__ = ["aux_logits", "transform_input"]
