@@ -186,7 +186,6 @@ class BBBConv2d(ModuleWrapper):
             kl += calculate_kl(self.prior_mu, self.prior_sigma, self.bias_mu, self.bias_sigma)
         return kl
 
-args = []
 
 class Net(ModuleWrapper):
     """
