@@ -87,13 +87,16 @@ args = [[4, 8, 4], [24, 116, 232, 464, 1024]]
 class Net(nn.Module):
     def __init__(
         self,
-        stages_repeats: List[int],
-        stages_out_channels: List[int],
+        stages_repeats=None,
+        stages_out_channels=None,
         num_classes: int = 1000,
         inverted_residual: Callable[..., nn.Module] = InvertedResidual,
     ) -> None:
         super().__init__()
-
+        if stages_out_channels is None:
+            stages_out_channels = [24, 116, 232, 464, 1024]
+        if stages_repeats is None:
+            stages_repeats = [4, 8, 4]
         if len(stages_repeats) != 3:
             raise ValueError("expected stages_repeats as list of 3 positive ints")
         if len(stages_out_channels) != 5:

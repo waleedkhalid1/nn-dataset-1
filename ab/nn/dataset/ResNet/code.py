@@ -132,13 +132,12 @@ class Bottleneck(nn.Module):
 
         return out
 
-args = [BasicBlock, [2, 2, 2, 2]]
 
 class Net(nn.Module):
     def __init__(
         self,
-        block: Type[Union[BasicBlock, Bottleneck]],
-        layers: List[int],
+        block: Type[Union[BasicBlock, Bottleneck]] = BasicBlock,
+        layers=None,
         num_classes: int = 1000,
         zero_init_residual: bool = False,
         groups: int = 1,
@@ -147,6 +146,8 @@ class Net(nn.Module):
         norm_layer: Optional[Callable[..., nn.Module]] = None,
     ) -> None:
         super().__init__()
+        if layers is None:
+            layers = [2, 2, 2, 2]
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
         self._norm_layer = norm_layer
