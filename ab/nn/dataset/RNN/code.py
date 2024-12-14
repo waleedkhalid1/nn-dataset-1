@@ -1,10 +1,9 @@
 import torch
 import torch.nn as nn
 
-args = [128, 256, 10]
 
 class Net(nn.Module):
-    def __init__(self, input_size: int, hidden_size: int, output_size: int, batch_size: int, num_layers: int = 1) -> None:
+    def __init__(self, input_size: int = 128, hidden_size: int = 256, output_size: int = 10, batch_size: int = 1, num_layers: int = 1) -> None:
         super().__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size

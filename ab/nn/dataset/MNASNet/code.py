@@ -5,8 +5,6 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
-# Paper suggests 0.9997 momentum, for TensorFlow. Equivalent PyTorch momentum is
-# 1.0 - tensorflow.
 _BN_MOMENTUM = 1 - 0.9997
 
 
@@ -72,13 +70,12 @@ def _get_depths(alpha: float) -> List[int]:
     depths = [32, 16, 24, 40, 80, 96, 192, 320]
     return [_round_to_multiple_of(depth * alpha, 8) for depth in depths]
 
-args = [0.75]
 
 class Net(torch.nn.Module):
     # Version 2 adds depth scaling in the initial stages of the network.
     _version = 2
 
-    def __init__(self, alpha: float, num_classes: int = 1000, dropout: float = 0.2) -> None:
+    def __init__(self, alpha: float = 0.75, num_classes: int = 1000, dropout: float = 0.2) -> None:
         super().__init__()
         if alpha <= 0.0:
             raise ValueError(f"alpha should be greater than 0.0 instead of {alpha}")

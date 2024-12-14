@@ -100,55 +100,42 @@ class InvertedResidual(nn.Module):
             result += input
         return result
 
-width_mult = 1.0
 
-bneck_conf = partial(InvertedResidualConfig, width_mult=width_mult)
-adjust_channels = partial(InvertedResidualConfig.adjust_channels, width_mult=width_mult)
-
-reduce_divider = 2
-dilation = 2
-inverted_residual_setting = [
-        bneck_conf(16, 3, 16, 16, True, "RE", 2, 1),  # C1
-        bneck_conf(16, 3, 72, 24, False, "RE", 2, 1),  # C2
-        bneck_conf(24, 3, 88, 24, False, "RE", 1, 1),
-        bneck_conf(24, 5, 96, 40, True, "HS", 2, 1),  # C3
-        bneck_conf(40, 5, 240, 40, True, "HS", 1, 1),
-        bneck_conf(40, 5, 240, 40, True, "HS", 1, 1),
-        bneck_conf(40, 5, 120, 48, True, "HS", 1, 1),
-        bneck_conf(48, 5, 144, 48, True, "HS", 1, 1),
-        bneck_conf(48, 5, 288, 96 // reduce_divider, True, "HS", 2, dilation),  # C4
-        bneck_conf(96 // reduce_divider, 5, 576 // reduce_divider, 96 // reduce_divider, True, "HS", 1, dilation),
-        bneck_conf(96 // reduce_divider, 5, 576 // reduce_divider, 96 // reduce_divider, True, "HS", 1, dilation),
-    ]
-last_channel = adjust_channels(1024 // reduce_divider)
-
-
-args = [inverted_residual_setting, last_channel]
 
 class Net(nn.Module):
     def __init__(
         self,
-        inverted_residual_setting: List[InvertedResidualConfig],
-        last_channel: int,
+        inverted_residual_setting=None,
+        last_channel: int = None,
         num_classes: int = 1000,
         block: Optional[Callable[..., nn.Module]] = None,
         norm_layer: Optional[Callable[..., nn.Module]] = None,
         dropout: float = 0.2,
         **kwargs: Any,
     ) -> None:
-        """
-        MobileNet V3 main class
-
-        Args:
-            inverted_residual_setting (List[InvertedResidualConfig]): Network structure
-            last_channel (int): The number of channels on the penultimate layer
-            num_classes (int): Number of classes
-            block (Optional[Callable[..., nn.Module]]): Module specifying inverted residual building block for mobilenet
-            norm_layer (Optional[Callable[..., nn.Module]]): Module specifying the normalization layer to use
-            dropout (float): The droupout probability
-        """
         super().__init__()
+        reduce_divider = 2
+        width_mult = 1.0
+        dilation = 2
 
+        if inverted_residual_setting is None:
+            bneck_conf = partial(InvertedResidualConfig, width_mult=width_mult)
+            inverted_residual_setting = [
+                bneck_conf(16, 3, 16, 16, True, "RE", 2, 1),  # C1
+                bneck_conf(16, 3, 72, 24, False, "RE", 2, 1),  # C2
+                bneck_conf(24, 3, 88, 24, False, "RE", 1, 1),
+                bneck_conf(24, 5, 96, 40, True, "HS", 2, 1),  # C3
+                bneck_conf(40, 5, 240, 40, True, "HS", 1, 1),
+                bneck_conf(40, 5, 240, 40, True, "HS", 1, 1),
+                bneck_conf(40, 5, 120, 48, True, "HS", 1, 1),
+                bneck_conf(48, 5, 144, 48, True, "HS", 1, 1),
+                bneck_conf(48, 5, 288, 96 // reduce_divider, True, "HS", 2, dilation),  # C4
+                bneck_conf(96 // reduce_divider, 5, 576 // reduce_divider, 96 // reduce_divider, True, "HS", 1, dilation),
+                bneck_conf(96 // reduce_divider, 5, 576 // reduce_divider, 96 // reduce_divider, True, "HS", 1, dilation),
+            ]
+        if last_channel is None:
+            adjust_channels = partial(InvertedResidualConfig.adjust_channels, width_mult=width_mult)
+            last_channel = adjust_channels(1024 // reduce_divider)
         if not inverted_residual_setting:
             raise ValueError("The inverted_residual_setting should not be empty")
         elif not (

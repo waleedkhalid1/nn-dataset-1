@@ -478,13 +478,6 @@ class SwinTransformerBlockV2(SwinTransformerBlock):
         x = x + self.stochastic_depth(self.norm2(self.mlp(x)))
         return x
 
-args = [
-    [4, 4],
-    96,
-    [2, 2, 6, 2],
-    [3, 6, 12, 24],
-    [7, 7]
-]
 
 class Net(nn.Module):
     """
@@ -508,11 +501,11 @@ class Net(nn.Module):
 
     def __init__(
             self,
-            patch_size: List[int],
-            embed_dim: int,
-            depths: List[int],
-            num_heads: List[int],
-            window_size: List[int],
+            patch_size=None,
+            embed_dim: int = 96,
+            depths=None,
+            num_heads=None,
+            window_size=None,
             mlp_ratio: float = 4.0,
             dropout: float = 0.0,
             attention_dropout: float = 0.0,
@@ -523,6 +516,14 @@ class Net(nn.Module):
             downsample_layer: Callable[..., nn.Module] = PatchMerging,
     ):
         super().__init__()
+        if window_size is None:
+            window_size = [7, 7]
+        if num_heads is None:
+            num_heads = [3, 6, 12, 24]
+        if depths is None:
+            depths = [2, 2, 6, 2]
+        if patch_size is None:
+            patch_size = [4, 4]
         self.num_classes = num_classes
 
         if block is None:

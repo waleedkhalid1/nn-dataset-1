@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 
-args = []
 
 class Net(nn.Module):
     def __init__(self, num_classes: int = 1000, dropout: float = 0.5) -> None:

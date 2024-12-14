@@ -1,11 +1,9 @@
-from functools import partial
-from collections import OrderedDict
 from typing import Dict, List, Union, cast
 
 import torch
-from torch import nn, Tensor
 import torch.nn.functional as F
-import numpy as np
+from torch import nn
+
 
 class VGG(nn.Module):
     def __init__(
@@ -79,7 +77,6 @@ class FCNHead(nn.Sequential):
 
         super().__init__(*layers)
 
-args = [21]
 
 class Net(nn.Module):
     def __init__(self, num_classes = 100, backbone:VGG = None, backbone_num_classes = None, init_weights=True, dropout=0.5, **kwargs):

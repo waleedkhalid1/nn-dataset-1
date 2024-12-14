@@ -1,11 +1,9 @@
-from functools import partial
 from collections import OrderedDict
-from typing import Any, Callable, Dict, List, Optional, Sequence, Type, Union
+from typing import Callable, Dict, List, Optional, Sequence, Type, Union
 
 import torch
 from torch import nn, Tensor
 import torch.nn.functional as F
-
 
 
 class DeepLabHead(nn.Sequential):
@@ -318,21 +316,12 @@ class ResNet(nn.Module):
         return self._forward_impl(x)
 
 
-backbones: Dict[str, dict] = {
-    "ResNet50": [ResNet(Bottleneck, [3, 4, 6, 3], num_classes=100, replace_stride_with_dilation=[False, True, True]),
-                 DeepLabHead(2048, 21), None],
-    "ResNet101": [ResNet(Bottleneck, [3, 4, 23, 3], num_classes=100, replace_stride_with_dilation=[False, True, True]),
-                  DeepLabHead(2048, 21), None],
-}
-args = [*backbones["ResNet50"]]
-
-
 class Net(nn.Module):
     __constants__ = ["aux_classifier"]
 
     def __init__(
             self,
-            backbone: nn.Module = ResNet(Bottleneck, [3, 4, 6, 3], num_classes=100, replace_stride_with_dilation=[False, True, True]),
+            backbone: nn.Module = ResNet(Bottleneck, [3, 4, 23, 3], num_classes=100, replace_stride_with_dilation=[False, True, True]),
             classifier: nn.Module = DeepLabHead(2048, 21),
             aux_classifier: Optional[nn.Module] = None,
             **kwargs

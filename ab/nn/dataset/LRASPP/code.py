@@ -1,6 +1,5 @@
 from functools import partial
-from collections import OrderedDict
-from typing import Any, Callable, Dict, List, Optional, Sequence, Type, Union
+from typing import Any, Callable, Dict, List, Optional, Sequence
 
 import torch
 from torch import nn, Tensor
@@ -256,14 +255,18 @@ def mobilenet_v3_large(
     return _mobilenet_v3(inverted_residual_setting, last_channel, weights, progress, **kwargs)
 
 
-args = [MobileNetV3(*_mobilenet_v3_conf("mobilenet_v3_large"), num_classes = 100), None, None, 21]
-
 class Net(nn.Module):
     def __init__(
-        self, backbone: MobileNetV3 | nn.Module, low_channels: int | None, high_channels: int | None, num_classes: int=100, inter_channels: int = 128, **kwargs
+        self,
+        backbone: MobileNetV3 | nn.Module = MobileNetV3(*_mobilenet_v3_conf("mobilenet_v3_large"), num_classes = 100),
+        low_channels: int | None = None,
+        high_channels: int | None = None,
+        num_classes: int=21,
+        inter_channels: int = 128,
+        **kwargs
     ) -> None:
         super().__init__()
-        if low_channels == None or high_channels ==None or type(backbone)==MobileNetV3:
+        if low_channels is None or high_channels is None or type(backbone)==MobileNetV3:
             backbone = backbone.features
             stage_indices = [0] + [i for i, b in enumerate(backbone) if getattr(b, "_is_cn", False)] + [len(backbone) - 1]
             low_pos = stage_indices[-4]

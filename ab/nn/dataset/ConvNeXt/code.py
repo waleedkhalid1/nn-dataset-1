@@ -67,19 +67,11 @@ class CNBlockConfig:
         s += ")"
         return s.format(**self.__dict__)
 
-args = [
-    [
-        CNBlockConfig(96, 192, 3),
-        CNBlockConfig(192, 384, 3),
-        CNBlockConfig(384, 768, 27),
-        CNBlockConfig(768, None, 3),
-    ]
-]
 
 class Net(nn.Module):
     def __init__(
         self,
-        block_setting: List[CNBlockConfig],
+        block_setting=None,
         stochastic_depth_prob: float = 0.0,
         layer_scale: float = 1e-6,
         num_classes: int = 1000,
@@ -89,6 +81,13 @@ class Net(nn.Module):
     ) -> None:
         super().__init__()
 
+        if block_setting is None:
+            block_setting = [
+                CNBlockConfig(96, 192, 3),
+                CNBlockConfig(192, 384, 3),
+                CNBlockConfig(384, 768, 27),
+                CNBlockConfig(768, None, 3),
+            ]
         if not block_setting:
             raise ValueError("The block_setting should not be empty")
         elif not (isinstance(block_setting, Sequence) and all([isinstance(s, CNBlockConfig) for s in block_setting])):

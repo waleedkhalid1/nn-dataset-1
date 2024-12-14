@@ -172,26 +172,6 @@ class BlockParams:
         se_ratio: Optional[float] = None,
         **kwargs: Any,
     ) -> "BlockParams":
-        """
-        Programmatically compute all the per-block settings,
-        given the RegNet parameters.
-
-        The first step is to compute the quantized linear block parameters,
-        in log space. Key parameters are:
-        - `w_a` is the width progression slope
-        - `w_0` is the initial width
-        - `w_m` is the width stepping in the log space
-
-        In other terms
-        `log(block_width) = log(w_0) + w_m * block_capacity`,
-        with `bock_capacity` ramping up following the w_0 and w_a params.
-        This block width is finally quantized to multiples of 8.
-
-        The second step is to compute the parameters per stage,
-        taking into account the skip connection and the final 1x1 convolutions.
-        We use the fact that the output width is constant within a stage.
-        """
-
         QUANT = 8
         STRIDE = 2
 
@@ -240,10 +220,6 @@ class BlockParams:
     def _adjust_widths_groups_compatibilty(
         stage_widths: List[int], bottleneck_ratios: List[float], group_widths: List[int]
     ) -> Tuple[List[int], List[int]]:
-        """
-        Adjusts the compatibility of widths and groups,
-        depending on the bottleneck ratio.
-        """
         # Compute all widths for the current settings
         widths = [int(w * b) for w, b in zip(stage_widths, bottleneck_ratios)]
         group_widths_min = [min(g, w_bot) for g, w_bot in zip(group_widths, widths)]
@@ -253,12 +229,11 @@ class BlockParams:
         stage_widths = [int(w_bot / b) for w_bot, b in zip(ws_bot, bottleneck_ratios)]
         return stage_widths, group_widths_min
 
-args = [BlockParams.from_init_params(depth=16, w_0=48, w_a=27.89, w_m=2.09, group_width=8, se_ratio=0.25)]
 
 class Net(nn.Module):
     def __init__(
         self,
-        block_params: BlockParams,
+        block_params: BlockParams = BlockParams.from_init_params(depth=16, w_0=48, w_a=27.89, w_m=2.09, group_width=8, se_ratio=0.25),
         num_classes: int = 1000,
         stem_width: int = 32,
         stem_type: Optional[Callable[..., nn.Module]] = None,
