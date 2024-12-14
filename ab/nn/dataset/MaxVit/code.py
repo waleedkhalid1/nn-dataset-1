@@ -587,17 +587,17 @@ class Net(nn.Module):
     def __init__(
         self,
         # input size parameters
-        input_size: Tuple[int, int],
+        input_size: Tuple[int, int] = (299, 299),
         # stem and task parameters
-        stem_channels: int,
+        stem_channels: int = 64,
         # partitioning parameters
-        partition_size: int,
+        partition_size: int = 1,
         # block parameters
-        block_channels: List[int],
-        block_layers: List[int],
+            block_channels=None,
+            block_layers=None,
         # attention head dimensions
-        head_dim: int,
-        stochastic_depth_prob: float,
+        head_dim: int = 32,
+        stochastic_depth_prob: float = 0.2,
         # conv + transformer parameters
         # norm_layer is applied only to the conv layers
         # activation_layer is applied both to conv and transformer layers
@@ -615,6 +615,10 @@ class Net(nn.Module):
     ) -> None:
         super().__init__()
 
+        if block_layers is None:
+            block_layers = [2, 2, 5, 2]
+        if block_channels is None:
+            block_channels = [64, 128, 256, 512]
         input_channels = 3
 
         # https://github.com/google-research/maxvit/blob/da76cf0d8a6ec668cc31b399c4126186da7da944/maxvit/models/maxvit.py#L1029-L1030
