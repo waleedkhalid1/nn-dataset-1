@@ -197,43 +197,29 @@ class FusedMBConv(nn.Module):
             result += input
         return result
 
-bneck_conf = partial(MBConvConfig, width_mult=1.0, depth_mult=1.0)
-args = [
-    [
-        bneck_conf(1, 3, 1, 32, 16, 1),
-        bneck_conf(6, 3, 2, 16, 24, 2),
-        bneck_conf(6, 5, 2, 24, 40, 2),
-        bneck_conf(6, 3, 2, 40, 80, 3),
-        bneck_conf(6, 5, 1, 80, 112, 3),
-        bneck_conf(6, 5, 2, 112, 192, 4),
-        bneck_conf(6, 3, 1, 192, 320, 1),
-    ],
-    0.2
-]
-
 
 class Net(nn.Module):
     def __init__(
         self,
-        inverted_residual_setting: Sequence[Union[MBConvConfig, FusedMBConvConfig]],
-        dropout: float,
+        inverted_residual_setting: Sequence[Union[MBConvConfig, FusedMBConvConfig]] = None,
+        dropout: float = 0.2,
         stochastic_depth_prob: float = 0.2,
         num_classes: int = 1000,
         norm_layer: Optional[Callable[..., nn.Module]] = None,
         last_channel: Optional[int] = None,
     ) -> None:
-        """
-        EfficientNet V1 and V2 main class
-
-        Args:
-            inverted_residual_setting (Sequence[Union[MBConvConfig, FusedMBConvConfig]]): Network structure
-            dropout (float): The droupout probability
-            stochastic_depth_prob (float): The stochastic depth probability
-            num_classes (int): Number of classes
-            norm_layer (Optional[Callable[..., nn.Module]]): Module specifying the normalization layer to use
-            last_channel (int): The number of channels on the penultimate layer
-        """
         super().__init__()
+        if inverted_residual_setting is None:
+            bneck_conf = partial(MBConvConfig, width_mult=1.0, depth_mult=1.0)
+            inverted_residual_setting = [
+                bneck_conf(1, 3, 1, 32, 16, 1),
+                bneck_conf(6, 3, 2, 16, 24, 2),
+                bneck_conf(6, 5, 2, 24, 40, 2),
+                bneck_conf(6, 3, 2, 40, 80, 3),
+                bneck_conf(6, 5, 1, 80, 112, 3),
+                bneck_conf(6, 5, 2, 112, 192, 4),
+                bneck_conf(6, 3, 1, 192, 320, 1),
+            ]
 
         if not inverted_residual_setting:
             raise ValueError("The inverted_residual_setting should not be empty")
