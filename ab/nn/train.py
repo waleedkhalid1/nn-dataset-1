@@ -446,7 +446,7 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
                     elif task == 'txt_generation':
                         # Dynamically import RNN or LSTM model
                         if model_name.lower() == 'rnn':
-                            from dataset.RNN.code import Net as RNNNet
+                            from dataset.RNN import Net as RNNNet
                             model = RNNNet(1, 256, len(train_set.chars), batch_size)
                         elif model_name.lower() == 'lstm':
                             from ab.nn.dataset.LSTM import Net as LSTMNet
