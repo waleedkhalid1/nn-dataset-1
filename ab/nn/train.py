@@ -299,14 +299,7 @@ def save_results(config_model_name, study, n_epochs):
     :param config_model_name: Config (Task, Dataset, Normalization) and Model name.
     :param study: Optuna study object.
     :param n_epochs: Number of epochs.
-    :param n_optuna_trials: Number of trials.
     """
-    best_trial = {
-        "accuracy": float(study.best_trial.value),
-        "batch_size": int(study.best_trial.params["batch_size"]),
-        "lr": float(study.best_trial.params["lr"]),
-        "momentum": float(study.best_trial.params["momentum"])
-    }
 
     model_dir = f"stat/{config_model_name}/{n_epochs}/"
     ensure_directory_exists(model_dir)
