@@ -3,14 +3,12 @@ The original version of this dataset was created by <strong>Arash Torabi Goodarz
 
 ## Contribution
 
-To add more neural network models to the dataset, the following criteria must be met.
-1. Each model must be saved in a separated directory inside the initially provided directory named "Dataset", next to other already provided models.
-2. The code for each model must be provided in a respective ".py" file for the model in the directory "/ab/nn/dataset". This file must be named after the name of the model structure.
-3. The main class for each model must be named "Net".
-4. The implementation of this "Net" class must provide non-mutable default parameters for its constructor
+To add more neural network models to the dataset, the following criteria must be met:
+1. The code for each model must be provided in a respective ".py" file for the model in the directory <strong>/ab/nn/dataset</strong>. This file must be named after the name of the model structure.
+2. The main class for each model must be named <strong>Net</strong>.
+3. The implementation of this <strong>Net</strong> class must provide non-mutable default parameters for its constructor.
 
-
-For examples, see the models in the Dataset directory.
+For examples, see the models in the <strong>/ab/nn/dataset</strong> directory.
 
 <!--
 ## Installation with pip
