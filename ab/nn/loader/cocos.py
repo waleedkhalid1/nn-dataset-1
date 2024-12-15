@@ -14,10 +14,21 @@ from torchvision.datasets.utils import download_and_extract_archive
 coco_ann_url = "http://images.cocodataset.org/annotations/annotations_trainval2017.zip"
 coco_img_url = "http://images.cocodataset.org/zips/{}2017.zip"
 
+# Reduce COCOS classes:
+MIN_CLASS_LIST = [0, 1, 2, 16, 9, 44, 6, 3, 17, 62, 21, 67, 18, 19, 4,
+                  5, 64, 20, 63, 7, 72]
+MIN_CLASS_N = len(MIN_CLASS_LIST)
+
+def class_n ():
+    return MIN_CLASS_N
+
+def class_list():
+    return MIN_CLASS_LIST
+
 def loader(path="./data/cocos",resize=(128,128), **kwargs):
     train_set = COCOSegDataset(root=path,spilt="train",resize=resize,preprocess=True,**kwargs)
     val_set = COCOSegDataset(root=path,spilt="val",resize=resize,preprocess=True,**kwargs)
-    return train_set, val_set
+    return class_n(), train_set, val_set
 
 
 class COCOSegDataset(torch.utils.data.Dataset):
