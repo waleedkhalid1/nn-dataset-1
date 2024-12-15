@@ -444,15 +444,15 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
                             manual_args=manual_args.get(model_name) if manual_args else None
                         )
                     elif task == 'txt_generation':
-                        # # Dynamically import RNN or LSTM model
-                        # if model_name.lower() == 'rnn':
-                        #     from dataset.RNN import Net as RNNNet
-                        #     model = RNNNet(1, 256, len(train_set.chars), batch_size)
-                        # elif model_name.lower() == 'lstm':
-                        #     from ab.nn.dataset.LSTM import Net as LSTMNet
-                        #     model = LSTMNet(1, 256, len(train_set.chars), batch_size, num_layers=2)
-                        # else:
-                        #     raise ValueError(f"Unsupported text generation model: {model_name}")
+                        # Dynamically import RNN or LSTM model
+                        if model_name.lower() == 'rnn':
+                            from dataset.RNN import Net as RNNNet
+                            model = RNNNet(1, 256, len(train_set.chars), batch_size)
+                        elif model_name.lower() == 'lstm':
+                            from ab.nn.dataset.LSTM import Net as LSTMNet
+                            model = LSTMNet(1, 256, len(train_set.chars), batch_size, num_layers=2)
+                        else:
+                            raise ValueError(f"Unsupported text generation model: {model_name}")
 
                         trainer = TrainModel(
                             model_source_package=f"dataset.{model_name}",
