@@ -4,11 +4,11 @@ The python code of the DeepSeek large language models:<br/>
 Copyright (c) 2023 DeepSeek<br/>
 All rights reserved.
 
-The python code of ComplexNet model:<br/>
+The python code of neural network models with names matching or beginning with the following string ComplexNet:<br/>
 Copyright (c) 2019 Sébastien M. P.<br/>
 All rights reserved.
 
-The python code of FCN8s, FCN16s, FCN32s models:<br/>
+The python code of neural network models with names matching or beginning with the following strings FCN8s, FCN16s, FCN32s models:<br/>
 Copyright (c) 2017 - 2019 Kentaro Wada<br/>
 All rights reserved.
 
