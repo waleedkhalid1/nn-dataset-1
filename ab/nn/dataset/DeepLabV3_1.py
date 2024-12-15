@@ -318,15 +318,6 @@ class ResNet(nn.Module):
         return self._forward_impl(x)
 
 
-backbones: Dict[str, dict] = {
-    "ResNet50": [ResNet(Bottleneck, [3, 4, 6, 3], num_classes=100, replace_stride_with_dilation=[False, True, True]),
-                 DeepLabHead(2048, 21), None],
-    "ResNet101": [ResNet(Bottleneck, [3, 4, 23, 3], num_classes=100, replace_stride_with_dilation=[False, True, True]),
-                  DeepLabHead(2048, 21), None],
-}
-args = [*backbones["ResNet50"]]
-
-
 class Net(nn.Module):
     __constants__ = ["aux_classifier"]
 
