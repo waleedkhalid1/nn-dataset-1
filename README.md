@@ -18,11 +18,12 @@ pip install git+https://github.com/ABrain-One/nn-dataset
 -->
 
 ## Environment
-
-To use the pip package manager, create a virtual environment and run the following command within it: <br/> 
+### Pip package manager
+Create a virtual environment, activate it, and run the following command to install all the project dependencies: <br/> 
 <strong>pip install -r requirements.txt</strong>
 
-Also all versions of this project are compatible with <a href='https://hub.docker.com/r/abrainone/ai-linux' target='_blank'>AI Linux</a> and can be run inside a Docker image: <br/> 
+### Docker
+All versions of this project are compatible with <a href='https://hub.docker.com/r/abrainone/ai-linux' target='_blank'>AI Linux</a> and can be run inside a Docker image: <br/> 
 <strong> docker run -v /a/mm:&#x003C;nn-dataset path&#x003E;/ab/nn abrainone/ai-linux bash -c "PYTHONPATH=/a/mm python train.py" </strong>
 
 ## Citation
