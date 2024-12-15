@@ -42,7 +42,7 @@ class TrainModel:
         if isinstance(model_source_package, str):
             # Load the model class
             model_class = getattr(
-                __import__(model_source_package + ".code", fromlist=["Net"]),
+                __import__(model_source_package, fromlist=["Net"]),
                 "Net"
             )
             # Try loading arguments from args.py
@@ -456,7 +456,7 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
                             from dataset.RNN.code import Net as RNNNet
                             model = RNNNet(1, 256, len(train_set.chars), batch_size)
                         elif model_name.lower() == 'lstm':
-                            from dataset.LSTM.code import Net as LSTMNet
+                            from ab.nn.dataset.LSTM import Net as LSTMNet
                             model = LSTMNet(1, 256, len(train_set.chars), batch_size, num_layers=2)
                         else:
                             raise ValueError(f"Unsupported text generation model: {model_name}")
@@ -494,9 +494,9 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
 
 if __name__ == "__main__":
     # Config examples
-    # config ='all' # For all configurations
+    config ='all' # For all configurations
     # config = 'img_classification-cifar10-cifar10_norm' # For a particular configuration for all models
-    config = 'img_classification-cifar10-cifar10_complex-ComplexNet'  # For a particular configuration and model
+    # config = 'img_classification-cifar10-cifar10_complex-ComplexNet'  # For a particular configuration and model
 
     # Detects and saves performance metric values for a varying number of epochs
     for epochs in [1, 2, 5]:
