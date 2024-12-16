@@ -172,18 +172,7 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
 
                     print(f"Initialize training with lr = {lr}, momentum = {momentum}, batch_size = {batch_size}")
 
-                    if task == 'img_classification':
-                        trainer = TrainModel(
-                            model_source_package=f"dataset.{model_name}",
-                            train_dataset=train_set,
-                            test_dataset=test_set,
-                            output_dimension=output_dimension,
-                            lr=lr,
-                            momentum=momentum,
-                            batch_size=batch_size,
-                            manual_args=manual_args.get(model_name) if manual_args else None
-                        )
-                    elif task == 'txt_generation':
+                    if task == 'txt_generation':
                         # Dynamically import RNN or LSTM model
                         if model_name.lower() == 'rnn':
                             from dataset.RNN import Net as RNNNet
@@ -194,7 +183,7 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
                         else:
                             raise ValueError(f"Unsupported text generation model: {model_name}")
 
-                        trainer = TrainModel(
+                    trainer = TrainModel(
                             model_source_package=f"dataset.{model_name}",
                             train_dataset=train_set,
                             test_dataset=test_set,
@@ -202,18 +191,7 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
                             lr=lr,
                             momentum=momentum,
                             batch_size=batch_size,
-                            manual_args=manual_args.get(model_name) if manual_args else None
-                        )
-                    elif task == 'img_segmentation':
-                        trainer = TrainModel(
-                            model_source_package=f"dataset.{model_name}",
-                            train_dataset=train_set,
-                            test_dataset=test_set,
-                            output_dimension=output_dimension,
-                            lr=lr,
-                            momentum=momentum,
-                            batch_size=batch_size,
-                            task_type='img_segmentation',
+                            task_type=task,
                             manual_args=manual_args.get(model_name) if manual_args else None
                         )
                     return trainer.evaluate(n_epochs)
