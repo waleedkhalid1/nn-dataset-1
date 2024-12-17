@@ -33,20 +33,20 @@ class ModuleWrapper(nn.Module):
 
 class FlattenLayer(ModuleWrapper):
 
-    # def __init__(self, num_features):
-    #     super(FlattenLayer, self).__init__()
-    #     self.num_features = num_features
-    def __init__(self):
+    def __init__(self, num_features):
         super(FlattenLayer, self).__init__()
+        self.num_features = num_features
+    # def __init__(self):
+    #     super(FlattenLayer, self).__init__()
 
-    # def forward(self, x):
-    #     return x.view(-1, self.num_features)
+    def forward(self, x):
+        return x.view(-1, self.num_features)
     # def forward(self, x):
     #     return x.view(x.size(0), -1)
-    def forward(self, x):
-        x = F.adaptive_avg_pool2d(x, (2, 2))
-        batch_size = x.size(0)
-        return x.view(batch_size, -1)
+    # def forward(self, x):
+    #     x = F.adaptive_avg_pool2d(x, (2, 2))
+    #     batch_size = x.size(0)
+    #     return x.view(batch_size, -1)
 
 class BBBLinear(ModuleWrapper):
 
@@ -216,9 +216,10 @@ class Net(ModuleWrapper):
         self.act3 = self.act()
         self.pool3 = nn.MaxPool2d(kernel_size=3, stride=2)
 
-        # self.flatten = FlattenLayer(2 * 2 * 128)
-        self.flatten = FlattenLayer()
+        self.flatten = FlattenLayer(2 * 2 * 128)
+        # self.flatten = FlattenLayer()
         self.fc1 = BBBLinear(2 * 2 * 128, 1000, bias=True, priors=self.priors)
+        # self.fc1 = BBBLinear(35 * 35 * 128, 1000, bias=True, priors=self.priors)
         self.act4 = self.act()
 
         self.fc2 = BBBLinear(1000, 1000, bias=True, priors=self.priors)
