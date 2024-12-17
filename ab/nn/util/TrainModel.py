@@ -1,82 +1,24 @@
 import torch
 import torch.nn as nn
 from tqdm import tqdm
+import importlib
 
-
-def batch_intersection_union(output, target, nclass):
-    """mIoU"""
-    # inputs are numpy array, output 4D, target 3D
-    mini = 1
-    maxi = nclass
-    nbins = nclass
-    predict = torch.argmax(output, 1) + 1
-    target = target.float() + 1
-
-    predict = predict.float() * (target > 0).float()
-    intersection = predict * (predict == target).float()
-    area_inter = torch.histc(intersection.cpu(), bins=nbins, min=mini, max=maxi)
-    area_pred = torch.histc(predict.cpu(), bins=nbins, min=mini, max=maxi)
-    area_lab = torch.histc(target.cpu(), bins=nbins, min=mini, max=maxi)
-    area_union = area_pred + area_lab - area_inter
-    assert torch.sum(area_inter > area_union).item() == 0, "Intersection area should be smaller than Union area"
-    return area_inter.float(), area_union.float()
-
-
-class MetricMIoU(object):
-    """Computes mIoU metric scores
-    """
-
-    def __init__(self, nclass):
-        super(MetricMIoU, self).__init__()
-        self.nclass = nclass
-        self.reset()
-
-    def update(self, preds, labels):
-        """Updates the internal evaluation result.
-
-        Parameters
-        ----------
-        labels : 'NumpyArray' or list of `NumpyArray`
-            The labels of the data.
-        preds : 'NumpyArray' or list of `NumpyArray`
-            Predicted values.
-        """
-        inter, union = batch_intersection_union(preds, labels, self.nclass)
-
-        if self.total_inter.device != inter.device:
-            self.total_inter = self.total_inter.to(inter.device)
-            self.total_union = self.total_union.to(union.device)
-        self.total_inter += inter
-        self.total_union += union
-
-    def get(self):
-        """Gets the current evaluation result.
-
-        Returns
-        -------
-        mIoU
-        """
-        IoU = 1.0 * self.total_inter / (2.220446049250313e-16 + self.total_union)
-        mIoU = IoU.mean().item()
-        return mIoU
-
-    def reset(self):
-        """Resets the internal evaluation result to initial state."""
-        self.total_inter = torch.zeros(self.nclass)
-        self.total_union = torch.zeros(self.nclass)
 
 class TrainModel:
-    def __init__(self, model_source_package, train_dataset, test_dataset, output_dimension: int, lr: float, momentum: float, batch_size: int,
-                 manual_args: list = None, **kwargs):
+    def __init__(self, model_source_package, train_dataset, test_dataset, metric, output_dimension: int,
+                 lr: float, momentum: float, batch_size: int, manual_args: list = None, **kwargs):
         """
         Universal class for training CV, Text Generation and other models.
-        :param model_source_package: Path to the model's package (string).
-        :param train_dataset: dataset for training.
-        :param test_dataset: dataset for testing.
-        :param lr: Learning rate.
-        :param momentum: Momentum for SGD.
-        :param batch_size: Mini-batch size.
-        :param manual_args: List of manual arguments (if varies from original arguments).
+        :param model_source_package: Path to the model's package as a string (e.g., 'ab.nn.dataset.ResNet').
+        :param train_dataset: The dataset used for training the model (torch.utils.data.Dataset).
+        :param test_dataset: The dataset used for evaluating/testing the model (torch.utils.data.Dataset).
+        :param metric: The name of the evaluation metric (e.g., 'acc', 'miou').
+        :param output_dimension: The output dimension of the model (number of classes for classification tasks).
+        :param lr: Learning rate value for the optimizer.
+        :param momentum: Momentum value for the SGD optimizer.
+        :param batch_size: Batch size used for both training and evaluation.
+        :param manual_args: A list of arguments for model initialization (if different from the default ones).
+        :param kwargs: Additional parameters such as 'task_type' (e.g., 'img_segmentation') to specify the task type.
         """
         self.train_dataset = train_dataset
         self.test_dataset = test_dataset
@@ -94,6 +36,9 @@ class TrainModel:
             self.device = torch.device("mps")
         else:
             self.device = torch.device("cpu")
+
+        self.metric_name = metric
+        self.metric_function = self.load_metric_function(metric)
 
         # Load model
         if isinstance(model_source_package, str):
@@ -125,6 +70,22 @@ class TrainModel:
 
         self.model.to(self.device)
 
+    def load_metric_function(self, metric_name):
+        """
+        Dynamically load the metric function or class based on the metric_name.
+        :param metric_name: Name of the metric (e.g., 'accuracy', 'miou').
+        :return: Loaded metric function or initialized class.
+        """
+        try:
+            module = importlib.import_module(f"metric.{metric_name}")
+            if metric_name.lower() == "miou":
+                return module.MetricMIoU(self.output_dimension)
+            else:
+                return getattr(module, f"compute_{metric_name}")
+        except (ModuleNotFoundError, AttributeError) as e:
+            raise ValueError(f"Metric '{metric_name}' not found. Ensure a corresponding file and function exist.") \
+                from e
+
     def forward_pass(self, inputs):
         """
         Runs a forward pass through the model and removes auxiliary outputs if present.
@@ -141,6 +102,7 @@ class TrainModel:
         test_loader = torch.utils.data.DataLoader(
             self.test_dataset, batch_size=self.batch_size, shuffle=False, num_workers=2
         )
+        # Criterion и Optimizer
         if self.task == "img_segmentation":
             params_list = []
             criterion = torch.nn.CrossEntropyLoss(ignore_index=-1).to(self.device)
@@ -154,85 +116,45 @@ class TrainModel:
             criterion = torch.nn.CrossEntropyLoss().to(self.device)
             optimizer = torch.optim.SGD(self.model.parameters(), lr=self.lr, momentum=self.momentum)
 
-        # Training loop
-        for _ in tqdm(range(num_epochs), desc="Training"):
+        # --- Training --- #
+        for epoch in range(num_epochs):
             self.model.train()
-            for data in train_loader:
-                inputs, labels = data
+            for inputs, labels in tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}"):
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
 
                 optimizer.zero_grad()
-
-                if hasattr(self.model, "init_zero_hidden"):  # For RNN/LSTM
-                    hidden = self.model.init_zero_hidden(self.batch_size)
-                    if isinstance(hidden, tuple):  # For LSTM
-                        hidden = tuple(h.to(self.device) for h in hidden)
-                    else:  # For RNN
-                        hidden = hidden.to(self.device)
-
-                    outputs = []
-                    targets = []
-                    for c in range(inputs.size(1)):  # Iterate over sequence length
-                        step_input = inputs[:, c].unsqueeze(1)  # [batch_size, 1, input_size]
-                        out, hidden = self.model(step_input, hidden)
-                        outputs.append(out)
-                        targets.append(labels[:, c].long())
-
-                    outputs = torch.cat(outputs, dim=0)  # [batch_size * seq_len, output_size]
-                    targets = torch.cat(targets, dim=0)  # [batch_size * seq_len]
-                else:  # For other models
-                    outputs = self.forward_pass(inputs)
-                    targets = labels
-
-                loss = criterion(outputs, targets)
+                outputs = self.forward_pass(inputs)
+                loss = criterion(outputs, labels)
                 loss.backward()
                 nn.utils.clip_grad_norm_(self.model.parameters(), 3)
                 optimizer.step()
 
-        # Evaluation loop
+        # --- Evaluation --- #
         self.model.eval()
-        total = 0
-        correct = 0
+        total_correct, total_samples = 0, 0
+
+        if hasattr(self.metric_function, "reset"):  # Check for reset()
+            self.metric_function.reset()
+
         with torch.no_grad():
-            if self.task == "img_segmentation":
-                mIoU = MetricMIoU(self.output_dimension)
-            for data in test_loader:
-                inputs, labels = data
+            for inputs, labels in test_loader:
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
+                outputs = self.forward_pass(inputs)
 
-                if hasattr(self.model, "init_zero_hidden"):  # For RNN/LSTM
-                    hidden = self.model.init_zero_hidden(self.batch_size)
-                    if isinstance(hidden, tuple):
-                        hidden = tuple(h.to(self.device) for h in hidden)
-                    else:
-                        hidden = hidden.to(self.device)
+                if hasattr(self.metric_function, "update"):  # For mIoU
+                    self.metric_function.update(outputs, labels)
+                else:  # For accuracy and others
+                    correct, total = self.metric_function(outputs, labels)
+                    total_correct += correct
+                    total_samples += total
 
-                    outputs = []
-                    targets = []
-                    for c in range(inputs.size(1)):
-                        step_input = inputs[:, c].unsqueeze(1)
-                        out, hidden = self.model(step_input, hidden)
-                        outputs.append(out)
-                        targets.append(labels[:, c].long())
+        # Metric result
+        if hasattr(self.metric_function, "get"):
+            result = self.metric_function.get()
+        else:
+            result = total_correct / total_samples
 
-                    outputs = torch.cat(outputs, dim=0)
-                    targets = torch.cat(targets, dim=0)
-                elif self.task == "img_segmentation":  # Image Segmentation uses mIoU
-                    outputs = self.forward_pass(inputs)
-                    targets = labels
-                    mIoU.update(outputs, targets)
-                else:  # For other models
-                    outputs = self.forward_pass(inputs)
-                    targets = labels
-
-                _, predicted = torch.max(outputs.data, 1)
-                total += targets.size(0)
-                correct += (predicted == targets).sum().item()
-
-        metric = correct / total
-        if self.task == "img_segmentation":
-            metric = mIoU.get()
-        return metric
+        return result
 
     def get_args(self):
         return self.args

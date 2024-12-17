@@ -9,15 +9,16 @@ from ab.nn.util.DatasetLoader import DatasetLoader
 def parse_model_config(directory_name):
     """
     Parse the model configuration to extract task, dataset, and optional transformation.
-    :param directory_name: Name of the directory (e.g., "img_classification-cifar10-cifar10_norm-AlexNet").
+    :param directory_name: Name of the directory (e.g., "img_classification-cifar10-acc-cifar10_norm-AlexNet").
     :return: Parsed task, dataset name, and transformation name (if any).
     """
     parts = directory_name.split('-')
     task = parts[0]
     dataset_name = parts[1]
-    transform_name = parts[2] if len(parts) > 2 else None
-    model_name = parts[3]
-    return task, dataset_name, transform_name, model_name
+    metric = parts[2]
+    transform_name = parts[3] if len(parts) > 2 else None
+    model_name = parts[4]
+    return task, dataset_name, metric, transform_name, model_name
 
 
 def ensure_directory_exists(model_dir):
@@ -38,7 +39,6 @@ def save_results(config_model_name, study, n_epochs):
     :param study: Optuna study object.
     :param n_epochs: Number of epochs.
     """
-
     model_dir = f"stat/{config_model_name}/{n_epochs}/"
     ensure_directory_exists(model_dir)
 
@@ -79,7 +79,16 @@ def save_results(config_model_name, study, n_epochs):
     print(f"Trials for {config_model_name} saved at {model_dir}")
 
 
-def trials_left(config_model_name, model_name, n_epochs, n_optuna_trials):
+def count_trials_left(config_model_name, model_name, n_epochs, n_optuna_trials):
+    """
+    Calculates the remaining Optuna trials based on the completed ones. Checks for a "trials.json" file in the
+    specified directory to determine how many trials have been completed, and returns the number of trials left.
+    :param config_model_name: Configuration model name.
+    :param model_name: Name of the model.
+    :param n_epochs: Number of epochs.
+    :param n_optuna_trials: Total number of Optuna trials.
+    :return: n_trials_left: Remaining trials.
+    """
     model_dir = f"stat/{config_model_name}/{n_epochs}/"
     path = f"{model_dir}/trials.json"
     n_passed_trials = 0
@@ -113,7 +122,7 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
             for sub_config in os.listdir("stat")
             if os.path.isdir(os.path.join("stat", sub_config))
         ]
-    elif len(config.split('-')) == 3:  # Partial configuration, e.g., 'img_classification-cifar10-cifar10_norm'
+    elif len(config.split('-')) == 3:  # Partial configuration, e.g., 'img_classification-cifar10-acc-cifar10_norm'
         # Collect models matching the given configuration prefix
         config_prefix = config + '-'
         sub_configs = [
@@ -121,7 +130,7 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
             for sub_config in os.listdir("stat")
             if sub_config.startswith(config_prefix) and os.path.isdir(os.path.join("stat", sub_config))
         ]
-    else:  # Specific configuration, e.g., 'img_classification-cifar10-cifar10_norm-AlexNet'
+    else:  # Specific configuration, e.g., 'img_classification-cifar10-acc-cifar10_norm-AlexNet'
         sub_configs = [config]
 
     print("Configurations found for training:")
@@ -133,16 +142,18 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
 
         for sub_config in sub_configs:
             try:
-                task, dataset_name, transform_name, model_name = parse_model_config(sub_config)
+                task, dataset_name, metric, transform_name, model_name = parse_model_config(sub_config)
             except (ValueError, IndexError) as e:
                 print(f"Skipping config '{sub_config}': failed to parse. Error: {e}")
                 continue
 
-            n_optuna_trials_left = trials_left(config_name, model_name, n_epochs, n_optuna_trials)
+            n_optuna_trials_left = count_trials_left(config_name, model_name, n_epochs, n_optuna_trials)
             if n_optuna_trials_left == 0:
-                print(f"The model {model_name} has already passed all trials for task: {task}, dataset: {dataset_name}, transform: {transform_name}, epochs: {n_epochs}")
+                print(f"The model {model_name} has already passed all trials for task: {task}, dataset: {dataset_name},"
+                      f" metric: {metric}, transform: {transform_name}, epochs: {n_epochs}")
             else:
-                print(f"\nStarting training for the model: {model_name}, task: {task}, dataset: {dataset_name}, transform: {transform_name}, epochs: {n_epochs}")
+                print(f"\nStarting training for the model: {model_name}, task: {task}, dataset: {dataset_name},"
+                      f" metric: {metric}, transform: {transform_name}, epochs: {n_epochs}")
                 if task == "img_segmentation":
                     import ab.nn.loader.cocos as cocos
                     dataset_params['class_list'] = cocos.class_list()
@@ -185,12 +196,13 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
                             model_source_package=f"dataset.{model_name}",
                             train_dataset=train_set,
                             test_dataset=test_set,
+                            metric=metric,
                             output_dimension=output_dimension,
                             lr=lr,
                             momentum=momentum,
                             batch_size=batch_size,
-                            task_type=task,
-                            manual_args=manual_args.get(model_name) if manual_args else None
+                            task_type = task,
+                            manual_args = manual_args.get(model_name) if manual_args else None
                         )
                     return trainer.evaluate(n_epochs)
 
@@ -206,8 +218,8 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
 if __name__ == "__main__":
     # Config examples
     config ='all' # For all configurations
-    # config = 'img_classification-cifar10-cifar10_norm' # For a particular configuration for all models
-    # config = 'img_classification-cifar10-cifar10_complex-ComplexNet'  # For a particular configuration and model
+    # config = 'img_classification-cifar10-acc-cifar10_norm' # For a particular configuration for all models
+    # config = 'img_classification-cifar10-acc-cifar10_norm-GoogLeNet'  # For a particular configuration and model
 
     # Detects and saves performance metric values for a varying number of epochs
     for epochs in [1, 2, 5]:
