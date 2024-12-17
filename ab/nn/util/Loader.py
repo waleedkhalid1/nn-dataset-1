@@ -1,5 +1,5 @@
 
-class DatasetLoader:
+class Loader:
     @staticmethod
     def load_dataset(loader_path, transform_path=None, **kwargs):
         """

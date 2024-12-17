@@ -22,12 +22,12 @@ def batch_intersection_union(output, target, nclass):
     return area_inter.float(), area_union.float()
 
 
-class MetricMIoU(object):
+class MIoU(object):
     """
     Computes mIoU metric scores
     """
     def __init__(self, nclass):
-        super(MetricMIoU, self).__init__()
+        super(MIoU, self).__init__()
         self.nclass = nclass
         self.reset()
 

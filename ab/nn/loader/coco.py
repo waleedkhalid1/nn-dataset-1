@@ -25,7 +25,7 @@ def class_n ():
 def class_list():
     return MIN_CLASS_LIST
 
-def loader(path="./data/cocos",resize=(128,128), **kwargs):
+def loader(path="./data/coco",resize=(128,128), **kwargs):
     train_set = COCOSegDataset(root=path,spilt="train",resize=resize,preprocess=True,**kwargs)
     val_set = COCOSegDataset(root=path,spilt="val",resize=resize,preprocess=True,**kwargs)
     return class_n(), train_set, val_set
@@ -38,7 +38,7 @@ class COCOSegDataset(torch.utils.data.Dataset):
 
         Parameters
         ----------
-        path : Path towards cocos root directory. It should be structured as default.
+        path : Path towards coco root directory. It should be structured as default.
         spilt : str `"train"` or `"val"`.
         transform : transform towards the image. For resizing, please use `resize` parameter,
           for torch transforms might have issues transforming masks.

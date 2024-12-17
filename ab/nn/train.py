@@ -2,23 +2,25 @@ import json
 import os
 
 import optuna
-from ab.nn.util.TrainModel import TrainModel
-from ab.nn.util.DatasetLoader import DatasetLoader
+from ab.nn.util.Train import Train
+from ab.nn.util.Loader import Loader
 
+def value_or_none (l : list[str], i):
+    return l[i] if len(l) > i else None
 
 def parse_model_config(directory_name):
     """
-    Parse the model configuration to extract task, dataset, and optional transformation.
+    Parse the model configuration to extract task, and optionally dataset, metric, transformation, model.
     :param directory_name: Name of the directory (e.g., "img_classification-cifar10-acc-cifar10_norm-AlexNet").
     :return: Parsed task, dataset name, and transformation name (if any).
     """
     parts = directory_name.split('-')
     task = parts[0]
-    dataset_name = parts[1]
-    metric = parts[2]
-    transform_name = parts[3] if len(parts) > 2 else None
-    model_name = parts[4]
-    return task, dataset_name, metric, transform_name, model_name
+    dataset = value_or_none(parts, 1)
+    metric = value_or_none(parts, 2)
+    transform = value_or_none(parts, 3)
+    model = value_or_none(parts, 4)
+    return task, dataset, metric, transform, model
 
 
 def ensure_directory_exists(model_dir):
@@ -155,16 +157,16 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
                 print(f"\nStarting training for the model: {model_name}, task: {task}, dataset: {dataset_name},"
                       f" metric: {metric}, transform: {transform_name}, epochs: {n_epochs}")
                 if task == "img_segmentation":
-                    import ab.nn.loader.cocos as cocos
-                    dataset_params['class_list'] = cocos.class_list()
-                    dataset_params['path'] = "./data/cocos"
+                    import ab.nn.loader.coco as coco
+                    dataset_params['class_list'] = coco.class_list()
+                    dataset_params['path'] = "./data/coco"
                 # Paths for loader and transform
                 loader_path = f"loader.{dataset_name}.loader"
                 transform_path = f"transform.{transform_name}.transform" if transform_name else None
 
                 # Load dataset
                 try:
-                    output_dimension, train_set, test_set = DatasetLoader.load_dataset(loader_path, transform_path,
+                    output_dimension, train_set, test_set = Loader.load_dataset(loader_path, transform_path,
                                                                                   **dataset_params)
                 except Exception as e:
                     print(f"Skipping model '{model_name}': failed to load dataset. Error: {e}")
@@ -192,7 +194,7 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
                         else:
                             raise ValueError(f"Unsupported text generation model: {model_name}")
 
-                    trainer = TrainModel(
+                    trainer = Train(
                             model_source_package=f"dataset.{model_name}",
                             train_dataset=train_set,
                             test_dataset=test_set,

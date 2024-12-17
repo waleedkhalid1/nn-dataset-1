@@ -1,7 +1,7 @@
 import torch
 
 
-def compute_acc(outputs, targets):
+def compute(outputs, targets):
     """
     Compute accuracy for classification tasks.
     :param outputs: Model predictions.

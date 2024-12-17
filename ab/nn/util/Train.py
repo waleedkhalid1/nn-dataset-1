@@ -4,7 +4,7 @@ from tqdm import tqdm
 import importlib
 
 
-class TrainModel:
+class Train:
     def __init__(self, model_source_package, train_dataset, test_dataset, metric, output_dimension: int,
                  lr: float, momentum: float, batch_size: int, manual_args: list = None, **kwargs):
         """
@@ -12,7 +12,7 @@ class TrainModel:
         :param model_source_package: Path to the model's package as a string (e.g., 'ab.nn.dataset.ResNet').
         :param train_dataset: The dataset used for training the model (torch.utils.data.Dataset).
         :param test_dataset: The dataset used for evaluating/testing the model (torch.utils.data.Dataset).
-        :param metric: The name of the evaluation metric (e.g., 'acc', 'miou').
+        :param metric: The name of the evaluation metric (e.g., 'acc', 'iou').
         :param output_dimension: The output dimension of the model (number of classes for classification tasks).
         :param lr: Learning rate value for the optimizer.
         :param momentum: Momentum value for the SGD optimizer.
@@ -73,15 +73,15 @@ class TrainModel:
     def load_metric_function(self, metric_name):
         """
         Dynamically load the metric function or class based on the metric_name.
-        :param metric_name: Name of the metric (e.g., 'accuracy', 'miou').
+        :param metric_name: Name of the metric (e.g., 'accuracy', 'iou').
         :return: Loaded metric function or initialized class.
         """
         try:
             module = importlib.import_module(f"metric.{metric_name}")
-            if metric_name.lower() == "miou":
-                return module.MetricMIoU(self.output_dimension)
+            if metric_name.lower() == "iou":
+                return module.MIoU(self.output_dimension)
             else:
-                return getattr(module, f"compute_{metric_name}")
+                return getattr(module, f"compute")
         except (ModuleNotFoundError, AttributeError) as e:
             raise ValueError(f"Metric '{metric_name}' not found. Ensure a corresponding file and function exist.") \
                 from e
