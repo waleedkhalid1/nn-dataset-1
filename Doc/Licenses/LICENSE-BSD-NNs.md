@@ -1,6 +1,6 @@
 BSD 3-Clause License
 
-The python code of neural network models with file names beginning or corresponding to AlexNet, ConvNeXt, DeepLabV3, DenseNet, EfficientNet, FCN32s, GoogLeNet, InceptionV3, LRASPP, MNASNet, MaxVit, MobileNetV2, MobileNetV3, RegNet, ResNet, ShuffleNet, SqueezeNet, SwinTransformer, VGG, VisionTransformer:<br/>
+The python code of neural network models with file names beginning or identical to AlexNet, ConvNeXt, DeepLabV3, DenseNet, EfficientNet, FCN32s, GoogLeNet, InceptionV3, LRASPP, MNASNet, MaxVit, MobileNetV2, MobileNetV3, RegNet, ResNet, ShuffleNet, SqueezeNet, SwinTransformer, VGG, VisionTransformer:<br/>
 Copyright (c) 2016 Soumith Chintala<br/>
 All rights reserved.
 
