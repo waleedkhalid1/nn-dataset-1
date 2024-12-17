@@ -164,12 +164,10 @@ def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, man
                     if task == 'img_segmentation':
                         lr = trial.suggest_float('lr', 1e-4, 1e-2, log=False)
                         momentum = trial.suggest_float('momentum', 0.8, 0.99, log=True)
-                        batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
                     else:
                         lr = trial.suggest_float('lr', 1e-4, 1, log=False)
                         momentum = trial.suggest_float('momentum', 0.01, 0.99, log=True)
-                        batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
-
+                    batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
                     print(f"Initialize training with lr = {lr}, momentum = {momentum}, batch_size = {batch_size}")
 
                     if task == 'txt_generation':
