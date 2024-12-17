@@ -4,11 +4,15 @@ The python code of the DeepSeek large language models:<br/>
 Copyright (c) 2023 DeepSeek<br/>
 All rights reserved.
 
-The python code of neural network models with file names beginning or corresponding to ComplexNet:<br/>
+The python code of neural network models with file names beginning or identical to ComplexNet:<br/>
 Copyright (c) 2019 Sébastien M. P.<br/>
 All rights reserved.
 
-The python code of neural network models with file names beginning or corresponding to FCN8s, FCN16s, FCN32s:<br/>
+The python code of neural network models with file names beginning or identical to BayesianNet:<br/>
+Copyright (c) 2019 Kumar Shridhar<br/>
+All rights reserved.
+
+The python code of neural network models with file names beginning or identical to FCN8s, FCN16s, FCN32s:<br/>
 Copyright (c) 2017 - 2019 Kentaro Wada<br/>
 All rights reserved.
 
