@@ -15,7 +15,7 @@ setup(
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     author="ABrain One and contributors",
-    author_email="ai@abrain.one",
+    author_email="Ai@ABrain.one",
     url="https://github.com/ABrain-One/nn-dataset",
     packages=find_packages(include=['ab', 'ab.nn', 'ab.nn.*']),
     package_dir={'ab': 'ab'},
