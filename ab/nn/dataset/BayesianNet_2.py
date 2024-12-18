@@ -8,8 +8,6 @@ def calculate_kl(mu_q, sig_q, mu_p, sig_p):
     return kl
 
 class ModuleWrapper(nn.Module):
-    """Wrapper for nn.Module with support for arbitrary flags and a universal forward pass"""
-
     def __init__(self):
         super(ModuleWrapper, self).__init__()
 
@@ -36,17 +34,9 @@ class FlattenLayer(ModuleWrapper):
     def __init__(self, num_features):
         super(FlattenLayer, self).__init__()
         self.num_features = num_features
-    # def __init__(self):
-    #     super(FlattenLayer, self).__init__()
 
     def forward(self, x):
         return x.view(-1, self.num_features)
-    # def forward(self, x):
-    #     return x.view(x.size(0), -1)
-    # def forward(self, x):
-    #     x = F.adaptive_avg_pool2d(x, (2, 2))
-    #     batch_size = x.size(0)
-    #     return x.view(batch_size, -1)
 
 class BBBLinear(ModuleWrapper):
 
@@ -188,8 +178,6 @@ class BBBConv2d(ModuleWrapper):
 
 
 class Net(ModuleWrapper):
-    '''The architecture of AlexNet with Bayesian Layers'''
-
     def __init__(self, inputs: int = 3, outputs: int = 10):
         super(Net, self).__init__()
 
