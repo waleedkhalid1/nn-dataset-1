@@ -16,10 +16,10 @@ def read_readme():
 setup(
     name="nn-dataset",
     version="0.1.0",
-    description="A neural network dataset management tool",
+    description="Neural Network Dataset",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
-    author="ABrain-One",
+    author="ABrain One and contributors",
     author_email="Ai@ABrain.one",
     url="https://github.com/ABrain-One/nn-dataset",
     packages=find_packages(include=["ab.*"]),
