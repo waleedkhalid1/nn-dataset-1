@@ -20,7 +20,7 @@ setup(
     long_description=read_readme(),
     long_description_content_type="text/markdown",
     author="ABrain-One",
-    author_email="dmytro.ignatov@uni-wuerzburg.de",
+    author_email="Ai@ABrain.one",
     url="https://github.com/ABrain-One/nn-dataset",
     packages=find_packages(include=["ab.*"]),
     install_requires=read_requirements(),
