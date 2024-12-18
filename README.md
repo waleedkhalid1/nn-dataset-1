@@ -25,8 +25,8 @@ docker run -v /a/mm:<nn-dataset path>/ab/nn abrainone/ai-linux bash -c "PYTHONPA
 The primary goal of NN-Dataset project is to provide flexibility for dynamically combining various datasets, metrics, and models. It is designed to facilitate the validation of neural network performance across different training hyperparameter combinations and data transformation algorithms, while also generating performance statistics. It is primarily developed to support the <a href="https://github.com/ABrain-One/nn-gen"> NN-Gen</a> project.
 
 The main usage scenario:
-1. Add the new neural network model into the ab/nn/datasets directory.
-2. Create a new configuration folder for its training, e.g., ab/nn/stat/img_classification-cifar10-acc-cifar10_norm-ComplexNet
+1. Add the new neural network model into the `ab/nn/datasets` directory.
+2. Create a new configuration folder for its training, e.g., `ab/nn/stat/img_classification-cifar10-acc-cifar10_norm-ComplexNet`
 3. Run the automated training process for the new model:
 ```bash
 python ab/nn/train.py
