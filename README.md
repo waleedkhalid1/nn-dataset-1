@@ -1,6 +1,37 @@
 # Neural Network Dataset
 The original version of this dataset was created by <strong>Arash Torabi Goodarzi, Roman Kochnev</strong> and <strong>Zofia Antonina Bentyn</strong> at the Computer Vision Laboratory, University of Würzburg, Germany.
 
+## Installation of the Latest Version of the NN-Dataset
+
+```bash
+pip install git+https://github.com/ABrain-One/nn-dataset.git
+```
+
+## Environment for NN-Dataset Developers
+### Pip package manager
+Create a virtual environment, activate it, and run the following command to install all the project dependencies:
+```bash
+pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu124
+```
+
+### Docker
+All versions of this project are compatible with <a href='https://hub.docker.com/r/abrainone/ai-linux' target='_blank'>AI Linux</a> and can be run inside a Docker image:
+```bash
+docker run -v /a/mm:<nn-dataset path>/ab/nn abrainone/ai-linux bash -c "PYTHONPATH=/a/mm python train.py"
+```
+
+## Usage
+
+The primary goal of NN-Dataset project is to provide flexibility for dynamically combining various datasets, metrics, and models. It is designed to facilitate the validation of neural network performance across different training hyperparameter combinations and data transformation algorithms, while also generating performance statistics. It is primarily developed to support the <a href="https://github.com/ABrain-One/nn-gen"> NN-Gen</a> project.
+
+The main usage scenario:
+1. Add the new neural network model into the `ab/nn/datasets` directory.
+2. Create a new configuration folder for its training, e.g., `ab/nn/stat/img_classification-cifar10-acc-cifar10_norm-ComplexNet`
+3. Run the automated training process for the new model:
+```bash
+python ab/nn/train.py
+```
+
 ## Contribution
 
 To add more neural network models to the dataset, the following criteria must be met:
@@ -15,19 +46,26 @@ img_classification-cifar10-acc-cifar10_norm-ComplexNet/5<br/>
 
 For examples, see the models in the <strong>/ab/nn/dataset</strong> directory and statistics in the <strong>ab/nn/stat</strong> directory.
 
-<!--
-## Installation with pip
-pip install git+https://github.com/ABrain-One/nn-dataset
--->
+### Available Modules
 
-## Environment
-### Pip package manager
-Create a virtual environment, activate it, and run the following command to install all the project dependencies: <br/> 
-<strong>pip install -r requirements.txt</strong>
+The `nn-dataset` package includes the following key modules:
 
-### Docker
-All versions of this project are compatible with <a href='https://hub.docker.com/r/abrainone/ai-linux' target='_blank'>AI Linux</a> and can be run inside a Docker image: <br/> 
-<strong> docker run -v /a/mm:&#x003C;nn-dataset path&#x003E;/ab/nn abrainone/ai-linux bash -c "PYTHONPATH=/a/mm python train.py" </strong>
+1. **Datasets**:
+   - Predefined neural network architectures such as `AlexNet`, `ResNet`, `VGG`, and more.
+   - Located in `ab.nn.dataset`.
+
+2. **Loaders**:
+   - Data loaders for datasets such as CIFAR-10 and COCO.
+   - Located in `ab.nn.loader`.
+
+3. **Metrics**:
+   - Common evaluation metrics like accuracy and IoU.
+   - Located in `ab.nn.metric`.
+
+4. **Utilities**:
+   - Helper functions for training and statistical analysis.
+   - Located in `ab.nn.util`.
+
 
 ## Citation
 
