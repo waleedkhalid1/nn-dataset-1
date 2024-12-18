@@ -5,23 +5,6 @@ import optuna
 from ab.nn.util.Train import Train
 from ab.nn.util.Loader import Loader
 
-def value_or_none (l : list[str], i):
-    return l[i] if len(l) > i else None
-
-def parse_model_config(directory_name):
-    """
-    Parse the model configuration to extract task, and optionally dataset, metric, transformation, model.
-    :param directory_name: Name of the directory (e.g., "img_classification-cifar10-acc-cifar10_norm-AlexNet").
-    :return: Parsed task, dataset name, and transformation name (if any).
-    """
-    parts = directory_name.split('-')
-    task = parts[0]
-    dataset = value_or_none(parts, 1)
-    metric = value_or_none(parts, 2)
-    transform = value_or_none(parts, 3)
-    model = value_or_none(parts, 4)
-    return task, dataset, metric, transform, model
-
 
 def ensure_directory_exists(model_dir):
     """
@@ -104,126 +87,129 @@ def count_trials_left(config_model_name, model_name, n_epochs, n_optuna_trials):
     return n_trials_left
 
 
-def main(config='all', n_epochs=1, n_optuna_trials=100, dataset_params=None, manual_args=None):
+def extract_all_configs(config):
+    """
+    Collect models matching the given configuration prefix
+    """
+    return [sub_config
+            for sub_config in os.listdir("stat")
+            if sub_config.startswith(config) and os.path.isdir(os.path.join("stat", sub_config))]
+
+
+# todo: move to the ab.nn.util.Start and request information from database
+def provide_all_configs(config):
+    if not isinstance(config, list):
+        config = [config]
+    all_configs = []
+    for c in config:
+        all_configs = all_configs + extract_all_configs(c)
+    return all_configs
+
+
+def main(config='', n_epochs=1, n_optuna_trials=100):
     """
     Main function for training models using Optuna optimization.
-    :param config: Configuration specifying the models to train.
-    :param n_epochs: Number of epochs for training.
+    :param config: Configuration specifying the models to train. The default value for all configurations.
+    :param n_epochs: Number or list of numbers of epochs for training.
     :param n_optuna_trials: Number of Optuna trials.
-    :param dataset_params: Parameters specific to dataset loading.
-    :param manual_args: Manually provided arguments for model initialization.
     """
-    if dataset_params is None:
-        dataset_params = {}
+
+    # Parameters specific to dataset loading.
+    dataset_params = {}
 
     # Determine configurations based on the provided config
-    if config == 'all':
-        # Collect all configurations from the 'stat' directory
-        sub_configs = [
-            sub_config
-            for sub_config in os.listdir("stat")
-            if os.path.isdir(os.path.join("stat", sub_config))
-        ]
-    elif len(config.split('-')) == 3:  # Partial configuration, e.g., 'img_classification-cifar10-acc-cifar10_norm'
-        # Collect models matching the given configuration prefix
-        config_prefix = config + '-'
-        sub_configs = [
-            sub_config
-            for sub_config in os.listdir("stat")
-            if sub_config.startswith(config_prefix) and os.path.isdir(os.path.join("stat", sub_config))
-        ]
-    else:  # Specific configuration, e.g., 'img_classification-cifar10-acc-cifar10_norm-AlexNet'
-        sub_configs = [config]
+    sub_configs = provide_all_configs(config)
 
-    print("Configurations found for training:")
-    for idx, sub_config in enumerate(sub_configs, start=1):
-        print(f"{idx}. {sub_config}")
+    if not isinstance(n_epochs, list):
+        n_epochs = [n_epochs]
+    for epoch in n_epochs:
+        print(f"Configurations found for training for {epoch} epochs:")
+        for idx, sub_config in enumerate(sub_configs, start=1):
+            print(f"{idx}. {sub_config}")
 
-    for config_name in sub_configs:
-        sub_configs = [config_name]
+        for config_name in sub_configs:
+            sub_configs = [config_name]
 
-        for sub_config in sub_configs:
-            try:
-                task, dataset_name, metric, transform_name, model_name = parse_model_config(sub_config)
-            except (ValueError, IndexError) as e:
-                print(f"Skipping config '{sub_config}': failed to parse. Error: {e}")
-                continue
-
-            n_optuna_trials_left = count_trials_left(config_name, model_name, n_epochs, n_optuna_trials)
-            if n_optuna_trials_left == 0:
-                print(f"The model {model_name} has already passed all trials for task: {task}, dataset: {dataset_name},"
-                      f" metric: {metric}, transform: {transform_name}, epochs: {n_epochs}")
-            else:
-                print(f"\nStarting training for the model: {model_name}, task: {task}, dataset: {dataset_name},"
-                      f" metric: {metric}, transform: {transform_name}, epochs: {n_epochs}")
-                if task == "img_segmentation":
-                    import ab.nn.loader.coco as coco
-                    dataset_params['class_list'] = coco.class_list()
-                    dataset_params['path'] = "./data/coco"
-                # Paths for loader and transform
-                loader_path = f"loader.{dataset_name}.loader"
-                transform_path = f"transform.{transform_name}.transform" if transform_name else None
-
-                # Load dataset
+            for sub_config in sub_configs:
                 try:
-                    output_dimension, train_set, test_set = Loader.load_dataset(loader_path, transform_path,
-                                                                                  **dataset_params)
-                except Exception as e:
-                    print(f"Skipping model '{model_name}': failed to load dataset. Error: {e}")
+                    task, dataset_name, metric, transform_name, model_name = sub_config.split('-')
+                except (ValueError, IndexError) as e:
+                    print(f"Skipping config '{sub_config}': failed to parse. Error: {e}")
                     continue
 
-                # Configure Optuna for the current model
-                def objective(trial):
-                    if task == 'img_segmentation':
-                        lr = trial.suggest_float('lr', 1e-4, 1e-2, log=False)
-                        momentum = trial.suggest_float('momentum', 0.8, 0.99, log=True)
-                    else:
-                        lr = trial.suggest_float('lr', 1e-4, 1, log=False)
-                        momentum = trial.suggest_float('momentum', 0.01, 0.99, log=True)
-                    batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
-                    print(f"Initialize training with lr = {lr}, momentum = {momentum}, batch_size = {batch_size}")
+                n_optuna_trials_left = count_trials_left(config_name, model_name, epoch, n_optuna_trials)
+                if n_optuna_trials_left == 0:
+                    print(f"The model {model_name} has already passed all trials for task: {task}, dataset: {dataset_name},"
+                          f" metric: {metric}, transform: {transform_name}, epochs: {epoch}")
+                else:
+                    print(f"\nStarting training for the model: {model_name}, task: {task}, dataset: {dataset_name},"
+                          f" metric: {metric}, transform: {transform_name}, epochs: {epoch}")
+                    if task == "img_segmentation":
+                        import ab.nn.loader.coco as coco
+                        dataset_params['class_list'] = coco.class_list()
+                        dataset_params['path'] = "./data/coco"
+                    # Paths for loader and transform
+                    loader_path = f"loader.{dataset_name}.loader"
+                    transform_path = f"transform.{transform_name}.transform" if transform_name else None
 
-                    if task == 'txt_generation':
-                        # Dynamically import RNN or LSTM model
-                        if model_name.lower() == 'rnn':
-                            from dataset.RNN import Net as RNNNet
-                            model = RNNNet(1, 256, len(train_set.chars), batch_size)
-                        elif model_name.lower() == 'lstm':
-                            from ab.nn.dataset.LSTM import Net as LSTMNet
-                            model = LSTMNet(1, 256, len(train_set.chars), batch_size, num_layers=2)
+                    # Load dataset
+                    try:
+                        output_dimension, train_set, test_set = Loader.load_dataset(loader_path, transform_path,
+                                                                                    **dataset_params)
+                    except Exception as e:
+                        print(f"Skipping model '{model_name}': failed to load dataset. Error: {e}")
+                        continue
+
+                    # Configure Optuna for the current model
+                    def objective(trial):
+                        if task == 'img_segmentation':
+                            lr = trial.suggest_float('lr', 1e-4, 1e-2, log=False)
+                            momentum = trial.suggest_float('momentum', 0.8, 0.99, log=True)
                         else:
-                            raise ValueError(f"Unsupported text generation model: {model_name}")
+                            lr = trial.suggest_float('lr', 1e-4, 1, log=False)
+                            momentum = trial.suggest_float('momentum', 0.01, 0.99, log=True)
+                        batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
+                        print(f"Initialize training with lr = {lr}, momentum = {momentum}, batch_size = {batch_size}")
 
-                    trainer = Train(
+                        if task == 'txt_generation':
+                            # Dynamically import RNN or LSTM model
+                            if model_name.lower() == 'rnn':
+                                from dataset.RNN import Net as RNNNet
+                                model = RNNNet(1, 256, len(train_set.chars), batch_size)
+                            elif model_name.lower() == 'lstm':
+                                from ab.nn.dataset.LSTM import Net as LSTMNet
+                                model = LSTMNet(1, 256, len(train_set.chars), batch_size, num_layers=2)
+                            else:
+                                raise ValueError(f"Unsupported text generation model: {model_name}")
+
+                        trainer = Train(
                             model_source_package=f"dataset.{model_name}",
+                            task_type=task,
                             train_dataset=train_set,
                             test_dataset=test_set,
                             metric=metric,
                             output_dimension=output_dimension,
                             lr=lr,
                             momentum=momentum,
-                            batch_size=batch_size,
-                            task_type = task,
-                            manual_args = manual_args.get(model_name) if manual_args else None
-                        )
-                    return trainer.evaluate(n_epochs)
+                            batch_size=batch_size)
+                        return trainer.evaluate(epoch)
 
-                # Launch Optuna for the current model
-                study_name = f"{model_name}_study"
-                study = optuna.create_study(study_name=study_name, direction='maximize')
-                study.optimize(objective, n_trials=n_optuna_trials_left)
+                    # Launch Optuna for the current model
+                    study_name = f"{model_name}_study"
+                    study = optuna.create_study(study_name=study_name, direction='maximize')
+                    study.optimize(objective, n_trials=n_optuna_trials_left)
 
-                # Save results
-                save_results(sub_config, study, n_epochs)
+                    # Save results
+                    save_results(sub_config, study, epoch)
 
 
 if __name__ == "__main__":
     # Config examples
-    config ='all' # For all configurations
-    # config = 'img_classification-cifar10-acc-cifar10_norm' # For a particular configuration for all models
-    # config = 'img_classification-cifar10-acc-cifar10_norm-GoogLeNet'  # For a particular configuration and model
+    conf = '' # For all configurations
+    # conf = 'img_classification' # For all image classification configurations
+    # conf = 'img_classification-cifar10-acc-cifar10_norm' # For a particular configuration for all models
+    # conf = 'img_classification-cifar10-acc-cifar10_norm-GoogLeNet'  # For a particular configuration and model
+    # conf = ['img_classification', 'img_segmentation']  # For all image classification and segmentation configurations
 
-    # Detects and saves performance metric values for a varying number of epochs
-    for epochs in [1, 2, 5]:
-        # Run training with Optuna
-        main(config, epochs, 100)
+    # Run training with Optuna: detects and saves performance metric values for a varying number of epochs
+    main(conf, [1, 2, 5], 100)

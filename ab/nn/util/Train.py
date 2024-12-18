@@ -5,11 +5,12 @@ import importlib
 
 
 class Train:
-    def __init__(self, model_source_package, train_dataset, test_dataset, metric, output_dimension: int,
-                 lr: float, momentum: float, batch_size: int, manual_args: list = None, **kwargs):
+    def __init__(self, model_source_package, task_type, train_dataset, test_dataset, metric, output_dimension: int,
+                 lr: float, momentum: float, batch_size: int):
         """
         Universal class for training CV, Text Generation and other models.
         :param model_source_package: Path to the model's package as a string (e.g., 'ab.nn.dataset.ResNet').
+        :param task_type: e.g., 'img_segmentation' to specify the task type.
         :param train_dataset: The dataset used for training the model (torch.utils.data.Dataset).
         :param test_dataset: The dataset used for evaluating/testing the model (torch.utils.data.Dataset).
         :param metric: The name of the evaluation metric (e.g., 'acc', 'iou').
@@ -17,8 +18,6 @@ class Train:
         :param lr: Learning rate value for the optimizer.
         :param momentum: Momentum value for the SGD optimizer.
         :param batch_size: Batch size used for both training and evaluation.
-        :param manual_args: A list of arguments for model initialization (if different from the default ones).
-        :param kwargs: Additional parameters such as 'task_type' (e.g., 'img_segmentation') to specify the task type.
         """
         self.train_dataset = train_dataset
         self.test_dataset = test_dataset
@@ -27,8 +26,8 @@ class Train:
         self.lr = lr
         self.momentum = momentum
         self.batch_size = max(2, batch_size)
-        self.args = None
-        self.task = kwargs.get('task_type')
+        self.args = []
+        self.task = task_type
 
         if torch.cuda.is_available():
             self.device = torch.device("cuda")
@@ -47,19 +46,8 @@ class Train:
                 __import__(model_source_package, fromlist=["Net"]),
                 "Net"
             )
-            # Try loading arguments from args.py
-            if manual_args is not None:
-                self.args = manual_args
-            else:
-                self.args = []
 
-            # Initialize the model with arguments
-            try:
-                self.model = model_class(*self.args)
-            except TypeError:
-                raise ValueError(f"Arguments required for {model_class.__name__} are missing. "
-                                 f"Please provide them manually via manual_args or add default arguments "
-                                 f"to the model code.")
+            self.model = model_class(*self.args)
 
         elif isinstance(model_source_package, torch.nn.Module):
             # If a pre-initialized model is passed
