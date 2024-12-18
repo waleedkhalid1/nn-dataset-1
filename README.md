@@ -1,7 +1,7 @@
 # Neural Network Dataset
 The original version of this dataset was created by <strong>Arash Torabi Goodarzi, Roman Kochnev</strong> and <strong>Zofia Antonina Bentyn</strong> at the Computer Vision Laboratory, University of Würzburg, Germany.
 
-## Installation of the Latest Version of the NN-Dataset from GitHub
+## Installation of the Latest Version of the NN-Dataset
 
 ```bash
 pip install git+https://github.com/ABrain-One/nn-dataset.git
