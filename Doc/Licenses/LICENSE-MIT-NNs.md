@@ -8,7 +8,7 @@ The python code of neural network models with file names beginning or identical 
 Copyright (c) 2019 Sébastien M. P.<br/>
 All rights reserved.
 
-The python code of neural network models with file names beginning or identical to BayesianNet:<br/>
+The python code of neural network models with file names beginning with Bayesian:<br/>
 Copyright (c) 2019 Kumar Shridhar<br/>
 All rights reserved.
 
