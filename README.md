@@ -52,4 +52,47 @@ This project is distributed under the following licensing terms:
 <li> all neural network models and their weights not covered by the above licenses, as well as all other files and assets in this project, are subject to the <a href="LICENSE.md">MIT license</a></li> 
 </ul>
 
+
+## Installation
+
+To install the `nn-dataset` package directly from the GitHub repository, use the following command:
+
+```bash
+pip install git+https://github.com/ABrain-One/nn-dataset.git
+```
+## Usage
+
+### Importing Modules
+
+After installation, you can start using the `nn-dataset` package. Here’s an example:
+
+```python
+from ab.nn.dataset import AlexNet
+
+# Use the imported class
+model = AlexNet()
+print(model)
+```
+
+### Available Modules
+
+The `nn-dataset` package includes the following key modules:
+
+1. **Datasets**:
+   - Predefined neural network architectures such as `AlexNet`, `ResNet`, `VGG`, and more.
+   - Located in `ab.nn.dataset`.
+
+2. **Loaders**:
+   - Data loaders for datasets such as CIFAR-10 and COCO.
+   - Located in `ab.nn.loader`.
+
+3. **Metrics**:
+   - Common evaluation metrics like accuracy and IOU.
+   - Located in `ab.nn.metric`.
+
+4. **Utilities**:
+   - Helper functions for training and statistical analysis.
+   - Located in `ab.nn.util`.
+
+
 #### The idea of Dr. Dmitry Ignatov
