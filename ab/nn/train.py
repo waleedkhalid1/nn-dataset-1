@@ -2,8 +2,9 @@ import json
 import os
 
 import optuna
-from ab.nn.util.Train import Train
+
 from ab.nn.util.Loader import Loader
+from ab.nn.util.Train import Train
 
 
 def ensure_directory_exists(model_dir):
@@ -81,7 +82,7 @@ def count_trials_left(config_model_name, model_name, n_epochs, n_optuna_trials):
         with open(path, "r") as f:
             trials = json.load(f)
             n_passed_trials = len(trials)
-    n_trials_left = max(0, n_optuna_trials - n_passed_trials)
+    n_trials_left = int(n_optuna_trials) if isinstance(n_optuna_trials, str) else max(0, n_optuna_trials - n_passed_trials)
     if n_passed_trials > 0:
         print(f"The {model_name} passed {n_passed_trials} trials, {n_trials_left} left.")
     return n_trials_left
@@ -106,7 +107,7 @@ def provide_all_configs(config):
     return all_configs
 
 
-def main(config='', n_epochs=1, n_optuna_trials=100):
+def main(config: str | list ='', n_epochs: int | list = 1, n_optuna_trials: int | str = 100):
     """
     Main function for training models using Optuna optimization.
     :param config: Configuration specifying the models to train. The default value for all configurations.
@@ -204,12 +205,18 @@ def main(config='', n_epochs=1, n_optuna_trials=100):
 
 
 if __name__ == "__main__":
-    # Config examples
-    conf = '' # For all configurations
+    # NN pipeline configuration examples
+    conf = ''  # For all configurations
     # conf = 'img_classification' # For all image classification configurations
     # conf = 'img_classification-cifar10-acc-cifar10_norm' # For a particular configuration for all models
     # conf = 'img_classification-cifar10-acc-cifar10_norm-GoogLeNet'  # For a particular configuration and model
     # conf = ['img_classification', 'img_segmentation']  # For all image classification and segmentation configurations
 
+    # Number of Optuna trial examples.
+    # optuna_trials = 100 # 100 trials
+    # optuna_trials = "+1"  # Try once more. For quick verification of model training after code modifications.
+    optuna_trials = "+5"  # Try 5 more times. To thoroughly verify model training after code modifications.
+
+    ''' Please commit updated statistics whenever you have new performance results '''
     # Run training with Optuna: detects and saves performance metric values for a varying number of epochs
-    main(conf, [1, 2, 5], 100)
+    main(conf, [1, 2, 5], optuna_trials)
