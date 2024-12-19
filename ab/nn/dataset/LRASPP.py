@@ -1,11 +1,8 @@
 from functools import partial
 from typing import Any, Callable, Dict, List, Optional, Sequence
-
 import torch
-from torch import nn, Tensor
 import torch.nn.functional as F
-
-
+from torch import nn, Tensor
 from torchvision.models._utils import _make_divisible, IntermediateLayerGetter
 from torchvision.ops.misc import Conv2dNormActivation, SqueezeExcitation as SElayer
 
@@ -106,8 +103,7 @@ class MobileNetV3(nn.Module):
         num_classes: int = 1000,
         block: Optional[Callable[..., nn.Module]] = None,
         norm_layer: Optional[Callable[..., nn.Module]] = None,
-        dropout: float = 0.2,
-        **kwargs: Any,
+            dropout: float = 0.2
     ) -> None:
         super().__init__()
 
@@ -177,12 +173,9 @@ class MobileNetV3(nn.Module):
 
     def _forward_impl(self, x: Tensor) -> Tensor:
         x = self.features(x)
-
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
-
         x = self.classifier(x)
-
         return x
 
     def forward(self, x: Tensor) -> Tensor:

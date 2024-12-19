@@ -1,4 +1,3 @@
-import warnings
 from collections import namedtuple
 from typing import Any, Callable, List, Optional, Tuple
 
@@ -66,7 +65,7 @@ class Net(nn.Module):
         if init_weights:
             for m in self.modules():
                 if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
-                    stddev = float(m.stddev) if hasattr(m, "stddev") else 0.1  # type: ignore
+                    stddev = float(m.stddev) if hasattr(m, "stddev") else 0.1
                     torch.nn.init.trunc_normal_(m.weight, mean=0.0, std=stddev, a=-2, b=2)
                 elif isinstance(m, nn.BatchNorm2d):
                     nn.init.constant_(m.weight, 1)
@@ -81,57 +80,32 @@ class Net(nn.Module):
         return x
 
     def _forward(self, x: Tensor) -> Tuple[Tensor, Optional[Tensor]]:
-        # N x 3 x 299 x 299
         x = self.Conv2d_1a_3x3(x)
-        # N x 32 x 149 x 149
         x = self.Conv2d_2a_3x3(x)
-        # N x 32 x 147 x 147
         x = self.Conv2d_2b_3x3(x)
-        # N x 64 x 147 x 147
         x = self.maxpool1(x)
-        # N x 64 x 73 x 73
         x = self.Conv2d_3b_1x1(x)
-        # N x 80 x 73 x 73
         x = self.Conv2d_4a_3x3(x)
-        # N x 192 x 71 x 71
         x = self.maxpool2(x)
-        # N x 192 x 35 x 35
         x = self.Mixed_5b(x)
-        # N x 256 x 35 x 35
         x = self.Mixed_5c(x)
-        # N x 288 x 35 x 35
         x = self.Mixed_5d(x)
-        # N x 288 x 35 x 35
         x = self.Mixed_6a(x)
-        # N x 768 x 17 x 17
         x = self.Mixed_6b(x)
-        # N x 768 x 17 x 17
         x = self.Mixed_6c(x)
-        # N x 768 x 17 x 17
         x = self.Mixed_6d(x)
-        # N x 768 x 17 x 17
         x = self.Mixed_6e(x)
-        # N x 768 x 17 x 17
         aux: Optional[Tensor] = None
         if self.AuxLogits is not None:
             if self.training:
                 aux = self.AuxLogits(x)
-        # N x 768 x 17 x 17
         x = self.Mixed_7a(x)
-        # N x 1280 x 8 x 8
         x = self.Mixed_7b(x)
-        # N x 2048 x 8 x 8
         x = self.Mixed_7c(x)
-        # N x 2048 x 8 x 8
-        # Adaptive average pooling
         x = self.avgpool(x)
-        # N x 2048 x 1 x 1
         x = self.dropout(x)
-        # N x 2048 x 1 x 1
         x = torch.flatten(x, 1)
-        # N x 2048
         x = self.fc(x)
-        # N x 1000 (num_classes)
         return x, aux
 
     @torch.jit.unused
@@ -139,7 +113,7 @@ class Net(nn.Module):
         if self.training and self.aux_logits:
             return InceptionOutputs(x, aux)
         else:
-            return x  # type: ignore[return-value]
+            return x
 
     def forward(self, x: Tensor) -> Tensor:
         x = self._transform_input(x)
@@ -347,25 +321,17 @@ class InceptionAux(nn.Module):
             conv_block = BasicConv2d
         self.conv0 = conv_block(in_channels, 128, kernel_size=1)
         self.conv1 = conv_block(128, 768, kernel_size=5)
-        self.conv1.stddev = 0.01  # type: ignore[assignment]
+        self.conv1.stddev = 0.01
         self.fc = nn.Linear(768, num_classes)
-        self.fc.stddev = 0.001  # type: ignore[assignment]
+        self.fc.stddev = 0.001
 
     def forward(self, x: Tensor) -> Tensor:
-        # N x 768 x 17 x 17
         x = F.avg_pool2d(x, kernel_size=5, stride=3)
-        # N x 768 x 5 x 5
         x = self.conv0(x)
-        # N x 128 x 5 x 5
         x = self.conv1(x)
-        # N x 768 x 1 x 1
-        # Adaptive average pooling
         x = F.adaptive_avg_pool2d(x, (1, 1))
-        # N x 768 x 1 x 1
         x = torch.flatten(x, 1)
-        # N x 768
         x = self.fc(x)
-        # N x 1000
         return x
 
 

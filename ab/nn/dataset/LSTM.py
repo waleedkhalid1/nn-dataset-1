@@ -3,9 +3,6 @@ import torch.nn as nn
 
 
 class Net(nn.Module):
-    """
-    Basic LSTM block. This represents a multi-layer LSTM
-    """
     def __init__(self, input_size: int, hidden_size: int, output_size: int, batch_size: int, num_layers: int = 1) -> None:
         super().__init__()
         self.input_size = input_size

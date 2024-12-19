@@ -1,7 +1,8 @@
-import torch.nn as nn
-from torch.nn import Parameter
-import torch.nn.functional as F
 import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from torch.nn import Parameter
+
 
 def calculate_kl(mu_q, sig_q, mu_p, sig_p):
     kl = 0.5 * (2 * torch.log(sig_p / sig_q) - 1 + (sig_q / sig_p).pow(2) + ((mu_p - mu_q) / sig_p).pow(2)).sum()
@@ -185,8 +186,8 @@ class Net(ModuleWrapper):
         self.priors = self.priors = {
             'prior_mu': 0,
             'prior_sigma': 0.1,
-            'posterior_mu_initial': (0, 0.1),  # (mean, std) normal_
-            'posterior_rho_initial': (-5, 0.1),  # (mean, std) normal_
+            'posterior_mu_initial': (0, 0.1),
+            'posterior_rho_initial': (-5, 0.1),
         }
         self.act = nn.Softplus
         

@@ -11,8 +11,6 @@ from torchvision.ops.misc import Conv2dNormActivation, SqueezeExcitation
 
 
 class SimpleStemIN(Conv2dNormActivation):
-    """Simple stem for ImageNet: 3x3, BN, ReLU."""
-
     def __init__(
         self,
         width_in: int,
@@ -26,8 +24,6 @@ class SimpleStemIN(Conv2dNormActivation):
 
 
 class BottleneckTransform(nn.Sequential):
-    """Bottleneck transformation: 1x1, 3x3 [+SE], 1x1."""
-
     def __init__(
         self,
         width_in: int,
@@ -51,8 +47,6 @@ class BottleneckTransform(nn.Sequential):
         )
 
         if se_ratio:
-            # The SE reduction ratio is defined with respect to the
-            # beginning of the block
             width_se_out = int(round(se_ratio * width_in))
             layers["se"] = SqueezeExcitation(
                 input_channels=w_b,
@@ -67,8 +61,6 @@ class BottleneckTransform(nn.Sequential):
 
 
 class ResBottleneckBlock(nn.Module):
-    """Residual bottleneck block: x + F(x), F = bottleneck transform."""
-
     def __init__(
         self,
         width_in: int,
@@ -81,8 +73,6 @@ class ResBottleneckBlock(nn.Module):
         se_ratio: Optional[float] = None,
     ) -> None:
         super().__init__()
-
-        # Use skip connection with projection if shape changes
         self.proj = None
         should_proj = (width_in != width_out) or (stride != 1)
         if should_proj:
@@ -110,8 +100,6 @@ class ResBottleneckBlock(nn.Module):
 
 
 class AnyStage(nn.Sequential):
-    """AnyNet stage (sequence of blocks w/ the same output shape)."""
-
     def __init__(
         self,
         width_in: int,
@@ -169,21 +157,18 @@ class BlockParams:
         w_m: float,
         group_width: int,
         bottleneck_multiplier: float = 1.0,
-        se_ratio: Optional[float] = None,
-        **kwargs: Any,
+            se_ratio: Optional[float] = None
     ) -> "BlockParams":
         QUANT = 8
         STRIDE = 2
 
         if w_a < 0 or w_0 <= 0 or w_m <= 1 or w_0 % 8 != 0:
             raise ValueError("Invalid RegNet settings")
-        # Compute the block widths. Each stage has one unique block width
         widths_cont = torch.arange(depth) * w_a + w_0
         block_capacity = torch.round(torch.log(widths_cont / w_0) / math.log(w_m))
         block_widths = (torch.round(torch.divide(w_0 * torch.pow(w_m, block_capacity), QUANT)) * QUANT).int().tolist()
         num_stages = len(set(block_widths))
 
-        # Convert to per stage parameters
         split_helper = zip(
             block_widths + [0],
             [0] + block_widths,
@@ -199,7 +184,6 @@ class BlockParams:
         bottleneck_multipliers = [bottleneck_multiplier] * num_stages
         group_widths = [group_width] * num_stages
 
-        # Adjust the compatibility of stage widths and group widths
         stage_widths, group_widths = cls._adjust_widths_groups_compatibilty(
             stage_widths, bottleneck_multipliers, group_widths
         )
@@ -220,11 +204,9 @@ class BlockParams:
     def _adjust_widths_groups_compatibilty(
         stage_widths: List[int], bottleneck_ratios: List[float], group_widths: List[int]
     ) -> Tuple[List[int], List[int]]:
-        # Compute all widths for the current settings
         widths = [int(w * b) for w, b in zip(stage_widths, bottleneck_ratios)]
         group_widths_min = [min(g, w_bot) for g, w_bot in zip(group_widths, widths)]
 
-        # Compute the adjusted widths so that stage and group widths fit
         ws_bot = [_make_divisible(w_bot, g) for w_bot, g in zip(widths, group_widths_min)]
         stage_widths = [int(w_bot / b) for w_bot, b in zip(ws_bot, bottleneck_ratios)]
         return stage_widths, group_widths_min
@@ -252,9 +234,8 @@ class Net(nn.Module):
         if activation is None:
             activation = nn.ReLU
 
-        # Ad hoc stem
         self.stem = stem_type(
-            3,  # width_in
+            3,
             stem_width,
             norm_layer,
             activation,
@@ -296,10 +277,8 @@ class Net(nn.Module):
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(in_features=current_width, out_features=num_classes)
 
-        # Performs ResNet-style weight initialization
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
-                # Note that there is no bias due to BN
                 fan_out = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
                 nn.init.normal_(m.weight, mean=0.0, std=math.sqrt(2.0 / fan_out))
             elif isinstance(m, nn.BatchNorm2d):

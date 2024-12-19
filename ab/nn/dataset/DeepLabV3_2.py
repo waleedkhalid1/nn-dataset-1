@@ -1,9 +1,8 @@
 from collections import OrderedDict
 from typing import Callable, Dict, List, Optional, Sequence, Type, Union
-
 import torch
-from torch import nn, Tensor
 import torch.nn.functional as F
+from torch import nn, Tensor
 
 
 class DeepLabHead(nn.Sequential):
@@ -150,7 +149,6 @@ class BasicBlock(nn.Module):
 
 
 class Bottleneck(nn.Module):
-
     expansion: int = 4
 
     def __init__(
@@ -250,9 +248,9 @@ class ResNet(nn.Module):
         if zero_init_residual:
             for m in self.modules():
                 if isinstance(m, Bottleneck) and m.bn3.weight is not None:
-                    nn.init.constant_(m.bn3.weight, 0)  # type: ignore[arg-type]
+                    nn.init.constant_(m.bn3.weight, 0)
                 elif isinstance(m, BasicBlock) and m.bn2.weight is not None:
-                    nn.init.constant_(m.bn2.weight, 0)  # type: ignore[arg-type]
+                    nn.init.constant_(m.bn2.weight, 0)
 
     def _make_layer(
         self,

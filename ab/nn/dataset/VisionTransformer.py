@@ -17,8 +17,6 @@ class ConvStemConfig(NamedTuple):
 
 
 class MLPBlock(MLP):
-    """Transformer MLP block."""
-
     _version = 2
 
     def __init__(self, in_dim: int, mlp_dim: int, dropout: float):
@@ -43,7 +41,6 @@ class MLPBlock(MLP):
         version = local_metadata.get("version", None)
 
         if version is None or version < 2:
-            # Replacing legacy MLPBlock with MLP. See https://github.com/pytorch/vision/pull/6053
             for i in range(2):
                 for type in ["weight", "bias"]:
                     old_key = f"{prefix}linear_{i+1}.{type}"
@@ -63,8 +60,6 @@ class MLPBlock(MLP):
 
 
 class EncoderBlock(nn.Module):
-    """Transformer encoder block."""
-
     def __init__(
         self,
         num_heads: int,
@@ -77,12 +72,10 @@ class EncoderBlock(nn.Module):
         super().__init__()
         self.num_heads = num_heads
 
-        # Attention block
         self.ln_1 = norm_layer(hidden_dim)
         self.self_attention = nn.MultiheadAttention(hidden_dim, num_heads, dropout=attention_dropout, batch_first=True)
         self.dropout = nn.Dropout(dropout)
 
-        # MLP block
         self.ln_2 = norm_layer(hidden_dim)
         self.mlp = MLPBlock(hidden_dim, mlp_dim, dropout)
 
@@ -99,8 +92,6 @@ class EncoderBlock(nn.Module):
 
 
 class Encoder(nn.Module):
-    """Transformer Model Encoder for sequence to sequence translation."""
-
     def __init__(
         self,
         seq_length: int,
@@ -113,9 +104,7 @@ class Encoder(nn.Module):
         norm_layer: Callable[..., torch.nn.Module] = partial(nn.LayerNorm, eps=1e-6),
     ):
         super().__init__()
-        # Note that batch_size is on the first dim because
-        # we have batch_first=True in nn.MultiAttention() by default
-        self.pos_embedding = nn.Parameter(torch.empty(1, seq_length, hidden_dim).normal_(std=0.02))  # from BERT
+        self.pos_embedding = nn.Parameter(torch.empty(1, seq_length, hidden_dim).normal_(std=0.02))
         self.dropout = nn.Dropout(dropout)
         layers: OrderedDict[str, nn.Module] = OrderedDict()
         for i in range(num_layers):
@@ -137,8 +126,6 @@ class Encoder(nn.Module):
 
 
 class Net(nn.Module):
-    """Vision Transformer as per https://arxiv.org/abs/2010.11929."""
-
     def __init__(
         self,
         image_size: int = 299,
@@ -167,7 +154,6 @@ class Net(nn.Module):
         self.norm_layer = norm_layer
 
         if conv_stem_configs is not None:
-            # As per https://arxiv.org/abs/2106.14881
             seq_proj = nn.Sequential()
             prev_channels = 3
             for i, conv_stem_layer_config in enumerate(conv_stem_configs):
@@ -194,7 +180,6 @@ class Net(nn.Module):
 
         seq_length = (image_size // patch_size) ** 2
 
-        # Add a class token
         self.class_token = nn.Parameter(torch.zeros(1, 1, hidden_dim))
         seq_length += 1
 
@@ -221,13 +206,11 @@ class Net(nn.Module):
         self.heads = nn.Sequential(heads_layers)
 
         if isinstance(self.conv_proj, nn.Conv2d):
-            # Init the patchify stem
             fan_in = self.conv_proj.in_channels * self.conv_proj.kernel_size[0] * self.conv_proj.kernel_size[1]
             nn.init.trunc_normal_(self.conv_proj.weight, std=math.sqrt(1 / fan_in))
             if self.conv_proj.bias is not None:
                 nn.init.zeros_(self.conv_proj.bias)
         elif self.conv_proj.conv_last is not None and isinstance(self.conv_proj.conv_last, nn.Conv2d):
-            # Init the last 1x1 conv of the conv stem
             nn.init.normal_(
                 self.conv_proj.conv_last.weight, mean=0.0, std=math.sqrt(2.0 / self.conv_proj.conv_last.out_channels)
             )
@@ -250,34 +233,17 @@ class Net(nn.Module):
         torch._assert(w == self.image_size, f"Wrong image width! Expected {self.image_size} but got {w}!")
         n_h = h // p
         n_w = w // p
-
-        # (n, c, h, w) -> (n, hidden_dim, n_h, n_w)
         x = self.conv_proj(x)
-        # (n, hidden_dim, n_h, n_w) -> (n, hidden_dim, (n_h * n_w))
         x = x.reshape(n, self.hidden_dim, n_h * n_w)
-
-        # (n, hidden_dim, (n_h * n_w)) -> (n, (n_h * n_w), hidden_dim)
-        # The self attention layer expects inputs in the format (N, S, E)
-        # where S is the source sequence length, N is the batch size, E is the
-        # embedding dimension
         x = x.permute(0, 2, 1)
-
         return x
 
     def forward(self, x: torch.Tensor):
-        # Reshape and permute the input tensor
         x = self._process_input(x)
         n = x.shape[0]
-
-        # Expand the class token to the full batch
         batch_class_token = self.class_token.expand(n, -1, -1)
         x = torch.cat([batch_class_token, x], dim=1)
-
         x = self.encoder(x)
-
-        # Classifier "token" as used by standard language architectures
         x = x[:, 0]
-
         x = self.heads(x)
-
         return x

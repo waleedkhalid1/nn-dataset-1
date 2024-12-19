@@ -1,4 +1,4 @@
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, Optional
 
 import torch
 import torch.nn as nn
@@ -10,15 +10,9 @@ from torchvision.models._utils import _ovewrite_named_param
 def channel_shuffle(x: Tensor, groups: int) -> Tensor:
     batchsize, num_channels, height, width = x.size()
     channels_per_group = num_channels // groups
-
-    # reshape
     x = x.view(batchsize, groups, channels_per_group, height, width)
-
     x = torch.transpose(x, 1, 2).contiguous()
-
-    # flatten
     x = x.view(batchsize, num_channels, height, width)
-
     return x
 
 
@@ -110,10 +104,7 @@ class Net(nn.Module):
             nn.ReLU(inplace=True),
         )
         input_channels = output_channels
-
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
-
-        # Static annotations for mypy
         self.stage2: nn.Sequential
         self.stage3: nn.Sequential
         self.stage4: nn.Sequential
@@ -135,14 +126,13 @@ class Net(nn.Module):
         self.fc = nn.Linear(output_channels, num_classes)
 
     def _forward_impl(self, x: Tensor) -> Tensor:
-        # See note [TorchScript super()]
         x = self.conv1(x)
         x = self.maxpool(x)
         x = self.stage2(x)
         x = self.stage3(x)
         x = self.stage4(x)
         x = self.conv5(x)
-        x = x.mean([2, 3])  # globalpool
+        x = x.mean([2, 3])
         x = self.fc(x)
         return x
 

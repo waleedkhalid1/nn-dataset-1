@@ -1,11 +1,8 @@
-from functools import partial
 from collections import OrderedDict
-from typing import Any, Callable, Dict, List, Optional, Sequence, Type, Union
-
+import torch.nn.functional as F
 import torch
 from torch import nn, Tensor
-import torch.nn.functional as F
-
+from typing import Callable, Dict, List, Optional, Sequence, Type, Union
 
 
 class DeepLabHead(nn.Sequential):
@@ -252,9 +249,9 @@ class ResNet(nn.Module):
         if zero_init_residual:
             for m in self.modules():
                 if isinstance(m, Bottleneck) and m.bn3.weight is not None:
-                    nn.init.constant_(m.bn3.weight, 0)  # type: ignore[arg-type]
+                    nn.init.constant_(m.bn3.weight, 0)
                 elif isinstance(m, BasicBlock) and m.bn2.weight is not None:
-                    nn.init.constant_(m.bn2.weight, 0)  # type: ignore[arg-type]
+                    nn.init.constant_(m.bn2.weight, 0)
 
     def _make_layer(
         self,
@@ -325,8 +322,7 @@ class Net(nn.Module):
             self,
             backbone: nn.Module = ResNet(Bottleneck, [3, 4, 6, 3], num_classes=100, replace_stride_with_dilation=[False, True, True]),
             classifier: nn.Module = DeepLabHead(2048, 21),
-            aux_classifier: Optional[nn.Module] = None,
-            **kwargs
+            aux_classifier: Optional[nn.Module] = None
     ) -> None:
         super(Net, self).__init__()
         self.backbone = backbone

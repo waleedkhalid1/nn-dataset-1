@@ -1,10 +1,12 @@
 from collections import OrderedDict
+
 import torch
-from torch._C import _disabled_torch_function_impl
 import torch.nn as nn
-from torch.nn import init, Module, Conv2d, Linear
 import torch.nn.functional as F
+from torch._C import _disabled_torch_function_impl
+from torch.nn import init, Module, Conv2d, Linear
 from torch.nn.functional import relu, max_pool2d
+
 
 def _retrieve_elements_from_indices(tensor, indices):
     flattened_tensor = tensor.flatten(start_dim=-2)
@@ -20,9 +22,6 @@ def complex_relu(input):
 
 def complex_max_pool2d(input,kernel_size, stride=None, padding=0,
                                 dilation=1, ceil_mode=False, return_indices=False):
-    '''
-    Perform complex max pooling by selecting on the absolute value on the complex values.
-    '''
     absolute_value, indices =  max_pool2d(
                                input.abs(), 
                                kernel_size = kernel_size, 
@@ -32,19 +31,14 @@ def complex_max_pool2d(input,kernel_size, stride=None, padding=0,
                                ceil_mode = ceil_mode, 
                                return_indices = True
                             )
-    # performs the selection on the absolute values
     absolute_value = absolute_value.type(torch.complex64)
-    # retrieve the corresonding phase value using the indices
-    # unfortunately, the derivative for 'angle' is not implemented
     angle = torch.atan2(input.imag,input.real)
-    # get only the phase values selected by max pool
     angle = _retrieve_elements_from_indices(angle, indices)
     return absolute_value \
            * (torch.cos(angle).type(torch.complex64)+1j*torch.sin(angle).type(torch.complex64))
 
 
 class _ParameterMeta(torch._C._TensorMeta):
-    # Make `isinstance(t, Parameter)` return True for custom tensor instances that have the _is_param flag.
     def __instancecheck__(self, instance):
         if self is Parameter:
             if isinstance(instance, torch.Tensor) and getattr(
@@ -59,11 +53,8 @@ class Parameter(torch.Tensor, metaclass=_ParameterMeta):
         if data is None:
             data = torch.empty(0)
         if type(data) is torch.Tensor or type(data) is Parameter:
-            # For ease of BC maintenance, keep this path for standard Tensor.
-            # Eventually (tm), we should change the behavior for standard Tensor to match.
             return torch.Tensor._make_subclass(cls, data, requires_grad)
 
-        # Path for custom tensors: set a flag on the instance to indicate parameter-ness.
         t = data.detach().requires_grad_(requires_grad)
         if type(t) is not type(data):
             raise RuntimeError(
@@ -76,8 +67,6 @@ class Parameter(torch.Tensor, metaclass=_ParameterMeta):
         t._is_param = True
         return t
 
-    # Note: the 3 methods below only apply to standard Tensor. Parameters of custom tensor types
-    # are still considered that custom tensor type and these methods will not be called for them.
     def __deepcopy__(self, memo):
         if id(self) in memo:
             return memo[id(self)]
@@ -94,7 +83,6 @@ class Parameter(torch.Tensor, metaclass=_ParameterMeta):
     def __reduce_ex__(self, proto):
         state = torch._utils._get_obj_state(self)
 
-        # See Note [Don't serialize hooks]
         hooks = OrderedDict()
         if not state:
             return (
@@ -165,14 +153,12 @@ class ComplexBatchNorm2d(_ComplexBatchNorm):
         if self.training and self.track_running_stats:
             if self.num_batches_tracked is not None:
                 self.num_batches_tracked += 1
-                if self.momentum is None:  # use cumulative moving average
+                if self.momentum is None:
                     exponential_average_factor = 1.0 / float(self.num_batches_tracked)
-                else:  # use exponential moving average
+                else:
                     exponential_average_factor = self.momentum
 
         if self.training or (not self.training and not self.track_running_stats):
-            # calculate mean of real and imaginary part
-            # mean does not support automatic differentiation for outputs with complex dtype.
             mean_r = input.real.mean([0, 2, 3]).type(torch.complex64)
             mean_i = input.imag.mean([0, 2, 3]).type(torch.complex64)
             mean = mean_r + 1j*mean_i
@@ -180,7 +166,6 @@ class ComplexBatchNorm2d(_ComplexBatchNorm):
             mean = self.running_mean
 
         if self.training and self.track_running_stats:
-            # update running mean
             with torch.no_grad():
                 self.running_mean = exponential_average_factor * mean\
                     + (1 - exponential_average_factor) * self.running_mean
@@ -188,7 +173,6 @@ class ComplexBatchNorm2d(_ComplexBatchNorm):
         input = input - mean[None, :, None, None]
 
         if self.training or (not self.training and not self.track_running_stats):
-            # Elements of the covariance matrix (biased for train)
             n = input.numel() / input.size(1)
             Crr = 1./n*input.real.pow(2).sum(dim=[0,2,3])+self.eps
             Cii = 1./n*input.imag.pow(2).sum(dim=[0,2,3])+self.eps
@@ -196,7 +180,7 @@ class ComplexBatchNorm2d(_ComplexBatchNorm):
         else:
             Crr = self.running_covar[:,0]+self.eps
             Cii = self.running_covar[:,1]+self.eps
-            Cri = self.running_covar[:,2]#+self.eps 
+            Cri = self.running_covar[:, 2]
        
         if self.training and self.track_running_stats:
             with torch.no_grad():
@@ -209,7 +193,6 @@ class ComplexBatchNorm2d(_ComplexBatchNorm):
                 self.running_covar[:,2] = exponential_average_factor * Cri * n / (n - 1)\
                     + (1 - exponential_average_factor) * self.running_covar[:,2]
                 
-        # calculate the inverse square root the covariance matrix
         det = Crr*Cii-Cri.pow(2)
         s = torch.sqrt(det)
         t = torch.sqrt(Cii+Crr + 2 * s)

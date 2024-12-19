@@ -28,7 +28,6 @@ class _MBConvConfig:
 
 
 class MBConvConfig(_MBConvConfig):
-    # Stores information listed at Table 1 of the EfficientNet paper & Table 4 of the EfficientNetV2 paper
     def __init__(
         self,
         expand_ratio: float,
@@ -54,7 +53,6 @@ class MBConvConfig(_MBConvConfig):
 
 
 class FusedMBConvConfig(_MBConvConfig):
-    # Stores information listed at Table 4 of the EfficientNetV2 paper
     def __init__(
         self,
         expand_ratio: float,
@@ -87,8 +85,6 @@ class MBConv(nn.Module):
 
         layers: List[nn.Module] = []
         activation_layer = nn.SiLU
-
-        # expand
         expanded_channels = cnf.adjust_channels(cnf.input_channels, cnf.expand_ratio)
         if expanded_channels != cnf.input_channels:
             layers.append(
@@ -101,7 +97,6 @@ class MBConv(nn.Module):
                 )
             )
 
-        # depthwise
         layers.append(
             Conv2dNormActivation(
                 expanded_channels,
@@ -114,11 +109,9 @@ class MBConv(nn.Module):
             )
         )
 
-        # squeeze and excitation
         squeeze_channels = max(1, cnf.input_channels // 4)
         layers.append(se_layer(expanded_channels, squeeze_channels, activation=partial(nn.SiLU, inplace=True)))
 
-        # project
         layers.append(
             Conv2dNormActivation(
                 expanded_channels, cnf.out_channels, kernel_size=1, norm_layer=norm_layer, activation_layer=None
@@ -156,7 +149,6 @@ class FusedMBConv(nn.Module):
 
         expanded_channels = cnf.adjust_channels(cnf.input_channels, cnf.expand_ratio)
         if expanded_channels != cnf.input_channels:
-            # fused expand
             layers.append(
                 Conv2dNormActivation(
                     cnf.input_channels,
@@ -168,7 +160,6 @@ class FusedMBConv(nn.Module):
                 )
             )
 
-            # project
             layers.append(
                 Conv2dNormActivation(
                     expanded_channels, cnf.out_channels, kernel_size=1, norm_layer=norm_layer, activation_layer=None
@@ -234,7 +225,6 @@ class Net(nn.Module):
 
         layers: List[nn.Module] = []
 
-        # building first layer
         firstconv_output_channels = inverted_residual_setting[0].input_channels
         layers.append(
             Conv2dNormActivation(
@@ -242,21 +232,17 @@ class Net(nn.Module):
             )
         )
 
-        # building inverted residual blocks
         total_stage_blocks = sum(cnf.num_layers for cnf in inverted_residual_setting)
         stage_block_id = 0
         for cnf in inverted_residual_setting:
             stage: List[nn.Module] = []
             for _ in range(cnf.num_layers):
-                # copy to avoid modifications. shallow copy is enough
                 block_cnf = copy.copy(cnf)
 
-                # overwrite info if not the first conv in the stage
                 if stage:
                     block_cnf.input_channels = block_cnf.out_channels
                     block_cnf.stride = 1
 
-                # adjust stochastic depth probability based on the depth of the stage block
                 sd_prob = stochastic_depth_prob * float(stage_block_id) / total_stage_blocks
 
                 stage.append(block_cnf.block(block_cnf, sd_prob, norm_layer))
@@ -264,7 +250,6 @@ class Net(nn.Module):
 
             layers.append(nn.Sequential(*stage))
 
-        # building last several layers
         lastconv_input_channels = inverted_residual_setting[-1].out_channels
         lastconv_output_channels = last_channel if last_channel is not None else 4 * lastconv_input_channels
         layers.append(
@@ -299,12 +284,9 @@ class Net(nn.Module):
 
     def _forward_impl(self, x: Tensor) -> Tensor:
         x = self.features(x)
-
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
-
         x = self.classifier(x)
-
         return x
 
     def forward(self, x: Tensor) -> Tensor:

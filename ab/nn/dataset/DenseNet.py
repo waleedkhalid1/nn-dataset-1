@@ -29,34 +29,31 @@ class _DenseLayer(nn.Module):
 
     def bn_function(self, inputs: List[Tensor]) -> Tensor:
         concated_features = torch.cat(inputs, 1)
-        bottleneck_output = self.conv1(self.relu1(self.norm1(concated_features)))  # noqa: T484
+        bottleneck_output = self.conv1(self.relu1(self.norm1(concated_features)))
         return bottleneck_output
 
-    # todo: rewrite when torchscript supports any
     def any_requires_grad(self, input: List[Tensor]) -> bool:
         for tensor in input:
             if tensor.requires_grad:
                 return True
         return False
 
-    @torch.jit.unused  # noqa: T484
+    @torch.jit.unused
     def call_checkpoint_bottleneck(self, input: List[Tensor]) -> Tensor:
         def closure(*inputs):
             return self.bn_function(inputs)
 
         return cp.checkpoint(closure, *input, use_reentrant=False)
 
-    @torch.jit._overload_method  # noqa: F811
-    def forward(self, input: List[Tensor]) -> Tensor:  # noqa: F811
+    @torch.jit._overload_method
+    def forward(self, input: List[Tensor]) -> Tensor:
         pass
 
-    @torch.jit._overload_method  # noqa: F811
-    def forward(self, input: Tensor) -> Tensor:  # noqa: F811
+    @torch.jit._overload_method
+    def forward(self, input: Tensor) -> Tensor:
         pass
 
-    # torchscript does not yet support *args, so we overload method
-    # allowing it to take either a List[Tensor] or single Tensor
-    def forward(self, input: Tensor) -> Tensor:  # noqa: F811
+    def forward(self, input: Tensor) -> Tensor:
         if isinstance(input, Tensor):
             prev_features = [input]
         else:
@@ -116,20 +113,6 @@ class _Transition(nn.Sequential):
         self.pool = nn.AvgPool2d(kernel_size=2, stride=2)
 
 class Net(nn.Module):
-    r"""Densenet-BC model class, based on
-    `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`_.
-
-    Args:
-        growth_rate (int) - how many filters to add each layer (`k` in paper)
-        block_config (list of 4 ints) - how many layers in each pooling block
-        num_init_features (int) - the number of filters to learn in the first convolution layer
-        bn_size (int) - multiplicative factor for number of bottle neck layers
-          (i.e. bn_size * k features in the bottleneck layer)
-        drop_rate (float) - dropout rate after each dense layer
-        num_classes (int) - number of classification classes
-        memory_efficient (bool) - If True, uses checkpointing. Much more memory efficient,
-          but slower. Default: *False*. See `"paper" <https://arxiv.org/pdf/1707.06990.pdf>`_.
-    """
 
     def __init__(
         self,
@@ -144,7 +127,6 @@ class Net(nn.Module):
 
         super().__init__()
 
-        # First convolution
         self.features = nn.Sequential(
             OrderedDict(
                 [
@@ -156,7 +138,6 @@ class Net(nn.Module):
             )
         )
 
-        # Each denseblock
         num_features = num_init_features
         for i, num_layers in enumerate(block_config):
             block = _DenseBlock(
@@ -174,13 +155,8 @@ class Net(nn.Module):
                 self.features.add_module("transition%d" % (i + 1), trans)
                 num_features = num_features // 2
 
-        # Final batch norm
         self.features.add_module("norm5", nn.BatchNorm2d(num_features))
-
-        # Linear layer
         self.classifier = nn.Linear(num_features, num_classes)
-
-        # Official init from torch repo.
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(m.weight)
@@ -200,13 +176,7 @@ class Net(nn.Module):
 
 
 def _load_state_dict(model: nn.Module, weights: WeightsEnum, progress: bool) -> None:
-    # '.'s are no longer allowed in module names, but previous _DenseLayer
-    # has keys 'norm.1', 'relu.1', 'conv.1', 'norm.2', 'relu.2', 'conv.2'.
-    # They are also in the checkpoints in model_urls. This pattern is used
-    # to find such keys.
-    pattern = re.compile(
-        r"^(.*denselayer\d+\.(?:norm|relu|conv))\.((?:[12])\.(?:weight|bias|running_mean|running_var))$"
-    )
+    pattern = re.compile(r"^(.*denselayer\d+\.(?:norm|relu|conv))\.((?:[12])\.(?:weight|bias|running_mean|running_var))$")
 
     state_dict = weights.get_state_dict(progress=progress, check_hash=True)
     for key in list(state_dict.keys()):
