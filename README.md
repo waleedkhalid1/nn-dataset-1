@@ -22,7 +22,7 @@ docker run -v /a/mm:<nn-dataset path> abrainone/ai-linux bash -c "PYTHONPATH=/a/
 
 ## Usage
 
-The primary goal of NN-Dataset project is to provide flexibility for dynamically combining various datasets, metrics, and models. It is designed to facilitate the validation of neural network performance across different training hyperparameter combinations and data transformation algorithms, while also generating performance statistics. It is primarily developed to support the <a href="https://github.com/ABrain-One/nn-gen"> NN-Gen</a> project.
+The primary goal of NN-Dataset project is to provide flexibility for dynamically combining various datasets, metrics, and models. It is designed to facilitate the verification of neural network performance under various combinations of training hyperparameters and data transformation algorithms, by automatically generating performance statistics. It is primarily developed to support the <a href="https://github.com/ABrain-One/nn-gen"> NN-Gen</a> project.
 
 The main usage scenario:
 1. Add a new neural network model into the `ab/nn/datasets` directory.
