@@ -48,10 +48,8 @@ def transform():
     Define the transformation to be applied to the CIFAR-10 dataset.
     :return: A transformation pipeline using torchvision.transforms.
     """
-    transform = transforms.Compose([
+    return transforms.Compose([
         Reshape(),
         NormalizeToFloat(),
         transforms.ToTensor(),
-        ToComplex64()  
-    ])
-    return transform
+        ToComplex64()])

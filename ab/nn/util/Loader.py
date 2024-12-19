@@ -13,7 +13,7 @@ class Loader:
         transform = None
         if transform_path:
             transform_module, transform_func = transform_path.rsplit('.', 1)
-            transform = getattr(__import__(transform_module, fromlist=[transform_func]), transform_func)(**kwargs)
+            transform = getattr(__import__(transform_module, fromlist=[transform_func]), transform_func)()
 
         # Dynamically load the loader function
         loader_module, loader_func = loader_path.rsplit('.', 1)

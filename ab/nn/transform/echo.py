@@ -1,7 +1,5 @@
 import torchvision.transforms as transforms
 
-def transform(**kwargs):
-    transform = transforms.Compose([
-        transforms.ToTensor()
-    ])
-    return transform
+def transform():
+    return transforms.Compose([
+        transforms.ToTensor()])
