@@ -315,7 +315,7 @@ vgg_cfgs: Dict[str, List[Union[str, int]]] = {
 class Net(nn.Module):
     def __init__(self) -> None:
         super().__init__()
-        backbone : List[nn.Module] = [ResNet(Bottleneck, [3, 4, 6, 3], num_classes=100, replace_stride_with_dilation=[False, True, True]), FCNHead(2048, 21)]
+        backbone : List[nn.Module] = [VGG(make_layers(vgg_cfgs["D"]),num_classes=100),FCNHead(512, 21)]
         self.backbone = backbone[0].features
         self.classifier = backbone[1]
         self.__setattr__('exclusive',['classifier'])

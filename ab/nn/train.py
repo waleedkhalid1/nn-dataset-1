@@ -127,18 +127,14 @@ def main(config: str | list ='', n_epochs: int | list = 1, n_optuna_trials: int 
         print(f"Configurations found for training for {epoch} epochs:")
         for idx, sub_config in enumerate(sub_configs, start=1):
             print(f"{idx}. {sub_config}")
-
-        for config_name in sub_configs:
-            sub_configs = [config_name]
-
-            for sub_config in sub_configs:
+        for sub_config in sub_configs:
                 try:
                     task, dataset_name, metric, transform_name, model_name = sub_config.split('-')
                 except (ValueError, IndexError) as e:
                     print(f"Skipping config '{sub_config}': failed to parse. Error: {e}")
                     continue
 
-                n_optuna_trials_left = count_trials_left(config_name, model_name, epoch, n_optuna_trials)
+                n_optuna_trials_left = count_trials_left(sub_config, model_name, epoch, n_optuna_trials)
                 if n_optuna_trials_left == 0:
                     print(f"The model {model_name} has already passed all trials for task: {task}, dataset: {dataset_name},"
                           f" metric: {metric}, transform: {transform_name}, epochs: {epoch}")
@@ -217,6 +213,6 @@ if __name__ == "__main__":
     # optuna_trials = "+1"  # Try once more. For quick verification of model training after code modifications.
     # optuna_trials = "+5"  # Try 5 more times. To thoroughly verify model training after code modifications.
 
-    ''' !!! Commit updated statistics whenever new results are available !!! '''
+    ''' !!! Commit updated statistics whenever it's available !!! '''
     # Run training with Optuna: detects and saves performance metric values for a varying number of epochs
     main(conf, [1, 2, 5], optuna_trials)

@@ -311,11 +311,10 @@ vgg_cfgs: Dict[str, List[Union[str, int]]] = {
     "E": [64, 64, "M", 128, 128, "M", 256, 256, 256, 256, "M", 512, 512, 512, 512, "M", 512, 512, 512, 512, "M"],
 }
 
-
 class Net(nn.Module):
     def __init__(self) -> None:
         super().__init__()
-        backbone : List[nn.Module] = [ResNet(Bottleneck, [3, 4, 6, 3], num_classes=100, replace_stride_with_dilation=[False, True, True]), FCNHead(2048, 21)]
+        backbone : List[nn.Module] = [ResNet(Bottleneck, [3, 4, 23, 3], num_classes = 100, replace_stride_with_dilation=[False, True, True]),FCNHead(2048, 21)]
         self.backbone = backbone[0].features
         self.classifier = backbone[1]
         self.__setattr__('exclusive',['classifier'])
