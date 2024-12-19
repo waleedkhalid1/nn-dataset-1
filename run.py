@@ -10,8 +10,8 @@ if __name__ == "__main__":
 
     # Number of Optuna trial examples.
     optuna_trials = 100  # 100 trials
-    # optuna_trials = "+1"  # Try once more. For quick verification of model training after code modifications.
-    # optuna_trials = "+5"  # Try 5 more times. To thoroughly verify model training after code modifications.
+    # optuna_trials = "+1"  # Try once more: for quick verification of model training process after code modifications.
+    # optuna_trials = "+5"  # Try 5 more times: to thoroughly verify model training after code modifications.
 
     ''' !!! Commit updated statistics whenever it's generated !!! '''
     # Run training with Optuna: detects and saves performance metric values for a varying number of epochs
