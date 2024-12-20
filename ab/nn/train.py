@@ -5,6 +5,7 @@ import optuna
 
 from ab.nn.util.Loader import Loader
 from ab.nn.util.Train import Train
+from ab.nn.util.Const import stat_dir
 
 
 def ensure_directory_exists(model_dir):
@@ -18,14 +19,13 @@ def ensure_directory_exists(model_dir):
         os.makedirs(directory)
 
 
-def save_results(config_model_name, study, n_epochs):
+def save_results(model_dir, study, config_model_name):
     """
     Save Optuna study results for a given model in JSON-format.
-    :param config_model_name: Config (Task, Dataset, Normalization) and Model name.
+    :param model_dir: Directory for the model statistics.
     :param study: Optuna study object.
-    :param n_epochs: Number of epochs.
+    :param config_model_name: Config (Task, Dataset, Normalization) and Model name.
     """
-    model_dir = f"stat/{config_model_name}/{n_epochs}/"
     ensure_directory_exists(model_dir)
 
     # Save all trials as trials.json
@@ -65,21 +65,18 @@ def save_results(config_model_name, study, n_epochs):
     print(f"Trials for {config_model_name} saved at {model_dir}")
 
 
-def count_trials_left(config_model_name, model_name, n_epochs, n_optuna_trials):
+def count_trials_left(trial_file, model_name, n_optuna_trials):
     """
     Calculates the remaining Optuna trials based on the completed ones. Checks for a "trials.json" file in the
     specified directory to determine how many trials have been completed, and returns the number of trials left.
-    :param config_model_name: Configuration model name.
+    :param trial_file: Trial file path
     :param model_name: Name of the model.
-    :param n_epochs: Number of epochs.
     :param n_optuna_trials: Total number of Optuna trials.
     :return: n_trials_left: Remaining trials.
     """
-    model_dir = f"stat/{config_model_name}/{n_epochs}/"
-    path = f"{model_dir}/trials.json"
     n_passed_trials = 0
-    if os.path.exists(path):
-        with open(path, "r") as f:
+    if os.path.exists(trial_file):
+        with open(trial_file, "r") as f:
             trials = json.load(f)
             n_passed_trials = len(trials)
     n_trials_left = int(n_optuna_trials) if isinstance(n_optuna_trials, str) else max(0, n_optuna_trials - n_passed_trials)
@@ -88,30 +85,32 @@ def count_trials_left(config_model_name, model_name, n_epochs, n_optuna_trials):
     return n_trials_left
 
 
-def extract_all_configs(config):
+def extract_all_configs(config) -> list[str]:
     """
     Collect models matching the given configuration prefix
     """
-    return [sub_config
-            for sub_config in os.listdir("stat")
-            if sub_config.startswith(config) and os.path.isdir(os.path.join("stat", sub_config))]
+    l = list(set([sub_config
+                  for sub_config in os.listdir(stat_dir)
+                  if sub_config.startswith(config) and os.path.isdir(os.path.join(stat_dir, sub_config))]))
+    l.sort()
+    return l
 
 
 # todo: move to the ab.nn.util.Start and request information from database
-def provide_all_configs(config):
-    if not isinstance(config, list):
-        config = [config]
+def provide_all_configs(config) -> tuple[str]:
+    if not isinstance(config, tuple):
+        config = (config,)
     all_configs = []
     for c in config:
         all_configs = all_configs + extract_all_configs(c)
-    return all_configs
+    return tuple(all_configs)
 
 
-def main(config: str | list ='', n_epochs: int | list = 1, n_optuna_trials: int | str = 100):
+def main(config: str | tuple = '', n_epochs: int | tuple = (1, 2, 5), n_optuna_trials: int | str = 100):
     """
     Main function for training models using Optuna optimization.
     :param config: Configuration specifying the models to train. The default value for all configurations.
-    :param n_epochs: Number or list of numbers of epochs for training.
+    :param n_epochs: Number or tuple of numbers of epochs for training.
     :param n_optuna_trials: Number of Optuna trials.
     """
 
@@ -121,20 +120,18 @@ def main(config: str | list ='', n_epochs: int | list = 1, n_optuna_trials: int 
     # Determine configurations based on the provided config
     sub_configs = provide_all_configs(config)
 
-    if not isinstance(n_epochs, list):
-        n_epochs = [n_epochs]
+    if not isinstance(n_epochs, tuple):
+        n_epochs = (n_epochs,)
     for epoch in n_epochs:
         print(f"Configurations found for training for {epoch} epochs:")
         for idx, sub_config in enumerate(sub_configs, start=1):
             print(f"{idx}. {sub_config}")
         for sub_config in sub_configs:
-                try:
-                    task, dataset_name, metric, transform_name, model_name = sub_config.split('-')
-                except (ValueError, IndexError) as e:
-                    print(f"Skipping config '{sub_config}': failed to parse. Error: {e}")
-                    continue
+                task, dataset_name, metric, transform_name, model_name = sub_config.split('-')
+                model_dir : str = os.path.join(stat_dir, sub_config, str(epoch))
+                trials_file = os.path.join(model_dir, 'trials.json')
 
-                n_optuna_trials_left = count_trials_left(sub_config, model_name, epoch, n_optuna_trials)
+                n_optuna_trials_left = count_trials_left(trials_file, model_name, n_optuna_trials)
                 if n_optuna_trials_left == 0:
                     print(f"The model {model_name} has already passed all trials for task: {task}, dataset: {dataset_name},"
                           f" metric: {metric}, transform: {transform_name}, epochs: {epoch}")
@@ -151,8 +148,7 @@ def main(config: str | list ='', n_epochs: int | list = 1, n_optuna_trials: int 
 
                     # Load dataset
                     try:
-                        output_dimension, train_set, test_set = Loader.load_dataset(loader_path, transform_path,
-                                                                                    **dataset_params)
+                        output_dimension, train_set, test_set = Loader.load_dataset(loader_path, transform_path, **dataset_params)
                     except Exception as e:
                         print(f"Skipping model '{model_name}': failed to load dataset. Error: {e}")
                         continue
@@ -165,7 +161,7 @@ def main(config: str | list ='', n_epochs: int | list = 1, n_optuna_trials: int 
                         else:
                             lr = trial.suggest_float('lr', 1e-4, 1, log=False)
                             momentum = trial.suggest_float('momentum', 0.01, 0.99, log=True)
-                        batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
+                        batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32]) # todo , 64
                         print(f"Initialize training with lr = {lr}, momentum = {momentum}, batch_size = {batch_size}")
 
                         if task == 'txt_generation':
@@ -197,22 +193,5 @@ def main(config: str | list ='', n_epochs: int | list = 1, n_optuna_trials: int 
                     study.optimize(objective, n_trials=n_optuna_trials_left)
 
                     # Save results
-                    save_results(sub_config, study, epoch)
+                    save_results(model_dir, study, sub_config)
 
-
-if __name__ == "__main__":
-    # NN pipeline configuration examples
-    conf = ''  # For all configurations
-    # conf = 'img_classification' # For all image classification configurations
-    # conf = 'img_classification-cifar10-acc-cifar10_norm' # For a particular configuration for all models
-    # conf = 'img_classification-cifar10-acc-cifar10_norm-GoogLeNet'  # For a particular configuration and model
-    # conf = ['img_classification', 'img_segmentation']  # For all image classification and segmentation configurations
-
-    # Number of Optuna trial examples.
-    optuna_trials = 100 # 100 trials
-    # optuna_trials = "+1"  # Try once more. For quick verification of model training after code modifications.
-    # optuna_trials = "+5"  # Try 5 more times. To thoroughly verify model training after code modifications.
-
-    ''' !!! Commit updated statistics whenever it's available !!! '''
-    # Run training with Optuna: detects and saves performance metric values for a varying number of epochs
-    main(conf, [1, 2, 5], optuna_trials)

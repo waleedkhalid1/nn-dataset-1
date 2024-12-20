@@ -1,3 +1,4 @@
+from ab.nn.util.Util import nn_mod
 
 class Loader:
     @staticmethod
@@ -13,10 +14,10 @@ class Loader:
         transform = None
         if transform_path:
             transform_module, transform_func = transform_path.rsplit('.', 1)
-            transform = getattr(__import__(transform_module, fromlist=[transform_func]), transform_func)()
+            transform = getattr(__import__(nn_mod(transform_module), fromlist=[transform_func]), transform_func)()
 
         # Dynamically load the loader function
         loader_module, loader_func = loader_path.rsplit('.', 1)
-        loader = getattr(__import__(loader_module, fromlist=[loader_func]), loader_func)
+        loader = getattr(__import__(nn_mod(loader_module), fromlist=[loader_func]), loader_func)
         # Call the loader function with the dynamically loaded transform
         return loader(transform=transform, **kwargs)
