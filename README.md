@@ -29,7 +29,12 @@ The main usage scenario:
 2. Create a new configuration folder for its training, e.g., `ab/nn/stat/img_classification-cifar10-acc-cifar10_norm-ComplexNet`
 3. Run the automated training process for the new model:
 ```bash
-python ab/nn/train.py
+python run.py
+```
+
+Alternatively, execute from the root of the project (for pip distribution):
+```bash
+python ab.nn.train.py
 ```
 
 ## Contribution
