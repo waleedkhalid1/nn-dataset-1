@@ -34,7 +34,7 @@ python run.py
 
 Alternatively, execute from the root of the project (provided to support pip distribution):
 ```bash
-python ab.nn.train.py
+python ab/nn/train.py
 ```
 
 ## Contribution
