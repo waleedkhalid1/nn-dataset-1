@@ -3,20 +3,10 @@ import os
 
 import optuna
 
+from ab.nn.util.Const import stat_dir
 from ab.nn.util.Loader import Loader
 from ab.nn.util.Train import Train
-from ab.nn.util.Const import stat_dir
-
-
-def ensure_directory_exists(model_dir):
-    """
-    Ensures that the directory for the given path exists.
-    :param model_dir: Path to the target directory or file.
-    :return: Creates the directory if it does not exist.
-    """
-    directory = os.path.dirname(model_dir)
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+from ab.nn.util.Util import args, ensure_directory_exists, count_trials_left
 
 
 def save_results(model_dir, study, config_model_name):
@@ -65,26 +55,6 @@ def save_results(model_dir, study, config_model_name):
     print(f"Trials for {config_model_name} saved at {model_dir}")
 
 
-def count_trials_left(trial_file, model_name, n_optuna_trials):
-    """
-    Calculates the remaining Optuna trials based on the completed ones. Checks for a "trials.json" file in the
-    specified directory to determine how many trials have been completed, and returns the number of trials left.
-    :param trial_file: Trial file path
-    :param model_name: Name of the model.
-    :param n_optuna_trials: Total number of Optuna trials.
-    :return: n_trials_left: Remaining trials.
-    """
-    n_passed_trials = 0
-    if os.path.exists(trial_file):
-        with open(trial_file, "r") as f:
-            trials = json.load(f)
-            n_passed_trials = len(trials)
-    n_trials_left = int(n_optuna_trials) if isinstance(n_optuna_trials, str) else max(0, n_optuna_trials - n_passed_trials)
-    if n_passed_trials > 0:
-        print(f"The {model_name} passed {n_passed_trials} trials, {n_trials_left} left.")
-    return n_trials_left
-
-
 def extract_all_configs(config) -> list[str]:
     """
     Collect models matching the given configuration prefix
@@ -106,12 +76,13 @@ def provide_all_configs(config) -> tuple[str]:
     return tuple(all_configs)
 
 
-def main(config: str | tuple = '', n_epochs: int | tuple = (1, 2, 5), n_optuna_trials: int | str = 100):
+def main(config: str | tuple, n_epochs: int | tuple, n_optuna_trials: int | str, max_batch_binary_power: int = 6):
     """
     Main function for training models using Optuna optimization.
-    :param config: Configuration specifying the models to train. The default value for all configurations.
-    :param n_epochs: Number or tuple of numbers of epochs for training.
+    :param config: Configuration specifying the model training pipelines. The default value for all configurations.
+    :param n_epochs: Number or tuple of numbers of training epochs.
     :param n_optuna_trials: Number of Optuna trials.
+    :param max_batch_binary_power: Maximum binary power for batch size: for a value of 6, the batch size is 2^6 = 64
     """
 
     # Parameters specific to dataset loading.
@@ -161,7 +132,7 @@ def main(config: str | tuple = '', n_epochs: int | tuple = (1, 2, 5), n_optuna_t
                         else:
                             lr = trial.suggest_float('lr', 1e-4, 1, log=False)
                             momentum = trial.suggest_float('momentum', 0.01, 0.99, log=True)
-                        batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
+                        batch_size = trial.suggest_categorical('batch_size', [2 ** x for x in range(max_batch_binary_power + 1)])
                         print(f"Initialize training with lr = {lr}, momentum = {momentum}, batch_size = {batch_size}")
 
                         if task == 'txt_generation':
@@ -195,3 +166,6 @@ def main(config: str | tuple = '', n_epochs: int | tuple = (1, 2, 5), n_optuna_t
                     # Save results
                     save_results(model_dir, study, sub_config)
 
+if __name__ == "__main__":
+    a = args()
+    main(a.config, a.epochs, a.trials.a.max_batch)
