@@ -32,7 +32,7 @@ The main usage scenario:
 python run.py
 ```
 
-Alternatively, execute from the root of the project (provided to support pip distribution):
+Alternatively, execute from the root of the project:
 ```bash
 PYTHONPATH=. python ab/nn/train.py
 ```
