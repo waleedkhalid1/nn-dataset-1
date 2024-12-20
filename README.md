@@ -32,7 +32,7 @@ The main usage scenario:
 python run.py
 ```
 
-Alternatively, execute from the root of the project (for pip distribution):
+Alternatively, execute from the root of the project (provided to support pip distribution):
 ```bash
 python ab.nn.train.py
 ```
