@@ -168,4 +168,4 @@ def main(config: str | tuple, n_epochs: int | tuple, n_optuna_trials: int | str,
 
 if __name__ == "__main__":
     a = args()
-    main(a.config, a.epochs, a.trials.a.max_batch)
+    main(a.config, a.epochs, a.trials, a.max_batch_binary_power)

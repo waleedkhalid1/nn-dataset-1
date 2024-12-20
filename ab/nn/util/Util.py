@@ -15,9 +15,8 @@ def ensure_directory_exists(model_dir):
     :param model_dir: Path to the target directory or file.
     :return: Creates the directory if it does not exist.
     """
-    directory = os.path.dirname(model_dir)
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    if not os.path.exists(model_dir):
+        os.makedirs(model_dir)
 
 
 def count_trials_left(trial_file, model_name, n_optuna_trials):
