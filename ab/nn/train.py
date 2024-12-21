@@ -3,7 +3,7 @@ import os
 
 import optuna
 
-from ab.nn.util.Const import stat_dir
+from ab.nn.util.Const import stat_dir, default_config, default_epochs, default_trials, default_batch_power
 from ab.nn.util.Loader import Loader
 from ab.nn.util.Train import Train
 from ab.nn.util.Util import args, ensure_directory_exists, count_trials_left
@@ -76,7 +76,7 @@ def provide_all_configs(config) -> tuple[str]:
     return tuple(all_configs)
 
 
-def main(config: str | tuple, n_epochs: int | tuple, n_optuna_trials: int | str, max_batch_binary_power: int = 6):
+def main(config: str | tuple = default_config, n_epochs: int | tuple = default_epochs, n_optuna_trials: int | str = default_trials, max_batch_binary_power: int = default_batch_power):
     """
     Main function for training models using Optuna optimization.
     :param config: Configuration specifying the model training pipelines. The default value for all configurations.

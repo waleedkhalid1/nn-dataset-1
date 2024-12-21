@@ -2,8 +2,7 @@ import argparse
 import json
 import os
 
-from ab.nn.util.Const import nn_module
-
+from ab.nn.util.Const import nn_module, default_config, default_epochs, default_trials, default_batch_power
 
 def nn_mod(*nms):
     return ".".join((nn_module,) + nms)
@@ -46,26 +45,26 @@ def args():
         '-c',
         '--config',
         type=str,
-        default='',
+        default=default_config,
         help="Configuration specifying the model training pipelines. The default value for all configurations.")
     parser.add_argument(
         '-e',
         '--epochs',
         type=int,
         help="Numbers of training epochs",
-        default=(1, 2, 5))
+        default=default_epochs)
     parser.add_argument(
         '-t',
         '--trials',
         type=int,
         help="Number of Optuna trials",
-        default=100)
+        default=default_trials)
     parser.add_argument(
         '-b',
         '--max_batch_binary_power',
         type=int,
         help="Maximum binary power for batch size: for a value of 6, the batch size is 2^6 = 64",
-        default=6)
+        default=default_batch_power)
     return parser.parse_args()
 
 
