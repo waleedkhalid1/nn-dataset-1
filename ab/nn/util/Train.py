@@ -4,8 +4,7 @@ import torch
 import torch.nn as nn
 from tqdm import tqdm
 
-from ab.nn.util.Util import nn_mod
-
+from ab.nn.util.Util import nn_mod, get_attr
 
 class Train:
     def __init__(self, model_source_package, task_type, train_dataset, test_dataset, metric, output_dimension: int,
@@ -45,7 +44,7 @@ class Train:
         # Load model
         if isinstance(model_source_package, str):
             # Load the model class
-            model_class = getattr(__import__(nn_mod(model_source_package), fromlist=["Net"]), "Net")
+            model_class = get_attr(model_source_package, "Net")
             self.model = model_class(*self.args)
 
         elif isinstance(model_source_package, torch.nn.Module):

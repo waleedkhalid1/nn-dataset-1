@@ -15,5 +15,5 @@ if __name__ == "__main__":
 
     ''' !!! Commit updated statistics whenever it's generated !!! '''
     # Run training with Optuna: detects and saves performance metric values for a varying number of epochs
-    train.main(conf, (1, 2, 5), optuna_trials)
+    train.main(conf, (1, 2, 5), optuna_trials, from_root = True)
 

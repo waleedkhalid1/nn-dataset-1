@@ -2,10 +2,19 @@ import argparse
 import json
 import os
 
-from ab.nn.util.Const import nn_module, default_config, default_epochs, default_trials, default_batch_power
+import ab.nn.util.Const as Const
+from ab.nn.util.Const import nn_dir, nn_module, default_config, default_epochs, default_trials, default_batch_power, default_from_root
+
 
 def nn_mod(*nms):
-    return ".".join((nn_module,) + nms)
+    mod = ".".join(nms)
+    return ".".join((nn_module, mod)) if Const.from_root_g else mod
+
+def get_attr (mod, f):
+    return getattr(__import__(nn_mod(mod), fromlist=[f]), f)
+
+def full_path(nm):
+    return os.path.join(nn_dir, nm) if Const.from_root_g else nm
 
 
 def ensure_directory_exists(model_dir):
@@ -65,6 +74,12 @@ def args():
         type=int,
         help="Maximum binary power for batch size: for a value of 6, the batch size is 2^6 = 64",
         default=default_batch_power)
+    parser.add_argument(
+        '-r',
+        '--from_root',
+        type=bool,
+        help="If True, paths are relative to the project root; otherwise, to the train.py script directory.",
+        default=default_from_root)
     return parser.parse_args()
 
 

@@ -3,10 +3,11 @@ import os
 
 import optuna
 
-from ab.nn.util.Const import stat_dir, default_config, default_epochs, default_trials, default_batch_power
+import ab.nn.util.Const as Const
+from ab.nn.util.Const import default_config, default_epochs, default_trials, default_batch_power, default_from_root
 from ab.nn.util.Loader import Loader
 from ab.nn.util.Train import Train
-from ab.nn.util.Util import args, ensure_directory_exists, count_trials_left
+from ab.nn.util.Util import args, ensure_directory_exists, count_trials_left, full_path
 
 
 def save_results(model_dir, study, config_model_name):
@@ -55,7 +56,7 @@ def save_results(model_dir, study, config_model_name):
     print(f"Trials for {config_model_name} saved at {model_dir}")
 
 
-def extract_all_configs(config) -> list[str]:
+def extract_all_configs(config, stat_dir) -> list[str]:
     """
     Collect models matching the given configuration prefix
     """
@@ -67,29 +68,33 @@ def extract_all_configs(config) -> list[str]:
 
 
 # todo: move to the ab.nn.util.Start and request information from database
-def provide_all_configs(config) -> tuple[str]:
+def provide_all_configs(config, stat_dir) -> tuple[str]:
     if not isinstance(config, tuple):
         config = (config,)
     all_configs = []
     for c in config:
-        all_configs = all_configs + extract_all_configs(c)
+        all_configs = all_configs + extract_all_configs(c, stat_dir)
     return tuple(all_configs)
 
 
-def main(config: str | tuple = default_config, n_epochs: int | tuple = default_epochs, n_optuna_trials: int | str = default_trials, max_batch_binary_power: int = default_batch_power):
+def main(config: str | tuple = default_config, n_epochs: int | tuple = default_epochs,
+         n_optuna_trials: int | str = default_trials, from_root : bool = default_from_root,
+         max_batch_binary_power: int = default_batch_power):
     """
     Main function for training models using Optuna optimization.
     :param config: Configuration specifying the model training pipelines. The default value for all configurations.
     :param n_epochs: Number or tuple of numbers of training epochs.
     :param n_optuna_trials: Number of Optuna trials.
+    :param from_root: If True, paths are relative to the project root; otherwise, to the train.py script directory.
     :param max_batch_binary_power: Maximum binary power for batch size: for a value of 6, the batch size is 2^6 = 64
     """
 
     # Parameters specific to dataset loading.
     dataset_params = {}
-
+    Const.from_root_g = from_root
+    stat_dir = full_path('stat')
     # Determine configurations based on the provided config
-    sub_configs = provide_all_configs(config)
+    sub_configs = provide_all_configs(config, stat_dir)
 
     if not isinstance(n_epochs, tuple):
         n_epochs = (n_epochs,)
@@ -159,8 +164,7 @@ def main(config: str | tuple = default_config, n_epochs: int | tuple = default_e
                         return trainer.evaluate(epoch)
 
                     # Launch Optuna for the current model
-                    study_name = f"{model_name}_study"
-                    study = optuna.create_study(study_name=study_name, direction='maximize')
+                    study = optuna.create_study(study_name=model_name, direction='maximize')
                     study.optimize(objective, n_trials=n_optuna_trials_left)
 
                     # Save results
@@ -168,4 +172,4 @@ def main(config: str | tuple = default_config, n_epochs: int | tuple = default_e
 
 if __name__ == "__main__":
     a = args()
-    main(a.config, a.epochs, a.trials, a.max_batch_binary_power)
+    main(a.config, a.epochs, a.trials, a.from_root, a.max_batch_binary_power)
