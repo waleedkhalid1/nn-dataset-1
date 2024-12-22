@@ -28,12 +28,12 @@ The main usage scenario:
 1. Add a new neural network model into the `ab/nn/datasets` directory.
 2. Run the automated training process for the new model (e.g., trining pipeline configuration for ComplexNet):
 ```bash
-python run.py --config img_classification-cifar10-acc-cifar10_norm-ComplexNet
+python run.py -c img_classification-cifar10-acc-cifar10_norm-ComplexNet
 ```
 
 Alternatively, execute:
 ```bash
-python -m ab.nn.train --config img_classification-cifar10-acc-cifar10_norm-ComplexNet
+python -m ab.nn.train -c img_classification-cifar10-acc-cifar10_norm-ComplexNet
 ```
 
 ## Contribution
