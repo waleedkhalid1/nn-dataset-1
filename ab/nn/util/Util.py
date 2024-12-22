@@ -38,7 +38,7 @@ def define_global_paths():
     Defines project paths from current directory.
     """
     stat_dir = 'stat'
-    env_pref = ('.venv', 'site-packages') + to_nn
+    env_pref = ('.venv', 'Lib', 'site-packages') + to_nn
     pref = ()
     if exists(join(*to_nn, stat_dir)):
         pref = to_nn

@@ -26,15 +26,14 @@ The primary goal of NN-Dataset project is to provide flexibility for dynamically
 
 The main usage scenario:
 1. Add a new neural network model into the `ab/nn/datasets` directory.
-2. Create a new configuration folder for its training, e.g., `ab/nn/stat/img_classification-cifar10-acc-cifar10_norm-ComplexNet`
-3. Run the automated training process for the new model:
+2. Run the automated training process for the new model (e.g., a new ComplexNet training pipeline configuration):
 ```bash
-python run.py
+python run.py -c img_classification-cifar10-acc-cifar10_complex-ComplexNet
 ```
 
-Alternatively, execute from the root of the project:
+Alternatively, execute:
 ```bash
-python ab/nn/train.py
+python -m ab.nn.train -c img_classification-cifar10-acc-cifar10_complex-ComplexNet
 ```
 
 ## Contribution
