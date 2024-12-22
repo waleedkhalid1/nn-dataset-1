@@ -1,13 +1,10 @@
-import json
 import os
 
 import optuna
 
-import ab.nn.util.Const as Const
-from ab.nn.util.Const import default_config, default_epochs, default_trials, default_batch_power, default_from_root
 from ab.nn.util.Loader import Loader
 from ab.nn.util.Train import Train
-from ab.nn.util.Util import args, ensure_directory_exists, count_trials_left, full_path
+from ab.nn.util.Stat import *
 
 
 def save_results(model_dir, study, config_model_name):
@@ -56,55 +53,30 @@ def save_results(model_dir, study, config_model_name):
     print(f"Trials for {config_model_name} saved at {model_dir}")
 
 
-def extract_all_configs(config, stat_dir) -> list[str]:
-    """
-    Collect models matching the given configuration prefix
-    """
-    l = list(set([sub_config
-                  for sub_config in os.listdir(stat_dir)
-                  if sub_config.startswith(config) and os.path.isdir(os.path.join(stat_dir, sub_config))]))
-    l.sort()
-    return l
-
-
-# todo: move to the ab.nn.util.Start and request information from database
-def provide_all_configs(config, stat_dir) -> tuple[str]:
-    if not isinstance(config, tuple):
-        config = (config,)
-    all_configs = []
-    for c in config:
-        all_configs = all_configs + extract_all_configs(c, stat_dir)
-    return tuple(all_configs)
-
-
 def main(config: str | tuple = default_config, n_epochs: int | tuple = default_epochs,
-         n_optuna_trials: int | str = default_trials, from_root : bool = default_from_root,
-         max_batch_binary_power: int = default_batch_power):
+         n_optuna_trials: int | str = default_trials, max_batch_binary_power: int = default_batch_power):
     """
     Main function for training models using Optuna optimization.
     :param config: Configuration specifying the model training pipelines. The default value for all configurations.
     :param n_epochs: Number or tuple of numbers of training epochs.
     :param n_optuna_trials: Number of Optuna trials.
-    :param from_root: If True, paths are relative to the project root; otherwise, to the train.py script directory.
     :param max_batch_binary_power: Maximum binary power for batch size: for a value of 6, the batch size is 2^6 = 64
     """
 
     # Parameters specific to dataset loading.
-    dataset_params = {}
-    Const.from_root_g = from_root
-    stat_dir = full_path('stat')
+    define_global_paths()
     # Determine configurations based on the provided config
-    sub_configs = provide_all_configs(config, stat_dir)
+    sub_configs = provide_all_configs(config)
 
     if not isinstance(n_epochs, tuple):
         n_epochs = (n_epochs,)
     for epoch in n_epochs:
-        print(f"Configurations found for training for {epoch} epochs:")
+        print(f"Training configurations ({epoch} epochs):")
         for idx, sub_config in enumerate(sub_configs, start=1):
             print(f"{idx}. {sub_config}")
         for sub_config in sub_configs:
-                task, dataset_name, metric, transform_name, model_name = sub_config.split('-')
-                model_dir : str = os.path.join(stat_dir, sub_config, str(epoch))
+                task, dataset_name, metric, transform_name, model_name = conf_to_names(sub_config)
+                model_dir: str = os.path.join(Const.stat_dir_global, sub_config, str(epoch))
                 trials_file = os.path.join(model_dir, 'trials.json')
 
                 n_optuna_trials_left = count_trials_left(trials_file, model_name, n_optuna_trials)
@@ -114,17 +86,13 @@ def main(config: str | tuple = default_config, n_epochs: int | tuple = default_e
                 else:
                     print(f"\nStarting training for the model: {model_name}, task: {task}, dataset: {dataset_name},"
                           f" metric: {metric}, transform: {transform_name}, epochs: {epoch}")
-                    if task == "img_segmentation":
-                        import ab.nn.loader.coco as coco
-                        dataset_params['class_list'] = coco.class_list()
-                        dataset_params['path'] = "./data/coco"
                     # Paths for loader and transform
                     loader_path = f"loader.{dataset_name}.loader"
                     transform_path = f"transform.{transform_name}.transform" if transform_name else None
 
                     # Load dataset
                     try:
-                        output_dimension, train_set, test_set = Loader.load_dataset(loader_path, transform_path, **dataset_params)
+                        output_dimension, train_set, test_set = Loader.load_dataset(loader_path, transform_path)
                     except Exception as e:
                         print(f"Skipping model '{model_name}': failed to load dataset. Error: {e}")
                         continue
@@ -172,4 +140,4 @@ def main(config: str | tuple = default_config, n_epochs: int | tuple = default_e
 
 if __name__ == "__main__":
     a = args()
-    main(a.config, a.epochs, a.trials, a.from_root, a.max_batch_binary_power)
+    main(a.config, a.epochs, a.trials, a.max_batch_binary_power)

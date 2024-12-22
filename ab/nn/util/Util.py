@@ -1,20 +1,26 @@
 import argparse
 import json
-import os
+from os import makedirs
+from os.path import exists, join
 
 import ab.nn.util.Const as Const
-from ab.nn.util.Const import nn_dir, nn_module, default_config, default_epochs, default_trials, default_batch_power, default_from_root
+from ab.nn.util.Const import *
 
 
 def nn_mod(*nms):
-    mod = ".".join(nms)
-    return ".".join((nn_module, mod)) if Const.from_root_g else mod
+    return ".".join(to_nn + nms)
 
 def get_attr (mod, f):
     return getattr(__import__(nn_mod(mod), fromlist=[f]), f)
 
-def full_path(nm):
-    return os.path.join(nn_dir, nm) if Const.from_root_g else nm
+
+def conf_to_names(c: str) -> list[str]:
+    return c.split('-')
+
+
+def is_full_config(s: str):
+    l = conf_to_names(s)
+    return 5 == len(l) and exists(join(Const.dataset_dir_global, l[-1] + '.py'))
 
 
 def ensure_directory_exists(model_dir):
@@ -23,9 +29,28 @@ def ensure_directory_exists(model_dir):
     :param model_dir: Path to the target directory or file.
     :return: Creates the directory if it does not exist.
     """
-    if not os.path.exists(model_dir):
-        os.makedirs(model_dir)
+    if not exists(model_dir):
+        makedirs(model_dir)
 
+
+def define_global_paths():
+    """
+    Defines project paths from current directory.
+    """
+    stat_dir = 'stat'
+    env_pref = ('.venv', 'site-packages') + to_nn
+    pref = ()
+    if exists(join(*to_nn, stat_dir)):
+        pref = to_nn
+    if exists(join(*env_pref, stat_dir)):
+        pref = env_pref
+    Const.stat_dir_global = join(*pref, stat_dir)
+    Const.dataset_dir_global = join(*pref, 'dataset')
+
+    data_dir = 'data'
+    Const.data_dir_global = data_dir
+    if exists(stat_dir):
+        Const.data_dir_global = join(*(['..'] * len(to_nn)), data_dir)
 
 def count_trials_left(trial_file, model_name, n_optuna_trials):
     """
@@ -37,7 +62,7 @@ def count_trials_left(trial_file, model_name, n_optuna_trials):
     :return: n_trials_left: Remaining trials.
     """
     n_passed_trials = 0
-    if os.path.exists(trial_file):
+    if exists(trial_file):
         with open(trial_file, "r") as f:
             trials = json.load(f)
             n_passed_trials = len(trials)
@@ -74,12 +99,6 @@ def args():
         type=int,
         help="Maximum binary power for batch size: for a value of 6, the batch size is 2^6 = 64",
         default=default_batch_power)
-    parser.add_argument(
-        '-r',
-        '--from_root',
-        type=bool,
-        help="If True, paths are relative to the project root; otherwise, to the train.py script directory.",
-        default=default_from_root)
     return parser.parse_args()
 
 
