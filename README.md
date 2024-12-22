@@ -7,7 +7,7 @@ The original version of this dataset was created by <strong>Arash Torabi Goodarz
 pip install git+https://github.com/ABrain-One/nn-dataset
 ```
 
-## Environment for NN-Dataset Developers
+## Environment for NN-Dataset Contributors
 ### Pip package manager
 Create a virtual environment, activate it, and run the following command to install all the project dependencies:
 ```bash
