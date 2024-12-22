@@ -31,7 +31,7 @@ The main usage scenario:
 python run.py --config img_classification-cifar10-acc-cifar10_norm-ComplexNet
 ```
 
-Alternatively, execute from the root of the project:
+Alternatively, execute:
 ```bash
 python -m ab.nn.train --config img_classification-cifar10-acc-cifar10_norm-ComplexNet
 ```
