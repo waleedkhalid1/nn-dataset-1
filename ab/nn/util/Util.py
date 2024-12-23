@@ -41,7 +41,7 @@ def define_global_paths():
     stat_dir = 'stat'
 
     import ab.nn.__init__ as init_file
-    pref = Path(init_file.__file__).parent.relative_to(getcwd())
+    pref = Path(init_file.__file__).parent.absolute()
     Const.stat_dir_global = join(pref, stat_dir)
     Const.dataset_dir_global = join(pref, 'dataset')
 
