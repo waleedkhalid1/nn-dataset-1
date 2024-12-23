@@ -1,7 +1,8 @@
 import argparse
 import json
-from os import makedirs
+from os import makedirs, getcwd
 from os.path import exists, join
+from pathlib import Path
 
 import ab.nn.util.Const as Const
 from ab.nn.util.Const import *
@@ -38,14 +39,11 @@ def define_global_paths():
     Defines project paths from current directory.
     """
     stat_dir = 'stat'
-    env_pref = ('.venv', 'Lib', 'site-packages') + to_nn
-    pref = ()
-    if exists(join(*to_nn, stat_dir)):
-        pref = to_nn
-    if exists(join(*env_pref, stat_dir)):
-        pref = env_pref
-    Const.stat_dir_global = join(*pref, stat_dir)
-    Const.dataset_dir_global = join(*pref, 'dataset')
+
+    import ab.nn.__init__ as init_file
+    pref = Path(init_file.__file__).parent.relative_to(getcwd())
+    Const.stat_dir_global = join(pref, stat_dir)
+    Const.dataset_dir_global = join(pref, 'dataset')
 
     data_dir = 'data'
     Const.data_dir_global = data_dir
