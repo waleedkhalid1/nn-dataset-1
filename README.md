@@ -4,7 +4,7 @@ The original version of this dataset was created by <strong>Arash Torabi Goodarz
 ## Installation of the Latest Version of the NN-Dataset
 
 ```bash
-pip install git+https://github.com/ABrain-One/nn-dataset
+pip install git+https://github.com/ABrain-One/nn-dataset --upgrade
 ```
 
 ## Environment for NN-Dataset Contributors
