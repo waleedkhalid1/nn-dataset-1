@@ -108,7 +108,7 @@ def args():
         '--max_batch_binary_power',
         type=int,
         help="Maximum binary power for batch size: for a value of 6, the batch size is 2**6 = 64",
-        default=default_batch_power)
+        default=default_max_batch_power)
     return parser.parse_args()
 
 

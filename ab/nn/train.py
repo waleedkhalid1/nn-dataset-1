@@ -36,6 +36,16 @@ def save_results(model_dir, study, config_model_name):
     })
 
     trials_dict = filtered_trials.to_dict(orient='records')
+
+    i = 0
+    while i < len(trials_dict):
+        dic = trials_dict[i]
+        acc =  dic['accuracy']
+        if math.isnan(acc) or math.isinf(acc):
+            dic['accuracy'] = 0.0
+            trials_dict[i] = dic
+        i += 1
+
     path = f"{model_dir}/trials.json"
     if os.path.exists(path):
         with open(path, "r") as f:
@@ -55,7 +65,7 @@ def save_results(model_dir, study, config_model_name):
 
 
 def main(config: str | tuple = default_config, n_epochs: int | tuple = default_epochs,
-         n_optuna_trials: int | str = default_trials, max_batch_binary_power: int = default_batch_power):
+         n_optuna_trials: int | str = default_trials, max_batch_binary_power: int = default_max_batch_power):
     """
     Main function for training models using Optuna optimization.
     :param config: Configuration specifying the model training pipelines. The default value for all configurations.
