@@ -1,6 +1,7 @@
 import argparse
 import json
-from os import makedirs, getcwd
+import math
+from os import makedirs
 from os.path import exists, join
 from pathlib import Path
 
@@ -50,6 +51,17 @@ def define_global_paths():
     if exists(stat_dir):
         Const.data_dir_global = join(*(['..'] * len(to_nn)), data_dir)
 
+def max_batch (binary_power):
+    return 2 ** binary_power
+
+
+class CudaOutOfMemory(Exception):
+    def __init__(self, batch):
+        self.batch_power = int(math.log2(batch))
+
+    def batch_size_power(self):
+        return self.batch_power
+
 def count_trials_left(trial_file, model_name, n_optuna_trials):
     """
     Calculates the remaining Optuna trials based on the completed ones. Checks for a "trials.json" file in the
@@ -95,7 +107,7 @@ def args():
         '-b',
         '--max_batch_binary_power',
         type=int,
-        help="Maximum binary power for batch size: for a value of 6, the batch size is 2^6 = 64",
+        help="Maximum binary power for batch size: for a value of 6, the batch size is 2**6 = 64",
         default=default_batch_power)
     return parser.parse_args()
 

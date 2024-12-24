@@ -1,10 +1,11 @@
 import os
 
 import optuna
+from torch.cuda import OutOfMemoryError
 
 from ab.nn.util.Loader import Loader
-from ab.nn.util.Train import Train
 from ab.nn.util.Stat import *
+from ab.nn.util.Train import Train
 
 
 def save_results(model_dir, study, config_model_name):
@@ -60,7 +61,7 @@ def main(config: str | tuple = default_config, n_epochs: int | tuple = default_e
     :param config: Configuration specifying the model training pipelines. The default value for all configurations.
     :param n_epochs: Number or tuple of numbers of training epochs.
     :param n_optuna_trials: Number of Optuna trials.
-    :param max_batch_binary_power: Maximum binary power for batch size: for a value of 6, the batch size is 2^6 = 64
+    :param max_batch_binary_power: Maximum binary power for batch size: for a value of 6, the batch size is 2**6 = 64
     """
 
     # Parameters specific to dataset loading.
@@ -97,46 +98,64 @@ def main(config: str | tuple = default_config, n_epochs: int | tuple = default_e
                         print(f"Skipping model '{model_name}': failed to load dataset. Error: {e}")
                         continue
 
-                    # Configure Optuna for the current model
-                    def objective(trial):
-                        if task == 'img_segmentation':
-                            lr = trial.suggest_float('lr', 1e-4, 1e-2, log=False)
-                            momentum = trial.suggest_float('momentum', 0.8, 0.99, log=True)
-                        else:
-                            lr = trial.suggest_float('lr', 1e-4, 1, log=False)
-                            momentum = trial.suggest_float('momentum', 0.01, 0.99, log=True)
-                        batch_size = trial.suggest_categorical('batch_size', [2 ** x for x in range(max_batch_binary_power + 1)])
-                        print(f"Initialize training with lr = {lr}, momentum = {momentum}, batch_size = {batch_size}")
+                    continue_study = True
+                    max_batch_binary_power_local = max_batch_binary_power
+                    while continue_study and max_batch_binary_power_local > -1:
+                        try:
+                            # Configure Optuna for the current model
+                            def objective(trial):
+                                try:
+                                    if task == 'img_segmentation':
+                                            lr = trial.suggest_float('lr', 1e-4, 1e-2, log=False)
+                                            momentum = trial.suggest_float('momentum', 0.8, 0.99, log=True)
+                                    else:
+                                            lr = trial.suggest_float('lr', 1e-4, 1, log=False)
+                                            momentum = trial.suggest_float('momentum', 0.01, 0.99, log=True)
+                                    batch_size = trial.suggest_categorical('batch_size', [max_batch(x) for x in range(max_batch_binary_power_local + 1)])
+                                    print(f"Initialize training with lr = {lr}, momentum = {momentum}, batch_size = {batch_size}")
 
-                        if task == 'txt_generation':
-                            # Dynamically import RNN or LSTM model
-                            if model_name.lower() == 'rnn':
-                                from dataset.RNN import Net as RNNNet
-                                model = RNNNet(1, 256, len(train_set.chars), batch_size)
-                            elif model_name.lower() == 'lstm':
-                                from ab.nn.dataset.LSTM import Net as LSTMNet
-                                model = LSTMNet(1, 256, len(train_set.chars), batch_size, num_layers=2)
-                            else:
-                                raise ValueError(f"Unsupported text generation model: {model_name}")
+                                    if task == 'txt_generation':
+                                        # Dynamically import RNN or LSTM model
+                                        if model_name.lower() == 'rnn':
+                                            from dataset.RNN import Net as RNNNet
+                                            model = RNNNet(1, 256, len(train_set.chars), batch_size)
+                                        elif model_name.lower() == 'lstm':
+                                            from ab.nn.dataset.LSTM import Net as LSTMNet
+                                            model = LSTMNet(1, 256, len(train_set.chars), batch_size, num_layers=2)
+                                        else:
+                                            raise ValueError(f"Unsupported text generation model: {model_name}")
 
-                        trainer = Train(
-                            model_source_package=f"dataset.{model_name}",
-                            task_type=task,
-                            train_dataset=train_set,
-                            test_dataset=test_set,
-                            metric=metric,
-                            output_dimension=output_dimension,
-                            lr=lr,
-                            momentum=momentum,
-                            batch_size=batch_size)
-                        return trainer.evaluate(epoch)
+                                    trainer = Train(
+                                        model_source_package=f"dataset.{model_name}",
+                                        task_type=task,
+                                        train_dataset=train_set,
+                                        test_dataset=test_set,
+                                        metric=metric,
+                                        output_dimension=output_dimension,
+                                        lr=lr,
+                                        momentum=momentum,
+                                        batch_size=batch_size)
+                                    return trainer.evaluate(epoch)
+                                except Exception as e:
+                                    if isinstance(e, OutOfMemoryError):
+                                        if max_batch_binary_power_local <= 0:
+                                            return 0.0
+                                        else:
+                                            raise CudaOutOfMemory(batch_size)
+                                    else:
+                                        print(f"error '{model_name}': failed to train. Error: {e}")
+                                        return 0.0
+                            # Launch Optuna for the current model
+                            study = optuna.create_study(study_name=model_name, direction='maximize')
+                            study.optimize(objective, n_trials=n_optuna_trials_left)
 
-                    # Launch Optuna for the current model
-                    study = optuna.create_study(study_name=model_name, direction='maximize')
-                    study.optimize(objective, n_trials=n_optuna_trials_left)
+                            # Save results
+                            save_results(model_dir, study, sub_config)
+                            continue_study = False
+                        except CudaOutOfMemory as e:
+                            max_batch_binary_power_local = e.batch_size_power() - 1
+                            print(f"Max batch is decreased to {max_batch(max_batch_binary_power_local)} due to Cuda Out of Memory for model '{model_name}'")
 
-                    # Save results
-                    save_results(model_dir, study, sub_config)
 
 if __name__ == "__main__":
     a = args()
