@@ -164,7 +164,7 @@ def main(config: str | tuple = default_config, n_epochs: int | tuple = default_e
                             continue_study = False
                         except CudaOutOfMemory as e:
                             max_batch_binary_power_local = e.batch_size_power() - 1
-                            print(f"Max batch is decreased to {max_batch(max_batch_binary_power_local)} due to Cuda Out of Memory for model '{model_name}'")
+                            print(f"Max batch is decreased to {max_batch(max_batch_binary_power_local)} due to a CUDA Out of Memory Exception for model '{model_name}'")
 
 
 if __name__ == "__main__":
