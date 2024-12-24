@@ -27,7 +27,7 @@ class Train:
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.lr = lr
         self.momentum = momentum
-        self.batch_size = max(2, batch_size)
+        self.batch_size = batch_size
         self.args = []
         self.task = task_type
 
