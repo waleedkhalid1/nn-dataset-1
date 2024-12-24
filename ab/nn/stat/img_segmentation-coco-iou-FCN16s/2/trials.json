@@ -1,0 +1,79 @@
+[
+    {
+        "accuracy": 0.13457173109054565,
+        "batch_size": 16,
+        "lr": 0.00441729476920241,
+        "momentum": 0.8616759503009982,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.12746179103851318,
+        "batch_size": 4,
+        "lr": 0.003708079610386225,
+        "momentum": 0.8441406327560788,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.11179978400468826,
+        "batch_size": 4,
+        "lr": 0.007322563625329217,
+        "momentum": 0.841609108790056,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.09641629457473755,
+        "batch_size": 8,
+        "lr": 0.007370672090776785,
+        "momentum": 0.9102787249459963,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.09599293023347855,
+        "batch_size": 64,
+        "lr": 0.0025952669771202863,
+        "momentum": 0.9284986169719902,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.09466387331485748,
+        "batch_size": 8,
+        "lr": 0.0004824840629779356,
+        "momentum": 0.8755366577350943,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.09000279009342194,
+        "batch_size": 64,
+        "lr": 0.009269186504863044,
+        "momentum": 0.9397802190673791,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.08853393793106079,
+        "batch_size": 32,
+        "lr": 0.0036577633144963357,
+        "momentum": 0.8753359696772955,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.08502278476953506,
+        "batch_size": 8,
+        "lr": 0.006556489603577403,
+        "momentum": 0.9286620162183147,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.055420808494091034,
+        "batch_size": 16,
+        "lr": 0.00025220926213750136,
+        "momentum": 0.9374195461942407,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.04361084848642349,
+        "batch_size": 4,
+        "lr": 0.009572778412174382,
+        "momentum": 0.9518915358199218,
+        "transform": "echo"
+    }
+]
