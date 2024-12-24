@@ -1,8 +1,10 @@
+import importlib
+
 import torch
 import torch.nn as nn
 from tqdm import tqdm
-import importlib
 
+from ab.nn.util.Util import nn_mod, get_attr
 
 class Train:
     def __init__(self, model_source_package, task_type, train_dataset, test_dataset, metric, output_dimension: int,
@@ -25,7 +27,7 @@ class Train:
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.lr = lr
         self.momentum = momentum
-        self.batch_size = max(2, batch_size)
+        self.batch_size = batch_size
         self.args = []
         self.task = task_type
 
@@ -42,20 +44,14 @@ class Train:
         # Load model
         if isinstance(model_source_package, str):
             # Load the model class
-            model_class = getattr(
-                __import__(model_source_package, fromlist=["Net"]),
-                "Net"
-            )
-
+            model_class = get_attr(model_source_package, "Net")
             self.model = model_class(*self.args)
 
         elif isinstance(model_source_package, torch.nn.Module):
             # If a pre-initialized model is passed
             self.model = model_source_package
         else:
-            raise ValueError(
-                "model_source_package must be a string (path to the model) or an instance of torch.nn.Module.")
-
+            raise ValueError("model_source_package must be a string (path to the model) or an instance of torch.nn.Module.")
         self.model.to(self.device)
 
     def load_metric_function(self, metric_name):
@@ -65,11 +61,11 @@ class Train:
         :return: Loaded metric function or initialized class.
         """
         try:
-            module = importlib.import_module(f"metric.{metric_name}")
+            module = importlib.import_module(nn_mod('metric', metric_name))
             if metric_name.lower() == "iou":
                 return module.MIoU(self.output_dimension)
             else:
-                return getattr(module, f"compute")
+                return getattr(module, "compute")
         except (ModuleNotFoundError, AttributeError) as e:
             raise ValueError(f"Metric '{metric_name}' not found. Ensure a corresponding file and function exist.") \
                 from e

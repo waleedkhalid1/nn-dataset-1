@@ -10,6 +10,7 @@ import tqdm
 import requests
 
 from torchvision.datasets.utils import download_and_extract_archive
+import ab.nn.util.Const as Const
 
 coco_ann_url = "http://images.cocodataset.org/annotations/annotations_trainval2017.zip"
 coco_img_url = "http://images.cocodataset.org/zips/{}2017.zip"
@@ -22,17 +23,18 @@ MIN_CLASS_N = len(MIN_CLASS_LIST)
 def class_n ():
     return MIN_CLASS_N
 
-def class_list():
+def get_class_list():
     return MIN_CLASS_LIST
 
-def loader(path="./data/coco",resize=(128,128), **kwargs):
+def loader(resize=(128,128), **kwargs):
+    path= os.path.join(Const.data_dir_global, 'coco')
     train_set = COCOSegDataset(root=path,spilt="train",resize=resize,preprocess=True,**kwargs)
     val_set = COCOSegDataset(root=path,spilt="val",resize=resize,preprocess=True,**kwargs)
     return class_n(), train_set, val_set
 
 
 class COCOSegDataset(torch.utils.data.Dataset):
-    def __init__(self, root:os.path, spilt="val", transform=transforms.Compose([transforms.ToTensor()]), class_limit = None, num_limit = None, class_list=None, resize = (128,128)
+    def __init__(self, root:os.path, spilt="val", transform=transforms.Compose([transforms.ToTensor()]), class_limit = None, num_limit = None, resize = (128,128)
         , preprocess=True, least_pix=1000, **kwargs):
         """Read datas from COCOS and generate 2D masks.
 
@@ -44,14 +46,15 @@ class COCOSegDataset(torch.utils.data.Dataset):
           for torch transforms might have issues transforming masks.
         class_limit : Limit class index from 0 to the value. Set to `None` for no limit.
         num_limit : Limit maximum number of images to use. Only works with `preprocess`.
-        class_list : Limit class index within the list. Set to `None` for no limit,
-          It will ignore the `class_limit` parameter.
         resize : tuple (h,w) to resize the image and its mask. Uses Image from PIL to avoid
           artifacts on the mask
         preprocess : Set true to allow preprocess that filter out all images with mask that
           have lesser than `least_pix` pixels.
         least_pix : filter out thersold of preprocess.
         """
+
+        class_list = get_class_list() # Limit class index within the list. Set to `None` for no limit,
+          # It will ignore the `class_limit` parameter.
         valid_split = ["train","val"]
         self.root = root
         if spilt in valid_split:
@@ -92,8 +95,8 @@ class COCOSegDataset(torch.utils.data.Dataset):
         try:
             image = Image.open(file_Path).convert('RGB') # Read RGB image
         except:
-            ## Image doesn't exists, download from coco_url
-            ## This process is quite time consuming and should be avoided later
+            ## Image doesn't exist, download from coco_url
+            ## This process is quite time-consuming and should be avoided later
             if self.no_missing_img:
                 print("Failed to read image(s). Download will be performed thereafter, but it can significantly slowdown processing.")
                 self.no_missing_img= True

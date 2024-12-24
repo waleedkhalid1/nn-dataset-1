@@ -4,10 +4,10 @@ The original version of this dataset was created by <strong>Arash Torabi Goodarz
 ## Installation of the Latest Version of the NN-Dataset
 
 ```bash
-pip install git+https://github.com/ABrain-One/nn-dataset.git
+pip install git+https://github.com/ABrain-One/nn-dataset --upgrade --force
 ```
 
-## Environment for NN-Dataset Developers
+## Environment for NN-Dataset Contributors
 ### Pip package manager
 Create a virtual environment, activate it, and run the following command to install all the project dependencies:
 ```bash
@@ -17,7 +17,7 @@ pip install -r requirements.txt --extra-index-url https://download.pytorch.org/w
 ### Docker
 All versions of this project are compatible with <a href='https://hub.docker.com/r/abrainone/ai-linux' target='_blank'>AI Linux</a> and can be run inside a Docker image:
 ```bash
-docker run -v /a/mm:<nn-dataset path> abrainone/ai-linux bash -c "PYTHONPATH=/a/mm python ab/nn/train.py"
+docker run -v /a/mm:<nn-dataset path> abrainone/ai-linux bash -c "PYTHONPATH=/a/mm python -m ab.nn.train"
 ```
 
 ## Usage
@@ -25,11 +25,15 @@ docker run -v /a/mm:<nn-dataset path> abrainone/ai-linux bash -c "PYTHONPATH=/a/
 The primary goal of NN-Dataset project is to provide flexibility for dynamically combining various datasets, metrics, and models. It is designed to facilitate the verification of neural network performance under various combinations of training hyperparameters and data transformation algorithms, by automatically generating performance statistics. It is primarily developed to support the <a href="https://github.com/ABrain-One/nn-gen"> NN-Gen</a> project.
 
 The main usage scenario:
-1. Add a new neural network model into the `ab/nn/datasets` directory.
-2. Create a new configuration folder for its training, e.g., `ab/nn/stat/img_classification-cifar10-acc-cifar10_norm-ComplexNet`
-3. Run the automated training process for the new model:
+1. Add a new neural network model into the `ab/nn/dataset` directory.
+2. Run the automated training process for the new model (e.g., a new ComplexNet training pipeline configuration):
 ```bash
-python ab/nn/train.py
+python run.py -c img_classification-cifar10-acc-cifar10_complex-ComplexNet
+```
+
+Alternatively, execute:
+```bash
+python -m ab.nn.train -c img_classification-cifar10-acc-cifar10_complex-ComplexNet
 ```
 
 ## Contribution
@@ -39,9 +43,9 @@ To add more neural network models to the dataset, the following criteria must be
 2. The main class for each model must be named <strong>Net</strong>.
 3. The implementation of this <strong>Net</strong> class must provide non-mutable default parameters for its constructor.
 4. For each pull request involving a new neural network, please generate and submit training statistics for 100 Optuna trials (or at least 3 trials for very large models) in the <strong>ab/nn/stat</strong> directory. The trials should cover 1, 2, and 5 epochs of training. Ensure that this statistics is included along with the model in your pull request. For example, the statistics for the ComplexNet model are stored in three separate folders, each containing two files - <strong>trials.json</strong> and <strong>best_trials.json</strong>:<br/>
-img_classification-cifar10-acc-cifar10_norm-ComplexNet/1<br/>
-img_classification-cifar10-acc-cifar10_norm-ComplexNet/2<br/>
-img_classification-cifar10-acc-cifar10_norm-ComplexNet/5<br/>
+img_classification-cifar10-acc-cifar10_complex-ComplexNet/1<br/>
+img_classification-cifar10-acc-cifar10_complex-ComplexNet/2<br/>
+img_classification-cifar10-acc-cifar10_complex-ComplexNet/5<br/>
 
 
 For examples, see the models in the <strong>/ab/nn/dataset</strong> directory and statistics in the <strong>ab/nn/stat</strong> directory.
@@ -50,7 +54,7 @@ For examples, see the models in the <strong>/ab/nn/dataset</strong> directory an
 
 The `nn-dataset` package includes the following key modules:
 
-1. **Datasets**:
+1. **Dataset**:
    - Predefined neural network architectures such as `AlexNet`, `ResNet`, `VGG`, and more.
    - Located in `ab.nn.dataset`.
 
