@@ -8,4 +8,4 @@ default_max_batch_power = 12
 global dataset_dir_global
 global stat_dir_global
 global data_dir_global
-global stat_db_global
+global db_dir_global

@@ -33,7 +33,7 @@ def initialize_database():
     """
     Initialize the SQLite database and create the `results` table if it doesn't exist.
     """
-    conn = sqlite3.connect(Const.stat_db_global)
+    conn = sqlite3.connect(Const.db_dir_global)
     cursor = conn.cursor()
 
     # Create table if it doesn't exist
@@ -65,22 +65,22 @@ def save_results(model_dir, study, config_model_name, epoch):
 
     # Save all trials as trials.json
     trials_df = study.trials_dataframe()
-    filtered_trials = trials_df[["value", "params_batch_size", "params_lr", "params_momentum", "params_transform"]]
+    filtered_trials = trials_df[['value', 'params_batch_size', 'params_lr', 'params_momentum', 'params_transform']]
 
     filtered_trials = filtered_trials.rename(columns={
-        "value": "accuracy",
-        "params_batch_size": "batch_size",
-        "params_lr": "lr",
-        "params_momentum": "momentum",
-        "params_transform": "transform"
+        'value': 'accuracy',
+        'params_batch_size': 'batch_size',
+        'params_lr': 'lr',
+        'params_momentum': 'momentum',
+        'params_transform': 'transform'
     })
 
     filtered_trials = filtered_trials.astype({
-        "accuracy": float,
-        "batch_size": int,
-        "lr": float,
-        "momentum": float,
-        "transform": str
+        'accuracy': float,
+        'batch_size': int,
+        'lr': float,
+        'momentum': float,
+        'transform': str
     })
 
     trials_dict = filtered_trials.to_dict(orient='records')
@@ -94,25 +94,26 @@ def save_results(model_dir, study, config_model_name, epoch):
             trials_dict[i] = dic
         i += 1
 
+    trials_dict_all = trials_dict
     path = f"{model_dir}/trials.json"
     if os.path.exists(path):
         with open(path, "r") as f:
             previous_trials = json.load(f)
-            trials_dict = previous_trials + trials_dict
+            trials_dict_all = previous_trials + trials_dict_all
 
-    trials_dict = sorted(trials_dict, key=lambda x: x['accuracy'], reverse=True)
+    trials_dict_all = sorted(trials_dict_all, key=lambda x: x['accuracy'], reverse=True)
     # Save trials.json
     with open(path, "w") as f:
-        json.dump(trials_dict, f, indent=4)
+        json.dump(trials_dict_all, f, indent=4)
 
     # Save best_trial.json
     with open(f"{model_dir}/best_trial.json", "w") as f:
-        json.dump(trials_dict[0], f, indent=4)
+        json.dump(trials_dict_all[0], f, indent=4)
 
     print(f"Trials for {config_model_name} saved at {model_dir}")
 
     # Save results to SQLite DB
-    conn = sqlite3.connect(Const.stat_db_global)
+    conn = sqlite3.connect(Const.db_dir_global)
     cursor = conn.cursor()
 
     # Insert each trial into the database with epoch
@@ -120,8 +121,8 @@ def save_results(model_dir, study, config_model_name, epoch):
         cursor.execute("""
         INSERT INTO results (config_model_name, accuracy, batch_size, lr, momentum, transform, epoch)
         VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (config_model_name, trial["accuracy"], trial["batch_size"], trial["lr"],
-              trial["momentum"], trial["transform"], epoch))
+        """, (config_model_name, trial['accuracy'], trial['batch_size'], trial['lr'],
+              trial['momentum'], trial['transform'], epoch))
 
     conn.commit()
     conn.close()

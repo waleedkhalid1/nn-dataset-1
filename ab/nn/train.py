@@ -3,7 +3,6 @@ from torch.cuda import OutOfMemoryError
 
 from ab.nn.util.Loader import Loader
 from ab.nn.util.Stat import *
-from ab.nn.util.Stat import initialize_database
 from ab.nn.util.Train import Train
 
 
@@ -42,16 +41,6 @@ def main(config: str | tuple = default_config, n_epochs: int | tuple = default_e
                 else:
                     print(f"\nStarting training for the model: {model_name}, task: {task}, dataset: {dataset_name},"
                           f" metric: {metric},  epochs: {epoch}")
-                    # Paths for loader and transform
-                    # loader_path = f"loader.{dataset_name}.loader"
-                    # transform_path = f"transform.{transform_name}.transform" if transform_name else None
-
-                    # # Load dataset
-                    # try:
-                    #     output_dimension, train_set, test_set = Loader.load_dataset(loader_path, transform_path)
-                    # except Exception as e:
-                    #     print(f"Skipping model '{model_name}': failed to load dataset. Error: {e}")
-                    #     continue
 
                     continue_study = True
                     max_batch_binary_power_local = max_batch_binary_power
@@ -60,13 +49,8 @@ def main(config: str | tuple = default_config, n_epochs: int | tuple = default_e
                             # Configure Optuna for the current model
                             def objective(trial):
                                 try:
-                                    # Suggest transformation dynamically
-                                    transform_name = trial.suggest_categorical(
-                                        'transform', ['cifar10_complex', 'cifar10_norm', 'cifar10_norm_32', 'echo']
-                                    )
-                                    print(f"Chosen transformation: {transform_name}")
-
                                     # Suggest hyperparameters
+                                    transform_name = trial.suggest_categorical('transform', ['cifar10_complex', 'cifar10_norm', 'cifar10_norm_32', 'echo'])
                                     if task == 'img_segmentation':
                                             lr = trial.suggest_float('lr', 1e-4, 1e-2, log=False)
                                             momentum = trial.suggest_float('momentum', 0.8, 0.99, log=True)
@@ -74,11 +58,11 @@ def main(config: str | tuple = default_config, n_epochs: int | tuple = default_e
                                             lr = trial.suggest_float('lr', 1e-4, 1, log=False)
                                             momentum = trial.suggest_float('momentum', 0.01, 0.99, log=True)
                                     batch_size = trial.suggest_categorical('batch_size', [max_batch(x) for x in range(max_batch_binary_power_local + 1)])
-                                    print(f"Initialize training with lr = {lr}, momentum = {momentum}, batch_size = {batch_size}")
+                                    print(f"Initialize training with lr = {lr}, momentum = {momentum}, batch_size = {batch_size}, transformation: {transform_name}")
 
                                     # Load dataset with the chosen transformation
                                     loader_path = f"loader.{dataset_name}.loader"
-                                    transform_path = f"transform.{transform_name}.transform" if transform_name else None
+                                    transform_path = f"transform.{transform_name}.transform"
                                     # Load dataset
                                     try:
                                         output_dimension, train_set, test_set = Loader.load_dataset(loader_path, transform_path)
@@ -90,10 +74,10 @@ def main(config: str | tuple = default_config, n_epochs: int | tuple = default_e
                                     if task == 'txt_generation':
                                         # Dynamically import RNN or LSTM model
                                         if model_name.lower() == 'rnn':
-                                            from dataset.RNN import Net as RNNNet
+                                            from ab.nn.dataset.RNN import Net as RNNNet
                                             model = RNNNet(1, 256, len(train_set.chars), batch_size)
                                         elif model_name.lower() == 'lstm':
-                                            from dataset.LSTM import Net as LSTMNet
+                                            from ab.nn.dataset.LSTM import Net as LSTMNet
                                             model = LSTMNet(1, 256, len(train_set.chars), batch_size, num_layers=2)
                                         else:
                                             raise ValueError(f"Unsupported text generation model: {model_name}")
