@@ -22,7 +22,7 @@ def conf_to_names(c: str) -> list[str]:
 
 def is_full_config(s: str):
     l = conf_to_names(s)
-    return 5 == len(l) and exists(join(Const.dataset_dir_global, l[-1] + '.py'))
+    return 4 == len(l) and exists(join(Const.dataset_dir_global, l[-1] + '.py'))
 
 
 def ensure_directory_exists(model_dir):
