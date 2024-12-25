@@ -19,6 +19,6 @@ if __name__ == "__main__":
     # optuna_trials = "+5"  # Try 5 more times: to thoroughly verify model training after code modifications.
 
     ''' !!! Please commit updated statistics whenever it's generated !!! '''
-    # Run training with Optuna: detects and saves performance metric values for a varying number of epochs
+    # Run training with Optuna: detects and saves performance metric values
     train.main(conf, a.epochs, optuna_trials, a.max_batch_binary_power)
 
