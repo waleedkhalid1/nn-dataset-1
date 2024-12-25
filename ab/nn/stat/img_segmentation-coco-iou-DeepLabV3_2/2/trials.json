@@ -418,5 +418,12 @@
         "lr": 0.00968594150271012,
         "momentum": 0.8300387491024287,
         "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1,
+        "lr": 0.00798876040219708,
+        "momentum": 0.9330219652078512,
+        "transform": "echo"
     }
 ]
