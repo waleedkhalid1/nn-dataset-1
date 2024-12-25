@@ -21,7 +21,7 @@ def save_results(model_dir, study, config_model_name, epoch, db_path="results.db
 
     # Save all trials as trials.json
     trials_df = study.trials_dataframe()
-    filtered_trials = trials_df[["value", "params_batch_size", "params_lr", "params_momentum"]]
+    filtered_trials = trials_df[["value", "params_batch_size", "params_lr", "params_momentum", "params_transform"]]
 
     filtered_trials = filtered_trials.rename(columns={
         "value": "accuracy",
