@@ -2,5 +2,6 @@
     "accuracy": 0.0,
     "batch_size": 32,
     "lr": 0.009904617791014331,
-    "momentum": 0.8563942962720377
+    "momentum": 0.8563942962720377,
+    "transform": "echo"
 }
