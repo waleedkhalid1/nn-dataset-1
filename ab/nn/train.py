@@ -1,87 +1,10 @@
-import os
-
 import optuna
 from torch.cuda import OutOfMemoryError
 
 from ab.nn.util.Loader import Loader
 from ab.nn.util.Stat import *
-from ab.nn.util.Train import Train
-import sqlite3
 from ab.nn.util.Stat import initialize_database
-
-
-def save_results(model_dir, study, config_model_name, epoch, db_path="results.db"):
-    """
-    Save Optuna study results for a given model in JSON-format.
-    :param model_dir: Directory for the model statistics.
-    :param study: Optuna study object.
-    :param config_model_name: Config (Task, Dataset, Normalization) and Model name.
-    """
-    ensure_directory_exists(model_dir)
-
-    # Save all trials as trials.json
-    trials_df = study.trials_dataframe()
-    filtered_trials = trials_df[["value", "params_batch_size", "params_lr", "params_momentum"]]
-
-    filtered_trials = filtered_trials.rename(columns={
-        "value": "accuracy",
-        "params_batch_size": "batch_size",
-        "params_lr": "lr",
-        "params_momentum": "momentum",
-        "params_transform": "transform"
-    })
-
-    filtered_trials = filtered_trials.astype({
-        "accuracy": float,
-        "batch_size": int,
-        "lr": float,
-        "momentum": float,
-        "transform": str
-    })
-
-    trials_dict = filtered_trials.to_dict(orient='records')
-
-    i = 0
-    while i < len(trials_dict):
-        dic = trials_dict[i]
-        acc =  dic['accuracy']
-        if math.isnan(acc) or math.isinf(acc):
-            dic['accuracy'] = 0.0
-            trials_dict[i] = dic
-        i += 1
-
-    path = f"{model_dir}/trials.json"
-    if os.path.exists(path):
-        with open(path, "r") as f:
-            previous_trials = json.load(f)
-            trials_dict = previous_trials + trials_dict
-
-    trials_dict = sorted(trials_dict, key=lambda x: x['accuracy'], reverse=True)
-    # Save trials.json
-    with open(path, "w") as f:
-        json.dump(trials_dict, f, indent=4)
-
-    # Save best_trial.json
-    with open(f"{model_dir}/best_trial.json", "w") as f:
-        json.dump(trials_dict[0], f, indent=4)
-
-    print(f"Trials for {config_model_name} saved at {model_dir}")
-
-    # Save results to SQLite DB
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-
-    # Insert each trial into the database with epoch
-    for trial in trials_dict:
-        cursor.execute("""
-        INSERT INTO results (config_model_name, accuracy, batch_size, lr, momentum, transform, epoch)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (config_model_name, trial["accuracy"], trial["batch_size"], trial["lr"],
-              trial["momentum"], trial["transform"], epoch))
-
-    conn.commit()
-    conn.close()
-
+from ab.nn.util.Train import Train
 
 
 def main(config: str | tuple = default_config, n_epochs: int | tuple = default_epochs,
@@ -94,11 +17,10 @@ def main(config: str | tuple = default_config, n_epochs: int | tuple = default_e
     :param max_batch_binary_power: Maximum binary power for batch size: for a value of 6, the batch size is 2**6 = 64
     """
 
-
-    # Initialize the SQLite database
-    initialize_database("results.db")
     # Parameters specific to dataset loading.
     define_global_paths()
+    # Initialize the SQLite database
+    initialize_database()
     # Determine configurations based on the provided config
     sub_configs = provide_all_configs(config)
 
