@@ -25,16 +25,6 @@ def is_full_config(s: str):
     return 4 == len(l) and exists(join(Const.dataset_dir_global, l[-1] + '.py'))
 
 
-def ensure_directory_exists(model_dir):
-    """
-    Ensures that the directory for the given path exists.
-    :param model_dir: Path to the target directory or file.
-    :return: Creates the directory if it does not exist.
-    """
-    if not exists(model_dir):
-        makedirs(model_dir)
-
-
 def define_global_paths():
     """
     Defines project paths from current directory.
@@ -46,14 +36,12 @@ def define_global_paths():
     Const.stat_dir_global = join(pref, stat_dir)
     Const.dataset_dir_global = join(pref, 'dataset')
 
-    data_dir = 'data'
-    dataset_file = 'ab.nn.stat.db'
-    Const.data_dir_global = data_dir
-    Const.db_dir_global = dataset_file
+    Const.data_dir_global = 'data'
+    Const.db_dir_global = join('db', 'ab.nn.stat.db')
     if exists(stat_dir):
         project_root = ['..'] * len(to_nn)
-        Const.data_dir_global = join(*project_root, data_dir)
-        Const.db_dir_global = join(*project_root, dataset_file)
+        Const.data_dir_global = join(*project_root, Const.data_dir_global)
+        Const.db_dir_global = join(*project_root, Const.db_dir_global)
 
 def max_batch (binary_power):
     return 2 ** binary_power

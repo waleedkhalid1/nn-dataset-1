@@ -775,5 +775,26 @@
         "lr": 0.09517555639604895,
         "momentum": 0.08500802543135658,
         "transform": "cifar10_norm_32"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 2,
+        "lr": 0.7096675048861807,
+        "momentum": 0.042788978125203686,
+        "transform": "cifar10_complex"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 256,
+        "lr": 0.3175361820974442,
+        "momentum": 0.013456795320751022,
+        "transform": "cifar10_complex"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 8,
+        "lr": 0.5333479764808746,
+        "momentum": 0.08662123073490095,
+        "transform": "cifar10_complex"
     }
 ]

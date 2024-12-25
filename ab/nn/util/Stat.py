@@ -31,14 +31,15 @@ def provide_all_configs(config) -> tuple[str]:
 
 def initialize_database():
     """
-    Initialize the SQLite database and create the `results` table if it doesn't exist.
+    Initialize the SQLite database and create the `stat` table if it doesn't exist.
     """
+    makedirs(Path(Const.db_dir_global).parent.absolute(), exist_ok=True)
     conn = sqlite3.connect(Const.db_dir_global)
     cursor = conn.cursor()
 
     # Create table if it doesn't exist
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS results (
+    CREATE TABLE IF NOT EXISTS stat (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         config_model_name TEXT,
         accuracy REAL,
@@ -61,7 +62,7 @@ def save_results(model_dir, study, config_model_name, epoch):
     :param study: Optuna study object.
     :param config_model_name: Config (Task, Dataset, Normalization) and Model name.
     """
-    ensure_directory_exists(model_dir)
+    makedirs(model_dir, exist_ok=True)
 
     # Save all trials as trials.json
     trials_df = study.trials_dataframe()
@@ -119,7 +120,7 @@ def save_results(model_dir, study, config_model_name, epoch):
     # Insert each trial into the database with epoch
     for trial in trials_dict:
         cursor.execute("""
-        INSERT INTO results (config_model_name, accuracy, batch_size, lr, momentum, transform, epoch)
+        INSERT INTO stat (config_model_name, accuracy, batch_size, lr, momentum, transform, epoch)
         VALUES (?, ?, ?, ?, ?, ?, ?)
         """, (config_model_name, trial['accuracy'], trial['batch_size'], trial['lr'],
               trial['momentum'], trial['transform'], epoch))

@@ -58,7 +58,7 @@ def main(config: str | tuple = default_config, n_epochs: int | tuple = default_e
                                             lr = trial.suggest_float('lr', 1e-4, 1, log=False)
                                             momentum = trial.suggest_float('momentum', 0.01, 0.99, log=True)
                                     batch_size = trial.suggest_categorical('batch_size', [max_batch(x) for x in range(max_batch_binary_power_local + 1)])
-                                    print(f"Initialize training with lr = {lr}, momentum = {momentum}, batch_size = {batch_size}, transformation: {transform_name}")
+                                    print(f"Initialize training with lr = {lr}, momentum = {momentum}, batch_size = {batch_size}, transform: {transform_name}")
 
                                     # Load dataset with the chosen transformation
                                     loader_path = f"loader.{dataset_name}.loader"
