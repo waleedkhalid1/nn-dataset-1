@@ -33,8 +33,7 @@ def initialize_database():
     """
     Initialize the SQLite database and create the `results` table if it doesn't exist.
     """
-    db_path = Const.stat_db_global # Path to the SQLite database.
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(Const.stat_db_global)
     cursor = conn.cursor()
 
     # Create table if it doesn't exist
