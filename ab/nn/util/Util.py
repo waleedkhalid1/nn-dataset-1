@@ -47,9 +47,13 @@ def define_global_paths():
     Const.dataset_dir_global = join(pref, 'dataset')
 
     data_dir = 'data'
+    dataset_file = 'ab.nn.stat.db'
     Const.data_dir_global = data_dir
+    Const.stat_db_global = dataset_file
     if exists(stat_dir):
-        Const.data_dir_global = join(*(['..'] * len(to_nn)), data_dir)
+        project_root = ['..'] * len(to_nn)
+        Const.data_dir_global = join(*project_root, data_dir)
+        Const.stat_db_global = join(*project_root, dataset_file)
 
 def max_batch (binary_power):
     return 2 ** binary_power

@@ -1,0 +1,702 @@
+[
+    {
+        "accuracy": 0.0,
+        "batch_size": 1024,
+        "lr": 0.00012617074164994035,
+        "momentum": 0.9257710472100543,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 64,
+        "lr": 0.0029238232287808175,
+        "momentum": 0.8633009483129289,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 2048,
+        "lr": 0.007084038828223818,
+        "momentum": 0.8558660159311716,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 8,
+        "lr": 0.005655573119270924,
+        "momentum": 0.8838333896659897,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 4096,
+        "lr": 0.0050081920675946745,
+        "momentum": 0.9372874109740402,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 16,
+        "lr": 0.004653044408453313,
+        "momentum": 0.9259171116417294,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 32,
+        "lr": 0.00024071644318391738,
+        "momentum": 0.807934489463772,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1,
+        "lr": 0.00550597499172603,
+        "momentum": 0.8273533708715023,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 4096,
+        "lr": 0.0009866018833077153,
+        "momentum": 0.8716703166435094,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1,
+        "lr": 0.006391906597571335,
+        "momentum": 0.9645329377430523,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1024,
+        "lr": 0.009916867733737997,
+        "momentum": 0.9884921539922306,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 64,
+        "lr": 0.002306033327204717,
+        "momentum": 0.9173979255994777,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 64,
+        "lr": 0.002883402088566031,
+        "momentum": 0.8486472762142409,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 2,
+        "lr": 0.002755900118260068,
+        "momentum": 0.8977429774020995,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1024,
+        "lr": 0.0016641593537561,
+        "momentum": 0.9037731521128741,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 128,
+        "lr": 0.0036398452441427026,
+        "momentum": 0.9491298838066915,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 4,
+        "lr": 0.00014459273906541545,
+        "momentum": 0.8615595847457678,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 256,
+        "lr": 0.008012218921996274,
+        "momentum": 0.8359530765752216,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 512,
+        "lr": 0.0039397274731701685,
+        "momentum": 0.8788156631245154,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 64,
+        "lr": 0.001290278562681289,
+        "momentum": 0.8034036124834126,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1024,
+        "lr": 0.0038548136449838796,
+        "momentum": 0.9130256244151848,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 2048,
+        "lr": 0.007943825536573135,
+        "momentum": 0.8567154426715606,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 2048,
+        "lr": 0.007235929930117536,
+        "momentum": 0.8305874517281461,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 16,
+        "lr": 0.009883605564653154,
+        "momentum": 0.8921544559114443,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 2048,
+        "lr": 0.008826552257656179,
+        "momentum": 0.8468637312410782,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 8,
+        "lr": 0.006253470705758622,
+        "momentum": 0.8713742016781634,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 512,
+        "lr": 0.006715568764789388,
+        "momentum": 0.9518687214051383,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 2,
+        "lr": 0.0021281598241071234,
+        "momentum": 0.8191793444519636,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 128,
+        "lr": 0.003292707693970209,
+        "momentum": 0.8453901987847894,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 32,
+        "lr": 0.0008937864085823974,
+        "momentum": 0.8907421226823011,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 256,
+        "lr": 0.004282393486447871,
+        "momentum": 0.8803003137911601,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 8,
+        "lr": 0.005466403226628091,
+        "momentum": 0.9316830832835619,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 8,
+        "lr": 0.004879811121483458,
+        "momentum": 0.8638316756807006,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 4,
+        "lr": 0.0057872660649955845,
+        "momentum": 0.9039786536771082,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 4096,
+        "lr": 0.007324978023194696,
+        "momentum": 0.877704203786778,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 64,
+        "lr": 0.0045966492824794855,
+        "momentum": 0.9160926825283683,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 2048,
+        "lr": 0.00573961579079834,
+        "momentum": 0.9406217718329425,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1024,
+        "lr": 0.008779809165100953,
+        "momentum": 0.8163192315333699,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1,
+        "lr": 0.005230385630372805,
+        "momentum": 0.9772800068425662,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 8,
+        "lr": 0.0068207929857001925,
+        "momentum": 0.8392086120828322,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 16,
+        "lr": 0.0006676873756519966,
+        "momentum": 0.8574470005572353,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 4096,
+        "lr": 0.005961424985342729,
+        "momentum": 0.9276026237446194,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 4096,
+        "lr": 0.0018114638707363423,
+        "momentum": 0.9611054157007769,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 32,
+        "lr": 0.0027815787012865187,
+        "momentum": 0.8708697523234671,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 64,
+        "lr": 0.004862380292410893,
+        "momentum": 0.9372577793185166,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1024,
+        "lr": 0.0032786298702046648,
+        "momentum": 0.9052327422817371,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 4096,
+        "lr": 0.0043232432671861,
+        "momentum": 0.8812684949700113,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1,
+        "lr": 0.0062381291974339245,
+        "momentum": 0.920521310456199,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 64,
+        "lr": 0.00771616664184277,
+        "momentum": 0.8961587175324929,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1024,
+        "lr": 0.002418099691904596,
+        "momentum": 0.8535069292488934,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 2,
+        "lr": 0.006801897961269715,
+        "momentum": 0.8661295295962972,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 16,
+        "lr": 0.005336883296407507,
+        "momentum": 0.951983515005096,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 16,
+        "lr": 0.0034160140399907375,
+        "momentum": 0.9266922869399375,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 2048,
+        "lr": 0.0005454891110285983,
+        "momentum": 0.9429095626277721,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 128,
+        "lr": 0.0012298387098035972,
+        "momentum": 0.8860562307531851,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 512,
+        "lr": 0.004116816552172259,
+        "momentum": 0.9096729213539493,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 4,
+        "lr": 0.003628102221694354,
+        "momentum": 0.9639856884410463,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 256,
+        "lr": 0.005140127858761305,
+        "momentum": 0.9223068418139029,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 16,
+        "lr": 0.004535263504540941,
+        "momentum": 0.9742211436103231,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 8,
+        "lr": 0.008456327082746412,
+        "momentum": 0.8968847514195728,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 64,
+        "lr": 0.00011316747949617796,
+        "momentum": 0.8510348790555669,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 32,
+        "lr": 0.0004638282787625374,
+        "momentum": 0.8042286221365806,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 32,
+        "lr": 0.0015173943560155734,
+        "momentum": 0.8437005140163373,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 2048,
+        "lr": 0.001139112878599884,
+        "momentum": 0.8305469511996015,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 32,
+        "lr": 0.0020850856976219606,
+        "momentum": 0.8108138184542353,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1024,
+        "lr": 0.009633819785186688,
+        "momentum": 0.8234277357991657,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 4096,
+        "lr": 0.006322490329535327,
+        "momentum": 0.9333042979378509,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 8,
+        "lr": 0.000900538088447778,
+        "momentum": 0.9473481113985116,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 2,
+        "lr": 0.003026150302800345,
+        "momentum": 0.9107611627497342,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 2048,
+        "lr": 0.007299504918981849,
+        "momentum": 0.8731208371604398,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 512,
+        "lr": 0.004670304005961026,
+        "momentum": 0.8895600361209368,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1,
+        "lr": 0.0059320235372874505,
+        "momentum": 0.8269581125518191,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1,
+        "lr": 0.005605421607360018,
+        "momentum": 0.8091958331715692,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 128,
+        "lr": 0.006998711917739897,
+        "momentum": 0.8594380398762894,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1,
+        "lr": 0.003975625104765626,
+        "momentum": 0.8397254993409273,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 64,
+        "lr": 0.005095320900377108,
+        "momentum": 0.8149350631873595,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1024,
+        "lr": 0.006033289505698516,
+        "momentum": 0.8340269286482135,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 256,
+        "lr": 0.006460603658536223,
+        "momentum": 0.8702284864934303,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 16,
+        "lr": 0.002398883647249582,
+        "momentum": 0.8082961832187696,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 4096,
+        "lr": 0.005519172229608092,
+        "momentum": 0.821193554405215,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 4,
+        "lr": 0.00660092528323838,
+        "momentum": 0.8023892766998257,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 4096,
+        "lr": 0.00022079646001315874,
+        "momentum": 0.8652595313519658,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 4096,
+        "lr": 0.0008448382157999234,
+        "momentum": 0.8845595338686962,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 8,
+        "lr": 0.0003830375781282993,
+        "momentum": 0.8776041465505012,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 32,
+        "lr": 0.0016840385209839438,
+        "momentum": 0.8537342430752093,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 4096,
+        "lr": 0.0007840356814572364,
+        "momentum": 0.9003188840092993,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 2048,
+        "lr": 0.004806302604776158,
+        "momentum": 0.876085096389028,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 64,
+        "lr": 0.007568096424019161,
+        "momentum": 0.9562937538919122,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1024,
+        "lr": 0.004307781456694977,
+        "momentum": 0.9253330321923795,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1,
+        "lr": 0.0013409593878440382,
+        "momentum": 0.8622981862885962,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 16,
+        "lr": 0.0011015459145220959,
+        "momentum": 0.9171218950241445,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 8,
+        "lr": 0.005385178857512425,
+        "momentum": 0.9327859191913374,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1,
+        "lr": 0.005733344894126503,
+        "momentum": 0.9394228984725684,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 4096,
+        "lr": 0.007038060396553691,
+        "momentum": 0.9863481714258119,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1,
+        "lr": 0.006168998873442907,
+        "momentum": 0.9694783635070212,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 32,
+        "lr": 0.0002987279383414758,
+        "momentum": 0.884446170244446,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 2,
+        "lr": 0.005030422551830709,
+        "momentum": 0.9840315704993639,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1,
+        "lr": 0.008175706305466168,
+        "momentum": 0.8477949878618172,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 2048,
+        "lr": 0.0005710047524729565,
+        "momentum": 0.8682046420827972,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 64,
+        "lr": 0.006574591730487612,
+        "momentum": 0.8934681286609184,
+        "transform": "echo"
+    }
+]
