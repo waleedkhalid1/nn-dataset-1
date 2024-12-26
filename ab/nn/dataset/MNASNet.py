@@ -60,6 +60,13 @@ def _get_depths(alpha: float) -> List[int]:
 
 
 class Net(torch.nn.Module):
+
+    def criterion(self, prm):
+        return nn.CrossEntropyLoss()
+
+    def optimizer(self, prm):
+        return torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
+
     _version = 2
 
     def __init__(self, alpha: float = 0.75, num_classes: int = 1000, dropout: float = 0.2) -> None:

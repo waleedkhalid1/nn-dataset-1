@@ -313,6 +313,16 @@ vgg_cfgs: Dict[str, List[Union[str, int]]] = {
 
 
 class Net(nn.Module):
+
+    def criterion(self, prm):
+        return nn.CrossEntropyLoss(ignore_index=-1)
+
+    def optimizer(self, prm):
+        params_list = [{'params': self.backbone.parameters(), 'lr': prm['lr']}]
+        for module in self.exclusive:
+            params_list.append({'params': getattr(self, module).parameters(), 'lr': prm['lr'] * 10})
+        return torch.optim.SGD(params_list, lr=prm['lr'], momentum=prm['momentum'])
+
     def __init__(self) -> None:
         super().__init__()
         backbone : List[nn.Module] = [VGG(make_layers(vgg_cfgs["D"]),num_classes=100),FCNHead(512, 21)]

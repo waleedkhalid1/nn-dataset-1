@@ -190,6 +190,13 @@ class FusedMBConv(nn.Module):
 
 
 class Net(nn.Module):
+
+    def criterion(self, prm):
+        return nn.CrossEntropyLoss()
+
+    def optimizer(self, prm):
+        return torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
+
     def __init__(
         self,
         inverted_residual_setting: Sequence[Union[MBConvConfig, FusedMBConvConfig]] = None,

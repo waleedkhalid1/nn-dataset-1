@@ -315,20 +315,24 @@ class ResNet(nn.Module):
 
 
 class Net(nn.Module):
+
+    def criterion(self, prm):
+        return nn.CrossEntropyLoss(ignore_index=-1)
+
+    def optimizer(self, prm):
+        params_list = [{'params': self.backbone.parameters(), 'lr': prm['lr']}]
+        for module in self.exclusive:
+            params_list.append({'params': getattr(self, module).parameters(), 'lr': prm['lr'] * 10})
+        return torch.optim.SGD(params_list, lr=prm['lr'], momentum=prm['momentum'])
+
     __constants__ = ["aux_classifier"]
 
-    def __init__(
-            self,
-            backbone: nn.Module = ResNet(Bottleneck, [3, 4, 23, 3], num_classes=100, replace_stride_with_dilation=[False, True, True]),
-            classifier: nn.Module = DeepLabHead(2048, 21),
-            aux_classifier: Optional[nn.Module] = None,
-            **kwargs
-    ) -> None:
+    def __init__(self) -> None:
         super(Net, self).__init__()
-        self.backbone = backbone
-        self.classifier = classifier
-        self.aux_classifier = aux_classifier
-        self.__setattr__('exclusive', ['classifier'] if aux_classifier == None else ['classifier', 'aux_classifier'])
+        self.backbone: nn.Module = ResNet(Bottleneck, [3, 4, 23, 3], num_classes=100, replace_stride_with_dilation=[False, True, True])
+        self.classifier: nn.Module = DeepLabHead(2048, 21)
+        self.aux_classifier: Optional[nn.Module] = None
+        self.__setattr__('exclusive', ['classifier'] if self.aux_classifier == None else ['classifier', 'aux_classifier'])
 
     def forward(self, x: Tensor) -> Union[Dict[str, Tensor], Tensor]:
         input_shape = x.shape[-2:]

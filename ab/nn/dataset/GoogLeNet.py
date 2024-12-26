@@ -13,6 +13,13 @@ _GoogLeNetOutputs = GoogLeNetOutputs
 
 
 class Net(nn.Module):
+
+    def criterion(self, prm):
+        return nn.CrossEntropyLoss()
+
+    def optimizer(self, prm):
+        return torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
+
     __constants__ = ["aux_logits", "transform_input"]
 
     def __init__(

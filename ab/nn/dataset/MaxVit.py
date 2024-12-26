@@ -400,6 +400,13 @@ args = [
 ]
 
 class Net(nn.Module):
+
+    def criterion(self, prm):
+        return nn.CrossEntropyLoss()
+
+    def optimizer(self, prm):
+        return torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
+
     def __init__(
         self,
         input_size: Tuple[int, int] = (299, 299),

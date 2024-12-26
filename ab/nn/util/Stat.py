@@ -5,6 +5,28 @@ from os import listdir
 from ab.nn.util.Util import *
 
 
+
+def count_trials_left(trial_file, model_name, n_optuna_trials):
+    """
+    Calculates the remaining Optuna trials based on the completed ones. Checks for a "trials.json" file in the
+    specified directory to determine how many trials have been completed, and returns the number of trials left.
+    :param trial_file: Trial file path
+    :param model_name: Name of the model.
+    :param n_optuna_trials: Either the total number of Optuna trials, or if the value is negative or a string, it is considered the number of additional Optuna trials.
+    :return: n_trials_left: Remaining trials.
+    """
+    n_passed_trials = 0
+    if exists(trial_file):
+        with open(trial_file, "r") as f:
+            trials = json.load(f)
+            n_passed_trials = len(trials)
+    if isinstance(n_optuna_trials, str):
+        n_optuna_trials = - int(n_optuna_trials)
+    n_trials_left = abs(n_optuna_trials) if n_optuna_trials < 0 else max(0, n_optuna_trials - n_passed_trials)
+    if n_passed_trials > 0:
+        print(f"The {model_name} passed {n_passed_trials} trials, {n_trials_left} left.")
+    return n_trials_left
+
 def extract_all_configs(config) -> list[str]:
     """
     Collect models matching the given configuration prefix
@@ -18,7 +40,7 @@ def extract_all_configs(config) -> list[str]:
 
 # todo: Request information from database 
 # once the database is loaded, the function will be updated
-def provide_all_configs(config) -> tuple[str]:
+def get_configs(config) -> tuple[str]:
     if not isinstance(config, tuple):
         config = (config,)
     all_configs = []

@@ -29,6 +29,13 @@ cfgs: Dict[str, List[Union[str, int]]] = {
 
 
 class Net(nn.Module):
+
+    def criterion(self, prm):
+        return nn.CrossEntropyLoss()
+
+    def optimizer(self, prm):
+        return torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
+
     def __init__(
             self, features: nn.Module = make_layers(cfgs["A"], batch_norm=False), num_classes: int = 1000, init_weights: bool = True, dropout: float = 0.5
     ) -> None:

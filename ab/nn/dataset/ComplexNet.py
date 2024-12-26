@@ -235,6 +235,13 @@ class ComplexLinear(Module):
 
 
 class Net(nn.Module):
+
+    def criterion(self, prm):
+        return nn.CrossEntropyLoss()
+
+    def optimizer(self, prm):
+        return torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
+
     def __init__(self):
         super(Net, self).__init__()
         self.conv1 = ComplexConv2d(3, 10, 5, 1)

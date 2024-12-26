@@ -6,6 +6,7 @@ from tqdm import tqdm
 
 from ab.nn.util.Util import nn_mod, get_attr
 
+
 class Train:
     def __init__(self, model_source_package, task_type, train_dataset, test_dataset, metric, output_dimension: int,
                  lr: float, momentum: float, batch_size: int):
@@ -80,25 +81,11 @@ class Train:
         return outputs
 
     def evaluate(self, num_epochs):
-        train_loader = torch.utils.data.DataLoader(
-            self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=2
-        )
-        test_loader = torch.utils.data.DataLoader(
-            self.test_dataset, batch_size=self.batch_size, shuffle=False, num_workers=2
-        )
-        # Criterion и Optimizer
-        if self.task == "img_segmentation":
-            params_list = []
-            criterion = torch.nn.CrossEntropyLoss(ignore_index=-1).to(self.device)
-            if hasattr(self.model, 'backbone'):
-                params_list.append({'params': self.model.backbone.parameters(), 'lr': self.lr})
-            if hasattr(self.model, 'exclusive'):
-                for module in self.model.exclusive:
-                    params_list.append({'params': getattr(self.model, module).parameters(), 'lr': self.lr * 10})
-            optimizer = torch.optim.SGD(params_list, lr=self.lr, momentum=self.momentum)
-        else:
-            criterion = torch.nn.CrossEntropyLoss().to(self.device)
-            optimizer = torch.optim.SGD(self.model.parameters(), lr=self.lr, momentum=self.momentum)
+        train_loader = torch.utils.data.DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=2)
+        test_loader = torch.utils.data.DataLoader(self.test_dataset, batch_size=self.batch_size, shuffle=False, num_workers=2)
+
+        criterion = self.model.criterion({}).to(self.device)
+        optimizer = self.model.optimizer({'lr': self.lr, 'momentum': self.momentum})
 
         # --- Training --- #
         for epoch in range(num_epochs):

@@ -249,16 +249,22 @@ def mobilenet_v3_large(
 
 
 class Net(nn.Module):
-    def __init__(
-        self,
-        backbone: MobileNetV3 | nn.Module = MobileNetV3(*_mobilenet_v3_conf("mobilenet_v3_large"), num_classes = 100),
-        low_channels: int | None = None,
-        high_channels: int | None = None,
-        num_classes: int=21,
-        inter_channels: int = 128,
-        **kwargs
-    ) -> None:
+
+    def criterion(self, prm):
+        return nn.CrossEntropyLoss(ignore_index=-1)
+
+    def optimizer(self, prm):
+        params_list = [{'params': self.backbone.parameters(), 'lr': prm['lr']}]
+        for module in self.exclusive:
+            params_list.append({'params': getattr(self, module).parameters(), 'lr': prm['lr'] * 10})
+        return torch.optim.SGD(params_list, lr=prm['lr'], momentum=prm['momentum'])
+
+    def __init__(self, num_classes: int = 21) -> None:
         super().__init__()
+        backbone: MobileNetV3 | nn.Module = MobileNetV3(*_mobilenet_v3_conf("mobilenet_v3_large"), num_classes=100)
+        low_channels: int | None = None
+        high_channels: int | None = None
+        inter_channels: int = 128
         if low_channels is None or high_channels is None or type(backbone)==MobileNetV3:
             backbone = backbone.features
             stage_indices = [0] + [i for i, b in enumerate(backbone) if getattr(b, "_is_cn", False)] + [len(backbone) - 1]
@@ -270,7 +276,7 @@ class Net(nn.Module):
             self.backbone = backbone
         else:
             self.backbone = backbone
-        self.classifier = LRASPPHead(low_channels, high_channels, num_classes, inter_channels, **kwargs)
+        self.classifier = LRASPPHead(low_channels, high_channels, num_classes, inter_channels)
         self.__setattr__('exclusive',['classifier'])
 
     def forward(self, input: Tensor) -> Dict[str, Tensor]:
@@ -282,7 +288,7 @@ class Net(nn.Module):
 
 
 class LRASPPHead(nn.Module):
-    def __init__(self, low_channels: int, high_channels: int, num_classes: int, inter_channels: int, **kwargs) -> None:
+    def __init__(self, low_channels: int, high_channels: int, num_classes: int, inter_channels: int) -> None:
         super().__init__()
         self.cbr = nn.Sequential(
             nn.Conv2d(high_channels, inter_channels, 1, bias=False),

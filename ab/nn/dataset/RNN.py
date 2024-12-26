@@ -3,6 +3,13 @@ import torch.nn as nn
 
 
 class Net(nn.Module):
+
+    def criterion(self, prm):
+        return nn.CrossEntropyLoss()
+
+    def optimizer(self, prm):
+        return torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
+
     def __init__(self, input_size: int = 128, hidden_size: int = 256, output_size: int = 10, batch_size: int = 1, num_layers: int = 1) -> None:
         super().__init__()
         self.input_size = input_size

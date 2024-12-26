@@ -63,6 +63,16 @@ class OutConv(nn.Module):
 
 
 class Net(nn.Module):
+
+    def criterion(self, prm):
+        return nn.CrossEntropyLoss(ignore_index=-1)
+
+    def optimizer(self, prm):
+        params_list = []
+        for module in self.exclusive:
+            params_list.append({'params': getattr(self, module).parameters(), 'lr': prm['lr'] * 10})
+        return torch.optim.SGD(params_list, lr=prm['lr'], momentum=prm['momentum'])
+
     def __init__(self, num_classes = 21, bilinear=False, **args):
         super(Net, self).__init__()
         self.n_channels = 3

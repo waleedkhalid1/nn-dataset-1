@@ -179,6 +179,13 @@ class BBBConv2d(ModuleWrapper):
 
 
 class Net(ModuleWrapper):
+
+    def criterion(self, prm):
+        return nn.CrossEntropyLoss()
+
+    def optimizer(self, prm):
+        return torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
+
     def __init__(self, inputs: int = 3, outputs: int = 10):
         super(Net, self).__init__()
 
