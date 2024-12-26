@@ -81,6 +81,12 @@ def args():
         help="Maximum binary power for batch size: for a value of 6, the batch size is 2**6 = 64",
         default=default_max_batch_power)
     parser.add_argument(
+        '-l',
+        '--max_learning_rate',
+        type=float,
+        help="Maximum value of learning rate.",
+        default=default_max_learning_rate)
+    parser.add_argument(
         '-f',
         '--transform',
         type=str,
