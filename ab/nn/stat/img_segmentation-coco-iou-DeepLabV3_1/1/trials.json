@@ -728,10 +728,38 @@
         "transform": "echo"
     },
     {
+        "accuracy": 0.0414348766207695,
+        "batch_size": 64,
+        "lr": 0.0017711238640875091,
+        "momentum": 0.6143356483649961,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.03729277476668358,
+        "batch_size": 64,
+        "lr": 0.00011893879685473924,
+        "momentum": 0.5892455545069232,
+        "transform": "echo"
+    },
+    {
         "accuracy": 0.0,
         "batch_size": 1,
         "lr": 0.00169220304917628,
         "momentum": 0.8229533263547788,
         "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 64,
+        "lr": 0.0064834723874768845,
+        "momentum": 0.9121939362609595,
+        "transform": "cifar10_complex"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1024,
+        "lr": 3.738944540356621e-05,
+        "momentum": 0.7210837939000807,
+        "transform": "cifar10_norm_32"
     }
 ]

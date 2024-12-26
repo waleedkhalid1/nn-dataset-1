@@ -84,6 +84,13 @@
         "transform": "cifar10_norm"
     },
     {
+        "accuracy": 0.452,
+        "batch_size": 64,
+        "lr": 0.06596924585491518,
+        "momentum": 0.37921022764673096,
+        "transform": "cifar10_norm"
+    },
+    {
         "accuracy": 0.4349,
         "batch_size": 4,
         "lr": 0.024740573115836814,
@@ -105,10 +112,24 @@
         "transform": "cifar10_norm"
     },
     {
+        "accuracy": 0.4168,
+        "batch_size": 64,
+        "lr": 0.10372782835246029,
+        "momentum": 0.23062827244895973,
+        "transform": "cifar10_norm"
+    },
+    {
         "accuracy": 0.4149,
         "batch_size": 32,
         "lr": 0.04143548971416018,
         "momentum": 0.5760042362604021,
+        "transform": "cifar10_norm"
+    },
+    {
+        "accuracy": 0.4055,
+        "batch_size": 64,
+        "lr": 0.12937141910076697,
+        "momentum": 0.28247814786331893,
         "transform": "cifar10_norm"
     },
     {
@@ -168,6 +189,34 @@
         "transform": "cifar10_norm"
     },
     {
+        "accuracy": 0.3468,
+        "batch_size": 64,
+        "lr": 0.13759967260545952,
+        "momentum": 0.2985356250503242,
+        "transform": "cifar10_norm"
+    },
+    {
+        "accuracy": 0.344,
+        "batch_size": 32,
+        "lr": 0.020174722738053884,
+        "momentum": 0.047951327188132886,
+        "transform": "cifar10_norm"
+    },
+    {
+        "accuracy": 0.3391,
+        "batch_size": 64,
+        "lr": 0.037848345145126736,
+        "momentum": 0.16142415598913606,
+        "transform": "cifar10_norm"
+    },
+    {
+        "accuracy": 0.3338,
+        "batch_size": 64,
+        "lr": 0.043118497497602465,
+        "momentum": 0.16300269056197053,
+        "transform": "cifar10_norm"
+    },
+    {
         "accuracy": 0.3178,
         "batch_size": 32,
         "lr": 0.21695867497509508,
@@ -189,6 +238,41 @@
         "transform": "cifar10_norm"
     },
     {
+        "accuracy": 0.2767,
+        "batch_size": 64,
+        "lr": 0.1769671344000293,
+        "momentum": 0.40246563019375226,
+        "transform": "cifar10_norm"
+    },
+    {
+        "accuracy": 0.2706,
+        "batch_size": 32,
+        "lr": 0.011979381784329042,
+        "momentum": 0.029220344366751194,
+        "transform": "cifar10_norm"
+    },
+    {
+        "accuracy": 0.2648,
+        "batch_size": 32,
+        "lr": 0.014814703966060147,
+        "momentum": 0.01214792844166493,
+        "transform": "cifar10_norm"
+    },
+    {
+        "accuracy": 0.2471,
+        "batch_size": 128,
+        "lr": 0.524378155582084,
+        "momentum": 0.3183068320371559,
+        "transform": "cifar10_norm"
+    },
+    {
+        "accuracy": 0.2451,
+        "batch_size": 32,
+        "lr": 0.010679726171999806,
+        "momentum": 0.029786688720982474,
+        "transform": "cifar10_norm"
+    },
+    {
         "accuracy": 0.2366,
         "batch_size": 64,
         "lr": 0.021522729180551876,
@@ -203,10 +287,45 @@
         "transform": "cifar10_norm"
     },
     {
+        "accuracy": 0.173,
+        "batch_size": 32,
+        "lr": 0.0034233263913007518,
+        "momentum": 0.4285234282292187,
+        "transform": "cifar10_norm"
+    },
+    {
+        "accuracy": 0.1552,
+        "batch_size": 8,
+        "lr": 0.001516668868957231,
+        "momentum": 0.5410497833272052,
+        "transform": "cifar10_norm"
+    },
+    {
+        "accuracy": 0.1466,
+        "batch_size": 64,
+        "lr": 0.002240474967615597,
+        "momentum": 0.6497324309714256,
+        "transform": "cifar10_norm"
+    },
+    {
         "accuracy": 0.126,
         "batch_size": 4,
         "lr": 0.00010290508938211318,
         "momentum": 0.17988555333099346,
+        "transform": "cifar10_norm"
+    },
+    {
+        "accuracy": 0.1097,
+        "batch_size": 256,
+        "lr": 0.19059461460483917,
+        "momentum": 0.2526699571407815,
+        "transform": "cifar10_norm"
+    },
+    {
+        "accuracy": 0.1011,
+        "batch_size": 1024,
+        "lr": 0.04557311128833122,
+        "momentum": 0.11657968141241794,
         "transform": "cifar10_norm"
     },
     {
@@ -887,5 +1006,103 @@
         "lr": 0.07906888498045135,
         "momentum": 0.27148435744920024,
         "transform": "cifar10_complex"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 2,
+        "lr": 0.15464995973616683,
+        "momentum": 0.1431489234952241,
+        "transform": "cifar10_complex"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 2,
+        "lr": 0.0002697259458706061,
+        "momentum": 0.9751385647843998,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 512,
+        "lr": 0.00019378560690947206,
+        "momentum": 0.5163993830071882,
+        "transform": "cifar10_complex"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1,
+        "lr": 4.0193310579241225e-05,
+        "momentum": 0.7607106745991344,
+        "transform": "cifar10_norm_32"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 256,
+        "lr": 0.0001941960772119952,
+        "momentum": 0.7251953368490495,
+        "transform": "cifar10_complex"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 16,
+        "lr": 1.4686501740132124e-05,
+        "momentum": 0.3306259366517498,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 2,
+        "lr": 0.9027266799485429,
+        "momentum": 0.22958557212654848,
+        "transform": "cifar10_norm_32"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 4,
+        "lr": 3.402848331789764e-05,
+        "momentum": 0.9759145415558949,
+        "transform": "cifar10_norm_32"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 4,
+        "lr": 0.3029683716595443,
+        "momentum": 0.14075918582233102,
+        "transform": "cifar10_complex"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 64,
+        "lr": 0.08822221951659799,
+        "momentum": 0.40300744298812097,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 64,
+        "lr": 0.005659172443156631,
+        "momentum": 0.6072484818870802,
+        "transform": "cifar10_complex"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 1024,
+        "lr": 0.39536855350073175,
+        "momentum": 0.23501931334451076,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 128,
+        "lr": 0.0900932200453116,
+        "momentum": 0.431682229918236,
+        "transform": "cifar10_norm_32"
+    },
+    {
+        "accuracy": 0.0,
+        "batch_size": 512,
+        "lr": 0.000897730387475669,
+        "momentum": 0.8642276346151228,
+        "transform": "echo"
     }
 ]
