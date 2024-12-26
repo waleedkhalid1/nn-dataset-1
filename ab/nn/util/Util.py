@@ -1,7 +1,5 @@
 import argparse
-import json
 import math
-from os import makedirs
 from os.path import exists, join
 from pathlib import Path
 
@@ -56,36 +54,26 @@ class CudaOutOfMemory(Exception):
 
 def args():
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '-c',
-        '--config',
-        type=str,
-        default=default_config,
-        help="Configuration specifying the model training pipelines. The default value for all configurations.")
-    parser.add_argument(
-        '-e',
-        '--epochs',
-        type=int,
-        help="Numbers of training epochs",
-        default=default_epochs)
-    parser.add_argument(
-        '-t',
-        '--trials',
-        type=int,
-        help="Number of Optuna trials",
-        default=default_trials)
-    parser.add_argument(
-        '-b',
-        '--max_batch_binary_power',
-        type=int,
-        help="Maximum binary power for batch size: for a value of 6, the batch size is 2**6 = 64",
-        default=default_max_batch_power)
-    parser.add_argument(
-        '-f',
-        '--transform',
-        type=str,
-        help="The transformation algorithm name. If None (default), all available algorithms are used by Optuna.",
-        default=default_transform)
+    parser.add_argument('-c', '--config', type=str, default=default_config,
+                        help="Configuration specifying the model training pipelines. The default value for all configurations.")
+    parser.add_argument('-e', '--epochs', type=int, default=default_epochs,
+                        help="Numbers of training epochs")
+    parser.add_argument('-t', '--trials', type=int, default=default_trials,
+                        help="Number of Optuna trials")
+    parser.add_argument('--min_batch_binary_power', type=int, default=default_min_batch_power,
+                        help="Minimum power of two for batch size. E.g., with a value of 0, it equals 2**0 = 1.")
+    parser.add_argument('-b', '--max_batch_binary_power', type=int, default=default_max_batch_power,
+                        help="Maximum power of two for batch size. E.g., with a value of 12, it equals 2**12 = 2048.")
+    parser.add_argument('--min_learning_rate', type=float, default=default_min_lr,
+                        help="Minimum value of learning rate.")
+    parser.add_argument('-l', '--max_learning_rate', type=float, default=default_max_lr,
+                        help="Maximum value of learning rate.")
+    parser.add_argument('--min_momentum', type=float, default=default_min_momentum,
+                        help="Minimum value of momentum.")
+    parser.add_argument('-m', '--max_momentum', type=float, default=default_max_momentum,
+                        help="Maximum value of momentum.")
+    parser.add_argument('-f', '--transform', type=str, default=default_transform,
+                        help="The transformation algorithm name. If None (default), all available algorithms are used by Optuna.")
     return parser.parse_args()
 
 

@@ -7,14 +7,22 @@ from ab.nn.util.Train import Train
 
 
 def main(config: str | tuple = default_config, n_epochs: int | tuple = default_epochs,
-         n_optuna_trials: int | str = default_trials, max_batch_binary_power: int = default_max_batch_power,
+         n_optuna_trials: int | str = default_trials,
+         min_batch_binary_power: int = default_min_batch_power, max_batch_binary_power: int = default_max_batch_power,
+         min_learning_rate: float = default_min_lr, max_learning_rate: float = default_max_lr,
+         min_momentum: float = default_min_momentum, max_momentum: float = default_max_momentum,
          transform: str = None):
     """
     Main function for training models using Optuna optimization.
     :param config: Configuration specifying the model training pipelines. The default value for all configurations.
     :param n_epochs: Number or tuple of numbers of training epochs.
     :param n_optuna_trials: Number of Optuna trials.
-    :param max_batch_binary_power: Maximum binary power for batch size: for a value of 6, the batch size is 2**6 = 64.
+    :param min_batch_binary_power: Minimum power of two for batch size. E.g., with a value of 0, it equals 2**0 = 1.
+    :param max_batch_binary_power: Maximum power of two for batch size. E.g., with a value of 12, it equals 2**12 = 2048.
+    :param min_learning_rate: Minimum value of learning rate.
+    :param max_learning_rate: Maximum value of learning rate.
+    :param min_momentum: Minimum value of momentum.
+    :param max_momentum: Maximum value of momentum.
     :param transform: The transformation algorithm name. If None (default), all available algorithms are used by Optuna.
     """
 
@@ -53,9 +61,9 @@ def main(config: str | tuple = default_config, n_epochs: int | tuple = default_e
                                 try:
                                     # Suggest hyperparameters
                                     transform_name = trial.suggest_categorical('transform', [transform] if transform is not None else ['cifar10_complex', 'cifar10_norm', 'cifar10_norm_32', 'echo'])
-                                    lr = trial.suggest_float('lr', 1e-5, 1, log=True)
-                                    momentum = trial.suggest_float('momentum', 1e-6, 0.99, log=False)
-                                    batch_size = trial.suggest_categorical('batch_size', [max_batch(x) for x in range(max_batch_binary_power_local + 1)])
+                                    lr = trial.suggest_float('lr', min_learning_rate, max_learning_rate, log=True)
+                                    momentum = trial.suggest_float('momentum', min_momentum, max_momentum, log=False)
+                                    batch_size = trial.suggest_categorical('batch_size', [max_batch(x) for x in range(min_batch_binary_power, max_batch_binary_power_local + 1)])
                                     print(f"Initialize training with lr: {lr}, momentum: {momentum}, batch_size: {batch_size}, transform: {transform_name}")
 
                                     # Load dataset with the chosen transformation
@@ -114,4 +122,5 @@ def main(config: str | tuple = default_config, n_epochs: int | tuple = default_e
 
 if __name__ == "__main__":
     a = args()
-    main(a.config, a.epochs, a.trials, a.max_batch_binary_power, a.transform)
+    main(a.config, a.epochs, a.trials, a.min_batch_binary_power, a.max_batch_binary_power,
+         a.min_learning_rate, a.max_learning_rate, a.min_momentum, a.max_momentum, a.transform)

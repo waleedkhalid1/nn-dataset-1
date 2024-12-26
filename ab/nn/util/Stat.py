@@ -1,9 +1,9 @@
+import json
 import os
 import sqlite3
-from os import listdir
+from os import listdir, makedirs
 
 from ab.nn.util.Util import *
-
 
 
 def count_trials_left(trial_file, model_name, n_optuna_trials):

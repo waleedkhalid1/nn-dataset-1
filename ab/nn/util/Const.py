@@ -3,7 +3,12 @@ to_nn = ('ab', 'nn')
 default_config = ''
 default_epochs = (1, 2, 5)
 default_trials = 100
+default_min_batch_power = 0
 default_max_batch_power = 12
+default_min_lr = 1e-5
+default_max_lr = 1.0
+default_min_momentum = 0.0
+default_max_momentum = 1.0
 default_transform = None
 
 global dataset_dir_global
