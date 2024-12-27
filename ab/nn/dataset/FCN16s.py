@@ -79,14 +79,21 @@ class FCNHead(nn.Sequential):
 
 class Net(nn.Module):
 
-    def criterion(self, prm):
-        return nn.CrossEntropyLoss(ignore_index=-1)
 
-    def optimizer(self, prm):
+    def train_setup(self, device, prm):
+        self.criterions = (nn.CrossEntropyLoss(ignore_index=-1).to(device),)
         params_list = [{'params': self.backbone.parameters(), 'lr': prm['lr']}]
         for module in self.exclusive:
             params_list.append({'params': getattr(self, module).parameters(), 'lr': prm['lr'] * 10})
-        return torch.optim.SGD(params_list, lr=prm['lr'], momentum=prm['momentum'])
+        self.optimizer = torch.optim.SGD(params_list, lr=prm['lr'], momentum=prm['momentum'])
+
+    def learn(self, inputs, labels):
+        self.optimizer.zero_grad()
+        outputs = self(inputs)
+        loss = self.criterions[0](outputs, labels)
+        loss.backward()
+        nn.utils.clip_grad_norm_(self.parameters(), 3)
+        self.optimizer.step()
 
     def __init__(self, num_classes = 100):
         super(Net, self).__init__()
