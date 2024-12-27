@@ -157,6 +157,7 @@ def get_pandas_df_all() -> pd.DataFrame:
     Get the full dataset including its default full statistics as a pandas dataframe
     Returns:
     pd.Dataframe with columns ["structure", "code", "epochs", "accuracy", "batch_size", "lr", "momentum", "transform"]
+    todo: update this to load from the db file
     """
     out = pd.DataFrame(columns=["structure", "code", "epochs", "accuracy", "batch_size", "lr", "momentum", "transform"])
     pwd = str(pathlib.Path(__file__).parent.resolve())
@@ -189,6 +190,7 @@ def get_pandas_df_best() -> pd.DataFrame:
         Get the full dataset including its best default statistics as a pandas dataframe
         Returns:
         pd.Dataframe with columns ["structure", "code", "epochs", "accuracy", "batch_size", "lr", "momentum", "transform"]
+        todo: update this to load from the db file
     """
     out = pd.DataFrame(columns=["structure", "code", "epochs", "accuracy", "batch_size", "lr", "momentum", "transform"])
     pwd = str(pathlib.Path(__file__).parent.resolve())
