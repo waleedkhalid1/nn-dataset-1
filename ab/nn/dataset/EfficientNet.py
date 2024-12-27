@@ -191,11 +191,18 @@ class FusedMBConv(nn.Module):
 
 class Net(nn.Module):
 
-    def criterion(self, prm):
-        return nn.CrossEntropyLoss()
 
-    def optimizer(self, prm):
-        return torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
+    def train_setup(self, device, prm):
+        self.criterions = (nn.CrossEntropyLoss().to(device),)
+        self.optimizer = torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
+
+    def learn(self, inputs, labels):
+        self.optimizer.zero_grad()
+        outputs = self(inputs)
+        loss = self.criterions[0](outputs, labels)
+        loss.backward()
+        nn.utils.clip_grad_norm_(self.parameters(), 3)
+        self.optimizer.step()
 
     def __init__(
         self,

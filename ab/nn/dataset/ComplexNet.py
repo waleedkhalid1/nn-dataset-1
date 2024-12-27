@@ -238,13 +238,13 @@ class Net(nn.Module):
 
 
     def train_setup(self, device, prm):
-        self.criterion = nn.CrossEntropyLoss().to(device)
+        self.criterions = (nn.CrossEntropyLoss().to(device),)
         self.optimizer = torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
 
     def learn(self, inputs, labels):
         self.optimizer.zero_grad()
         outputs = self(inputs)
-        loss = self.criterion(outputs, labels)
+        loss = self.criterion[0](outputs, labels)
         loss.backward()
         nn.utils.clip_grad_norm_(self.parameters(), 3)
         self.optimizer.step()
