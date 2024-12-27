@@ -1,6 +1,8 @@
 import os
 import sqlite3
 from os import listdir
+import pandas as pd
+import pathlib
 
 from ab.nn.util.Util import *
 
@@ -149,3 +151,66 @@ def save_results(model_dir, study, config_model_name, epoch):
 
     conn.commit()
     conn.close()
+
+def get_pandas_df_all() -> pd.DataFrame:
+    """
+    Get the full dataset including its default full statistics as a pandas dataframe
+    Returns:
+    pd.Dataframe with columns ["structure", "code", "epochs", "accuracy", "batch_size", "lr", "momentum", "transform"]
+    """
+    out = pd.DataFrame(columns=["structure", "code", "epochs", "accuracy", "batch_size", "lr", "momentum", "transform"])
+    pwd = str(pathlib.Path(__file__).parent.resolve())
+    for stat_dir in listdir(pwd + "/../stat/"):
+        structure = stat_dir.split('-')[-1]
+
+        with open(pwd + "/../dataset/" + structure + ".py", "r") as code_file:
+            code = str(code_file.read())
+
+        for epochs in listdir(pwd + "/../stat/" + stat_dir + "/"):
+            with open(pwd + "/../stat/" + stat_dir + "/" + epochs + "/trials.json", "r") as json_file:
+                content = json.load(json_file)
+
+            for stat in content:
+                next_row = [
+                    structure,
+                    code,
+                    epochs,
+                    stat["accuracy"],
+                    stat["batch_size"],
+                    stat["lr"],
+                    stat["momentum"],
+                    stat["transform"]
+                ]
+                out.loc[len(out)] = next_row
+    return out
+
+def get_pandas_df_best() -> pd.DataFrame:
+    """
+        Get the full dataset including its best default statistics as a pandas dataframe
+        Returns:
+        pd.Dataframe with columns ["structure", "code", "epochs", "accuracy", "batch_size", "lr", "momentum", "transform"]
+    """
+    out = pd.DataFrame(columns=["structure", "code", "epochs", "accuracy", "batch_size", "lr", "momentum", "transform"])
+    pwd = str(pathlib.Path(__file__).parent.resolve())
+    for stat_dir in listdir(pwd + "/../stat/"):
+        structure = stat_dir.split('-')[-1]
+
+        with open(pwd + "/../dataset/" + structure + ".py", "r") as code_file:
+            code = str(code_file.read())
+
+        for epochs in listdir(pwd + "/../stat/" + stat_dir + "/"):
+            with open(pwd + "/../stat/" + stat_dir + "/" + epochs + "/best_trial.json", "r") as json_file:
+                stat = json.load(json_file)
+
+            next_row = [
+                structure,
+                code,
+                epochs,
+                stat["accuracy"],
+                stat["batch_size"],
+                stat["lr"],
+                stat["momentum"],
+                stat["transform"]
+            ]
+            out.loc[len(out)] = next_row
+    return out
