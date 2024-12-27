@@ -700,10 +700,38 @@
         "transform": "echo"
     },
     {
+        "accuracy": 0.07063289731740952,
+        "batch_size": 64,
+        "lr": 0.00735810493697548,
+        "momentum": 0.8965405351606646,
+        "transform": "echo"
+    },
+    {
         "accuracy": 0.0705983117222786,
         "batch_size": 32,
         "lr": 0.0064751807179462325,
         "momentum": 0.8424157325510169,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0694519504904747,
+        "batch_size": 64,
+        "lr": 0.00735810493697548,
+        "momentum": 0.8965405351606646,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.06460443884134293,
+        "batch_size": 64,
+        "lr": 0.00735810493697548,
+        "momentum": 0.8965405351606646,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.0644184798002243,
+        "batch_size": 64,
+        "lr": 0.00735810493697548,
+        "momentum": 0.8965405351606646,
         "transform": "echo"
     },
     {
