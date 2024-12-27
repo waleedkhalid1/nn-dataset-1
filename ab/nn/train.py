@@ -26,6 +26,11 @@ def main(config: str | tuple = default_config, n_epochs: int | tuple = default_e
     :param transform: The transformation algorithm name. If None (default), all available algorithms are used by Optuna.
     """
 
+    if min_batch_binary_power > max_batch_binary_power: raise Exception(f"min_batch_binary_power {min_batch_binary_power} > max_batch_binary_power {max_batch_binary_power}")
+    if min_learning_rate > max_learning_rate: raise Exception(f"min_learning_rate {min_learning_rate} > max_learning_rate {max_learning_rate}")
+    if min_momentum > max_momentum: raise Exception(f"min_momentum {min_momentum} > max_momentum {max_momentum}")
+
+
     # Parameters specific to dataset loading.
     define_global_paths()
     # Initialize the SQLite database
