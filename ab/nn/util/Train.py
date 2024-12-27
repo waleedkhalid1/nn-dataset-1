@@ -29,7 +29,6 @@ class Train:
         self.lr = lr
         self.momentum = momentum
         self.batch_size = batch_size
-        self.args = []
         self.task = task_type
 
         if torch.cuda.is_available():
@@ -46,7 +45,7 @@ class Train:
         if isinstance(model_source_package, str):
             # Load the model class
             model_class = get_attr(model_source_package, "Net")
-            self.model = model_class(*self.args)
+            self.model = model_class()
 
         elif isinstance(model_source_package, torch.nn.Module):
             # If a pre-initialized model is passed
@@ -126,6 +125,3 @@ class Train:
             result = total_correct / total_samples
 
         return result
-
-    def get_args(self):
-        return self.args
