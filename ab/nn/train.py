@@ -17,8 +17,8 @@ def main(config: str | tuple = default_config, n_epochs: int | tuple = default_e
     :param config: Configuration specifying the model training pipelines. The default value for all configurations.
     :param n_epochs: Number or tuple of numbers of training epochs.
     :param n_optuna_trials: Number of Optuna trials.
-    :param min_batch_binary_power: Minimum power of two for batch size. E.g., with a value of 0, it equals 2**0 = 1.
-    :param max_batch_binary_power: Maximum power of two for batch size. E.g., with a value of 12, it equals 2**12 = 2048.
+    :param min_batch_binary_power: Minimum power of two for batch size. E.g., with a value of 0, batch size equals 2**0 = 1.
+    :param max_batch_binary_power: Maximum power of two for batch size. E.g., with a value of 12, batch size equals 2**12 = 2048.
     :param min_learning_rate: Minimum value of learning rate.
     :param max_learning_rate: Maximum value of learning rate.
     :param min_momentum: Minimum value of momentum.

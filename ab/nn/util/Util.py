@@ -61,9 +61,9 @@ def args():
     parser.add_argument('-t', '--trials', type=int, default=default_trials,
                         help="Number of Optuna trials")
     parser.add_argument('--min_batch_binary_power', type=int, default=default_min_batch_power,
-                        help="Minimum power of two for batch size. E.g., with a value of 0, it equals 2**0 = 1.")
+                        help="Minimum power of two for batch size. E.g., with a value of 0, batch size equals 2**0 = 1.")
     parser.add_argument('-b', '--max_batch_binary_power', type=int, default=default_max_batch_power,
-                        help="Maximum power of two for batch size. E.g., with a value of 12, it equals 2**12 = 2048.")
+                        help="Maximum power of two for batch size. E.g., with a value of 12, batch size equals 2**12 = 2048.")
     parser.add_argument('--min_learning_rate', type=float, default=default_min_lr,
                         help="Minimum value of learning rate.")
     parser.add_argument('-l', '--max_learning_rate', type=float, default=default_max_lr,
