@@ -59,34 +59,19 @@ class Train:
             raise ValueError(f"Metric '{metric_name}' not found. Ensure a corresponding file and function exist.") \
                 from e
 
-    def forward_pass(self, inputs):
-        """
-        Runs a forward pass through the model and removes auxiliary outputs if present.
-        """
-        outputs = self.model(inputs)
-        if isinstance(outputs, (tuple, list)):  # For models like InceptionV3 that may have multiple outputs
-            outputs = outputs[0]  # Keep only the main output
-        return outputs
 
     def evaluate(self, num_epochs):
         train_loader = torch.utils.data.DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=2)
         test_loader = torch.utils.data.DataLoader(self.test_dataset, batch_size=self.batch_size, shuffle=False, num_workers=2)
 
-        criterion = self.model.criterion({}).to(self.device)
-        optimizer = self.model.optimizer({'lr': self.lr, 'momentum': self.momentum})
+        self.model.train_setup(self.device, {'lr': self.lr, 'momentum': self.momentum})
+        self.model.train()
 
         # --- Training --- #
         for epoch in range(num_epochs):
-            self.model.train()
             for inputs, labels in tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}"):
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
-
-                optimizer.zero_grad()
-                outputs = self.forward_pass(inputs)
-                loss = criterion(outputs, labels)
-                loss.backward()
-                nn.utils.clip_grad_norm_(self.model.parameters(), 3)
-                optimizer.step()
+                self.model.learn(inputs, labels)
 
         # --- Evaluation --- #
         self.model.eval()
@@ -98,7 +83,7 @@ class Train:
         with torch.no_grad():
             for inputs, labels in test_loader:
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
-                outputs = self.forward_pass(inputs)
+                outputs = self.model(inputs)
 
                 if hasattr(self.metric_function, "update"):  # For mIoU
                     self.metric_function.update(outputs, labels)
