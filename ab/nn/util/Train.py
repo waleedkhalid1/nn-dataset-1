@@ -1,7 +1,6 @@
 import importlib
 
 import torch
-import torch.nn as nn
 from tqdm import tqdm
 
 from ab.nn.util.Util import nn_mod, get_attr
@@ -25,7 +24,6 @@ class Train:
         self.train_dataset = train_dataset
         self.test_dataset = test_dataset
         self.output_dimension = output_dimension
-        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.lr = lr
         self.momentum = momentum
         self.batch_size = batch_size
@@ -42,16 +40,7 @@ class Train:
         self.metric_function = self.load_metric_function(metric)
 
         # Load model
-        if isinstance(model_source_package, str):
-            # Load the model class
-            model_class = get_attr(model_source_package, "Net")
-            self.model = model_class()
-
-        elif isinstance(model_source_package, torch.nn.Module):
-            # If a pre-initialized model is passed
-            self.model = model_source_package
-        else:
-            raise ValueError("model_source_package must be a string (path to the model) or an instance of torch.nn.Module.")
+        self.model = get_attr(model_source_package, "Net")()
         self.model.to(self.device)
 
     def load_metric_function(self, metric_name):
