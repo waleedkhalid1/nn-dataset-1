@@ -69,11 +69,16 @@ class CNBlockConfig:
 
 class Net(nn.Module):
 
-    def criterion(self, prm):
-        return nn.CrossEntropyLoss()
+    def train_setup(self, device, prm):
+        self.criterion = nn.CrossEntropyLoss().to(device)
+        self.optimizer = torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
 
-    def optimizer(self, prm):
-        return torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
+    def learn(self, inputs, labels):
+        self.optimizer.zero_grad()
+        outputs = self(inputs)
+        loss = self.criterion(outputs, labels)
+        loss.backward()
+        self.optimizer.step()
 
     def __init__(
         self,

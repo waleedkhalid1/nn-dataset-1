@@ -3,12 +3,17 @@ import torch.nn as nn
 
 class Net(nn.Module):
 
+    def train_setup(self, device, prm):
+        self.criterion = nn.CrossEntropyLoss().to(device)
+        self.optimizer = torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
 
-    def criterion(self, prm):
-        return nn.CrossEntropyLoss()
-
-    def optimizer(self, prm):
-        return torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
+    def learn(self, inputs, labels):
+        self.optimizer.zero_grad()
+        outputs = self(inputs)
+        loss = self.criterion(outputs, labels)
+        loss.backward()
+        nn.utils.clip_grad_norm_(self.parameters(), 3)
+        self.optimizer.step()
 
     def __init__(self, num_classes: int = 1000, dropout: float = 0.5) -> None:
         super().__init__()

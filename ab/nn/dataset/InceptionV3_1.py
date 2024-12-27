@@ -45,7 +45,7 @@ class Net(nn.Module):
         inception_e = inception_blocks[5]
         inception_aux = inception_blocks[6]
 
-        self.aux_logits = False
+        self.aux_logits = True
         self.transform_input = transform_input
         self.Conv2d_1a_3x3 = conv_block(3, 32, kernel_size=3, stride=2)
         self.Conv2d_2a_3x3 = conv_block(32, 32, kernel_size=3)
