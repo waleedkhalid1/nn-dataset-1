@@ -30,6 +30,18 @@ if __name__ == "__main__":
     max_mom = a.max_momentum
     transform = a.transform
 
+
+    epochs = 1
+    trials = "+1"
+
+    conf = 'img_class'
+    min_batch_power = 2
+    max_batch_power = 7
+    min_lr = 0.00029530005357731822
+    max_lr = 0.1
+    transform = "cifar10_norm"
+
+
     ''' !!! Please commit updated statistics whenever it's generated !!! '''
     # Run training with Optuna: detects and saves performance metric values
     train.main(conf, epochs, trials, min_batch_power, max_batch_power, min_lr, max_lr, min_mom, max_mom, transform)

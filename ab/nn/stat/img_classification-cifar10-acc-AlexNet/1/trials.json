@@ -259,6 +259,13 @@
         "transform": "cifar10_norm"
     },
     {
+        "accuracy": 0.3176,
+        "batch_size": 4,
+        "lr": 0.0022218590300686707,
+        "momentum": 0.6273359933462715,
+        "transform": "cifar10_norm"
+    },
+    {
         "accuracy": 0.3111,
         "batch_size": 128,
         "lr": 0.015517473961787768,
