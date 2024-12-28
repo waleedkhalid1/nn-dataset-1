@@ -65,21 +65,24 @@ class Train:
         test_loader = torch.utils.data.DataLoader(self.test_dataset, batch_size=self.batch_size, shuffle=False, num_workers=2)
 
         self.model.train_setup(self.device, {'lr': self.lr, 'momentum': self.momentum})
-        self.model.train()
-
+        res = None
         # --- Training --- #
         for epoch in range(num_epochs):
-            for inputs, labels in tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}"):
+            print(f"epoch {epoch}", flush=True)
+            self.model.train()
+            it = tqdm(train_loader)
+            for inputs, labels in it:
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
                 self.model.learn(inputs, labels)
+            res = self.eval(test_loader)
+        return res
 
-        # --- Evaluation --- #
+    def eval(self, test_loader):
+        """ Evaluation """
         self.model.eval()
         total_correct, total_samples = 0, 0
-
         if hasattr(self.metric_function, "reset"):  # Check for reset()
             self.metric_function.reset()
-
         with torch.no_grad():
             for inputs, labels in test_loader:
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
@@ -91,11 +94,9 @@ class Train:
                     correct, total = self.metric_function(outputs, labels)
                     total_correct += correct
                     total_samples += total
-
         # Metric result
         if hasattr(self.metric_function, "get"):
             result = self.metric_function.get()
         else:
             result = total_correct / total_samples
-
         return result
