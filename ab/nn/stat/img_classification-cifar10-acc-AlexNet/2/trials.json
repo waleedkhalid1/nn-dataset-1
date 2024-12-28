@@ -11,6 +11,15 @@
         "momentum": 0.7549,
         "batch": 4,
         "transform": "cifar10_norm",
+        "time": 145035309477,
+        "accuracy": 0.6815,
+        "epoch": 2
+    },
+    {
+        "lr": 0.0061,
+        "momentum": 0.7549,
+        "batch": 4,
+        "transform": "cifar10_norm",
         "time": 145060349211,
         "accuracy": 0.6643,
         "epoch": 2
