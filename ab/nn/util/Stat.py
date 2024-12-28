@@ -102,11 +102,7 @@ def save_results(config: str, model_stat_dir: str, prm: dict):
     with open(path, "w") as f:
         json.dump(trials_dict_all, f, indent=4)
 
-    # Save best_trial.json
-    with open(f"{model_stat_dir}/best_trial.json", "w") as f:
-        json.dump(trials_dict_all[0], f, indent=4)
-
-    print(f"Trials for {config} saved at {model_stat_dir}")
+    print(f"Trial (accuracy {prm['accuracy']}) for {config} saved at {model_stat_dir}")
 
     # Save results to SQLite DB
     conn = sqlite3.connect(Const.db_dir_global)

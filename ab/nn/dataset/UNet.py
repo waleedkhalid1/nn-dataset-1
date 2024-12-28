@@ -65,18 +65,21 @@ class OutConv(nn.Module):
 class Net(nn.Module):
 
     def train_setup(self, device, prm):
+        self.device = device
         self.criteria = (nn.CrossEntropyLoss(ignore_index=-1).to(device),)
         params_list = []
         for module in self.exclusive:
             params_list.append({'params': getattr(self, module).parameters(), 'lr': prm['lr'] * 10})
         self.optimizer = torch.optim.SGD(params_list, lr=prm['lr'], momentum=prm['momentum'])
 
-    def learn(self, inputs, labels):
-        self.optimizer.zero_grad()
-        outputs = self(inputs)
-        loss = self.criteria[0](outputs, labels)
-        loss.backward()
-        self.optimizer.step()
+    def learn(self, train_data):
+        for inputs, labels in train_data:
+            inputs, labels = inputs.to(self.device), labels.to(self.device)
+            self.optimizer.zero_grad()
+            outputs = self(inputs)
+            loss = self.criteria[0](outputs, labels)
+            loss.backward()
+            self.optimizer.step()
 
     def __init__(self, num_classes = 21):
         super(Net, self).__init__()

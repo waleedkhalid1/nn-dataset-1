@@ -80,10 +80,7 @@ class Train:
         for epoch in range(1, num_epochs + 1):
             print(f"epoch {epoch}", flush=True)
             self.model.train()
-            it = tqdm(train_loader)
-            for inputs, labels in it:
-                inputs, labels = inputs.to(self.device), labels.to(self.device)
-                self.model.learn(inputs, labels)
+            self.model.learn(tqdm(train_loader))
             accuracy = self.eval(test_loader)
             accuracy = 0.0 if math.isnan(accuracy) or math.isinf(accuracy) else accuracy
             prm.update({'time': time_f.time_ns() - time,
