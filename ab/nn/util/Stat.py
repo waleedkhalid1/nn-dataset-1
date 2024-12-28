@@ -56,28 +56,121 @@ def get_configs(config) -> tuple[str]:
 
 def initialize_database():
     """
-    Initialize the SQLite database and create the `stat` table if it doesn't exist.
+    Initialize the SQLite database and create the `stat` and `nn` table if it doesn't exist.
     """
     makedirs(Path(Const.db_dir_global).parent.absolute(), exist_ok=True)
     conn = sqlite3.connect(Const.db_dir_global)
     cursor = conn.cursor()
 
-    # Create table if it doesn't exist
+    # Create `nn` table
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS nn (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT UNIQUE NOT NULL
+    )
+    """)
+
+    # Create `stat` table
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS stat (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        config_model_name TEXT,
+        task TEXT NOT NULL,
+        dataset TEXT NOT NULL,
+        metric TEXT NOT NULL,
+        nn_id INTEGER NOT NULL,
         accuracy REAL,
         batch INTEGER,
         lr REAL,
         momentum REAL,
         transform TEXT,
-        epoch INTEGER
+        epoch INTEGER,
+        time REAL,
+        FOREIGN KEY (nn_id) REFERENCES nn (id) ON DELETE CASCADE
     )
     """)
 
+    populate_nn_table(conn)
     conn.commit()
     conn.close()
+
+
+def populate_nn_table(conn):
+    """
+    Populate the `nn` table with models from the dataset directory.
+    """
+    nn_directory = Path(Const.dataset_dir_global)
+    nn_files = [
+        f.stem for f in nn_directory.iterdir() if f.is_file() and f.suffix == ".py" and f.name != "__init__.py"
+    ]
+
+    cursor = conn.cursor()
+    for nn_name in nn_files:
+        cursor.execute("INSERT OR IGNORE INTO nn (name) VALUES (?)", (nn_name,))
+
+    print(f"NN models added to the `nn` table: {nn_files}")
+
+
+def load_all_statistics_from_json_to_db(conn):
+    """
+    Reload all statistics into the database for all subconfigs and epochs.
+    """
+    stat_base_path = Path(Const.stat_dir_global)
+    sub_configs = [d.name for d in stat_base_path.iterdir() if d.is_dir()]
+    epochs = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+    for epoch in epochs:
+
+        for sub_config in sub_configs:
+            model_dir = Path(Const.stat_dir_global) / sub_config / str(epoch)
+            trials_file = model_dir / 'trials.json'
+
+            if not trials_file.exists():
+                print(f"Skipping {sub_config}: trials.json not found for epoch {epoch}.")
+                continue
+
+            with open(trials_file, 'r') as f:
+                trials = json.load(f)
+
+            # Insert statistics into the database
+            for trial in trials:
+                task, dataset, metric, nn_name = conf_to_names(sub_config)
+                cursor = conn.cursor()
+
+                # Get or add NN model ID
+                cursor.execute("SELECT id FROM nn WHERE name = ?", (nn_name,))
+                nn_id = cursor.fetchone()
+
+                if not nn_id:
+                    print(f"Model {nn_name} not found in `nn` table. Checking for new models in the dataset directory.")
+                    nn_directory = Path(Const.dataset_dir_global)
+                    nn_file = nn_directory / f"{nn_name}.py"
+
+                    if nn_file.exists():
+                        print(f"New NN model {nn_name} found. Adding to the `nn` table.")
+                        cursor.execute("INSERT OR IGNORE INTO nn (name) VALUES (?)", (nn_name,))
+                        conn.commit()
+                        cursor.execute("SELECT id FROM nn WHERE name = ?", (nn_name,))
+                        nn_id = cursor.fetchone()
+                    else:
+                        print(f"NN model {nn_name} not found in the dataset directory. Skipping database save.")
+                        continue
+
+                nn_id = nn_id[0]  # Extract the actual ID
+
+                # Insert statistics into the `stat` table
+                try:
+                    trial_time = trial.get('time', None)  # Default to None if 'time' is missing
+                    conn.execute("""
+                    INSERT INTO stat (task, dataset, metric, nn_id, accuracy, batch, lr, momentum, transform, epoch, time)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (task, dataset, metric, nn_id, trial["accuracy"], trial["batch"],
+                        trial["lr"], trial["momentum"], trial["transform"], epoch, trial_time))
+                except Exception as e:
+                    print(f"Error inserting trial for {sub_config}: {e}")
+
+    conn.commit()
+    print("All statistics reloaded successfully.")
+
 
 
 def save_results(config: str, model_stat_dir: str, prm: dict):
@@ -88,6 +181,14 @@ def save_results(config: str, model_stat_dir: str, prm: dict):
     :param prm: Dictionary of all saved parameters.
     """
     makedirs(model_stat_dir, exist_ok=True)
+
+    # Extract task, dataset, metric, and nn_name from the config
+    try:
+        task, dataset, metric, nn_name = config.split('-')
+    except ValueError:
+        print(f"Invalid config format: {config}.")
+        return
+    
     trials_dict = [prm]
     trials_dict_all = trials_dict
 
@@ -112,13 +213,27 @@ def save_results(config: str, model_stat_dir: str, prm: dict):
     conn = sqlite3.connect(Const.db_dir_global)
     cursor = conn.cursor()
 
+    # Get or add NN model ID
+    cursor.execute("SELECT id FROM nn WHERE name = ?", (nn_name,))
+    nn_id = cursor.fetchone()
+
+    if not nn_id:
+        print(f"Model {nn_name} not found in `nn` table. Adding it.")
+        cursor.execute("INSERT OR IGNORE INTO nn (name) VALUES (?)", (nn_name,))
+        conn.commit()
+        cursor.execute("SELECT id FROM nn WHERE name = ?", (nn_name,))
+        nn_id = cursor.fetchone()
+
+    nn_id = nn_id[0]  # Extract ID from the result
+
     # Insert each trial into the database with epoch
     for trial in trials_dict:
+        trial_time = trial.get('time', None)  # Default to None if 'time' is missing
         cursor.execute("""
-        INSERT INTO stat (config_model_name, accuracy, batch, lr, momentum, transform, epoch)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (config, trial['accuracy'], trial['batch'], trial['lr'],
-              trial['momentum'], trial['transform'], trial['epoch']))
+        INSERT INTO stat (task, dataset, metric, nn_id, accuracy, batch, lr, momentum, transform, epoch, time)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (task, dataset, metric, nn_id, trial['accuracy'], trial['batch'], trial['lr'],
+              trial['momentum'], trial['transform'], trial['epoch'], trial_time))
 
     conn.commit()
     conn.close()
