@@ -43,8 +43,8 @@ def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
         print(f"{idx}. {sub_config}")
     for sub_config in sub_configs:
             task, dataset_name, metric, model_name = conf_to_names(sub_config)
-            model_dir: str = os.path.join(Const.stat_dir_global, sub_config, str(n_epochs))
-            trials_file = os.path.join(model_dir, 'trials.json')
+            model_stat_dir: str = join(Const.stat_dir_global, sub_config)
+            trials_file = join(model_stat_dir, str(n_epochs), 'trials.json')
             n_optuna_trials_left = count_trials_left(trials_file, model_name, n_optuna_trials)
             if n_optuna_trials_left == 0:
                 print(f"The model {model_name} has already passed all trials for task: {task}, dataset: {dataset_name},"
@@ -63,8 +63,8 @@ def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
                                 transform_name = trial.suggest_categorical('transform', [transform] if transform is not None else ['cifar10_complex', 'cifar10_norm', 'cifar10_norm_32', 'echo'])
                                 lr = trial.suggest_float('lr', min_learning_rate, max_learning_rate, log=True)
                                 momentum = trial.suggest_float('momentum', min_momentum, max_momentum, log=False)
-                                batch_size = trial.suggest_categorical('batch_size', [max_batch(x) for x in range(min_batch_binary_power, max_batch_binary_power_local + 1)])
-                                print(f"Initialize training with lr: {lr}, momentum: {momentum}, batch_size: {batch_size}, transform: {transform_name}")
+                                batch = trial.suggest_categorical('batch_size', [max_batch(x) for x in range(min_batch_binary_power, max_batch_binary_power_local + 1)])
+                                print(f"Initialize training with lr: {lr}, momentum: {momentum}, batch_size: {batch}, transform: {transform_name}")
                              # Load dataset with the chosen transformation
                                 loader_path = f"loader.{dataset_name}.loader"
                                 transform_path = f"transform.{transform_name}.transform"
@@ -80,37 +80,38 @@ def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
                                     # Dynamically import RNN or LSTM model
                                     if model_name.lower() == 'rnn':
                                         from ab.nn.dataset.RNN import Net as RNNNet
-                                        model = RNNNet(1, 256, len(train_set.chars), batch_size)
+                                        model = RNNNet(1, 256, len(train_set.chars), batch)
                                     elif model_name.lower() == 'lstm':
                                         from ab.nn.dataset.LSTM import Net as LSTMNet
-                                        model = LSTMNet(1, 256, len(train_set.chars), batch_size, num_layers=2)
+                                        model = LSTMNet(1, 256, len(train_set.chars), batch, num_layers=2)
                                     else:
                                         raise ValueError(f"Unsupported text generation model: {model_name}")
                                 trainer = Train(
+                                    config=sub_config,
                                     model_source_package=f"dataset.{model_name}",
-                                    task_type=task,
+                                    model_stat_dir=model_stat_dir,
+                                    task=task,
                                     train_dataset=train_set,
                                     test_dataset=test_set,
                                     metric=metric,
                                     output_dimension=output_dimension,
                                     lr=lr,
                                     momentum=momentum,
-                                    batch_size=batch_size)
+                                    batch=batch,
+                                    transform=transform_name)
                                 return trainer.evaluate(n_epochs)
                             except Exception as e:
                                 if isinstance(e, OutOfMemoryError):
                                     if max_batch_binary_power_local <= 0:
                                         return 0.0
                                     else:
-                                        raise CudaOutOfMemory(batch_size)
+                                        raise CudaOutOfMemory(batch)
                                 else:
                                     print(f"error '{model_name}': failed to train. Error: {e}")
                                     return 0.0
                         # Launch Optuna for the current model
                         study = optuna.create_study(study_name=model_name, direction='maximize')
                         study.optimize(objective, n_trials=n_optuna_trials_left)
-                        # Save results
-                        save_results(model_dir, study, sub_config, n_epochs)
                         continue_study = False
                     except CudaOutOfMemory as e:
                         max_batch_binary_power_local = e.batch_size_power() - 1

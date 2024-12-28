@@ -1,33 +1,42 @@
 import importlib
+import math
+import time as time_f
+from os.path import join
 
 import torch
 from tqdm import tqdm
 
+from ab.nn.util.Stat import save_results
 from ab.nn.util.Util import nn_mod, get_attr
 
 
 class Train:
-    def __init__(self, model_source_package, task_type, train_dataset, test_dataset, metric, output_dimension: int,
-                 lr: float, momentum: float, batch_size: int):
+    def __init__(self, config, model_source_package, model_stat_dir, task, train_dataset, test_dataset, metric, output_dimension: int,
+                 lr: float, momentum: float, batch: int, transform: str):
         """
         Universal class for training CV, Text Generation and other models.
+        :param config: Config (Task, Dataset, Metric, and Model name).
         :param model_source_package: Path to the model's package as a string (e.g., 'ab.nn.dataset.ResNet').
-        :param task_type: e.g., 'img_segmentation' to specify the task type.
-        :param train_dataset: The dataset used for training the model (torch.utils.data.Dataset).
-        :param test_dataset: The dataset used for evaluating/testing the model (torch.utils.data.Dataset).
+        :param model_stat_dir: Path to the model's statistics as a string (e.g., 'ab/nn/stat/img_classification-cifar10-acc-AlexNet').
+        :param task: e.g., 'img_segmentation' to specify the task type.
+        :param train_dataset: The dataset used for training the model (e.g., torch.utils.data.Dataset).
+        :param test_dataset: The dataset used for evaluating/testing the model (e.g., torch.utils.data.Dataset).
         :param metric: The name of the evaluation metric (e.g., 'acc', 'iou').
         :param output_dimension: The output dimension of the model (number of classes for classification tasks).
         :param lr: Learning rate value for the optimizer.
         :param momentum: Momentum value for the SGD optimizer.
-        :param batch_size: Batch size used for both training and evaluation.
+        :param batch: Batch size used for both training and evaluation.
         """
+        self.config = config
+        self.model_stat_dir = model_stat_dir
         self.train_dataset = train_dataset
         self.test_dataset = test_dataset
         self.output_dimension = output_dimension
         self.lr = lr
         self.momentum = momentum
-        self.batch_size = batch_size
-        self.task = task_type
+        self.batch = batch
+        self.transform = transform
+        self.task = task
 
         if torch.cuda.is_available():
             self.device = torch.device("cuda")
@@ -61,21 +70,28 @@ class Train:
 
 
     def evaluate(self, num_epochs):
-        train_loader = torch.utils.data.DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=2)
-        test_loader = torch.utils.data.DataLoader(self.test_dataset, batch_size=self.batch_size, shuffle=False, num_workers=2)
-
-        self.model.train_setup(self.device, {'lr': self.lr, 'momentum': self.momentum})
-        res = None
+        train_loader = torch.utils.data.DataLoader(self.train_dataset, batch_size=self.batch, shuffle=True, num_workers=2)
+        test_loader = torch.utils.data.DataLoader(self.test_dataset, batch_size=self.batch, shuffle=False, num_workers=2)
+        prm = {'lr': self.lr, 'momentum': self.momentum, 'batch': self.batch, 'transform': self.transform}
+        time = time_f.time_ns()
+        self.model.train_setup(self.device, prm)
+        accuracy = None
         # --- Training --- #
-        for epoch in range(num_epochs):
+        for epoch in range(1, num_epochs + 1):
             print(f"epoch {epoch}", flush=True)
             self.model.train()
             it = tqdm(train_loader)
             for inputs, labels in it:
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
                 self.model.learn(inputs, labels)
-            res = self.eval(test_loader)
-        return res
+            accuracy = self.eval(test_loader)
+            accuracy = 0.0 if math.isnan(accuracy) or math.isinf(accuracy) else accuracy
+            prm.update({'time': time_f.time_ns() - time,
+                        'accuracy': accuracy,
+                        'epoch': epoch})
+            save_results(self.config, join(self.model_stat_dir, str(epoch)), prm)
+
+        return accuracy
 
     def eval(self, test_loader):
         """ Evaluation """
