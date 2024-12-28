@@ -3,7 +3,7 @@
     "momentum": 0.7549,
     "batch": 4,
     "transform": "cifar10_norm",
-    "time": 363054701328,
-    "accuracy": 0.7707,
-    "epoch": 5
+    "time": 653442974684,
+    "accuracy": 0.8275,
+    "epoch": 9
 }
