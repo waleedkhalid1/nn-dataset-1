@@ -7,6 +7,7 @@ from os import listdir, makedirs
 import pandas as pd
 
 from ab.nn.util.Util import *
+import uuid
 
 
 def count_trials_left(trial_file, model_name, n_optuna_trials):
@@ -65,15 +66,16 @@ def initialize_database():
     # Create `nn` table
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS nn (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT UNIQUE NOT NULL
+        id TEXT PRIMARY KEY,
+        name TEXT UNIQUE NOT NULL,
+        code TEXT
     )
     """)
 
     # Create `stat` table
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS stat (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id TEXT PRIMARY KEY,
         task TEXT NOT NULL,
         dataset TEXT NOT NULL,
         metric TEXT NOT NULL,
@@ -100,15 +102,56 @@ def populate_nn_table(conn):
     """
     nn_directory = Path(Const.dataset_dir_global)
     nn_files = [
-        f.stem for f in nn_directory.iterdir() if f.is_file() and f.suffix == ".py" and f.name != "__init__.py"
+        Path(f) for f in nn_directory.iterdir() if f.is_file() and f.suffix == ".py" and f.name != "__init__.py"
     ]
 
     cursor = conn.cursor()
-    for nn_name in nn_files:
-        cursor.execute("INSERT OR IGNORE INTO nn (name) VALUES (?)", (nn_name,))
+    for nn_file in nn_files:
+        print(f"Adding NN model {nn_file} to the `nn` table.")
+        nn_id = str(uuid.uuid4())
+        nn_name = nn_file.stem
+
+        with open(nn_file, 'r') as file:
+            model_code = file.read()
+         # Check if the model exists in the database
+        cursor.execute("SELECT id, code FROM nn WHERE name = ?", (nn_name,))
+        existing_entry = cursor.fetchone()
+
+        if existing_entry:
+            # If model exists, update the code if it has changed
+            nn_id, existing_code = existing_entry
+            if existing_code != model_code:
+                print(f"Updating code for model: {nn_name}")
+                cursor.execute("UPDATE nn SET code = ? WHERE id = ?", (model_code, nn_id))
+        else:
+            # If model does not exist, insert it with a new UUID
+            nn_id = str(uuid.uuid4())
+            print(f"Adding new NN model {nn_name} to the `nn` table with UUID: {nn_id}")
+            cursor.execute("INSERT INTO nn (id, name, code) VALUES (?, ?, ?)", (nn_id, nn_name, model_code))
 
     print(f"NN models added to the `nn` table: {nn_files}")
 
+
+def clear_and_reload_database():
+    """
+    Clear the database and reload all NN models and statistics.
+    """
+    makedirs(Path(Const.db_dir_global).parent.absolute(), exist_ok=True)
+
+    conn = sqlite3.connect(Const.db_dir_global)
+    cursor = conn.cursor()
+
+    # Drop existing tables
+    cursor.execute("DROP TABLE IF EXISTS stat")
+    cursor.execute("DROP TABLE IF EXISTS nn")
+    conn.commit()
+
+    # Reinitialize the database
+    initialize_database()
+
+    # Reload statistics
+    load_all_statistics_from_json_to_db(conn)
+    conn.close()
 
 def load_all_statistics_from_json_to_db(conn):
     """
@@ -147,24 +190,31 @@ def load_all_statistics_from_json_to_db(conn):
 
                     if nn_file.exists():
                         print(f"New NN model {nn_name} found. Adding to the `nn` table.")
-                        cursor.execute("INSERT OR IGNORE INTO nn (name) VALUES (?)", (nn_name,))
+                        with nn_file.open('r', encoding='utf-8') as file:
+                            model_code = file.read()
+                        nn_id = str(uuid.uuid4())  # Generate a new UUID for the model
+                        cursor.execute("INSERT OR IGNORE INTO nn (id, name, code) VALUES (?, ?, ?)",
+                                    (nn_id, nn_name, model_code))
                         conn.commit()
-                        cursor.execute("SELECT id FROM nn WHERE name = ?", (nn_name,))
-                        nn_id = cursor.fetchone()
                     else:
                         print(f"NN model {nn_name} not found in the dataset directory. Skipping database save.")
                         continue
-
-                nn_id = nn_id[0]  # Extract the actual ID
+                else:
+                    nn_id = nn_id[0]  # Extract the actual ID
 
                 # Insert statistics into the `stat` table
                 try:
                     trial_time = trial.get('time', None)  # Default to None if 'time' is missing
+                    trial_uuid = str(uuid.uuid4())  # Generate a unique UUID for the trial
+
                     conn.execute("""
-                    INSERT INTO stat (task, dataset, metric, nn_id, accuracy, batch, lr, momentum, transform, epoch, time)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """, (task, dataset, metric, nn_id, trial["accuracy"], trial["batch"],
-                        trial["lr"], trial["momentum"], trial["transform"], epoch, trial_time))
+                    INSERT INTO stat (id, task, dataset, metric, nn_id, accuracy, batch, lr, momentum, transform, epoch, time)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (
+                        trial_uuid,  # UUID for the stat record
+                        task, dataset, metric, nn_id, trial["accuracy"], trial["batch"],
+                        trial["lr"], trial["momentum"], trial["transform"], epoch, trial_time
+                    ))
                 except Exception as e:
                     print(f"Error inserting trial for {sub_config}: {e}")
 
@@ -216,23 +266,16 @@ def save_results(config: str, model_stat_dir: str, prm: dict):
     # Get or add NN model ID
     cursor.execute("SELECT id FROM nn WHERE name = ?", (nn_name,))
     nn_id = cursor.fetchone()
-
-    if not nn_id:
-        print(f"Model {nn_name} not found in `nn` table. Adding it.")
-        cursor.execute("INSERT OR IGNORE INTO nn (name) VALUES (?)", (nn_name,))
-        conn.commit()
-        cursor.execute("SELECT id FROM nn WHERE name = ?", (nn_name,))
-        nn_id = cursor.fetchone()
-
-    nn_id = nn_id[0]  # Extract ID from the result
+    nn_id = nn_id[0] 
 
     # Insert each trial into the database with epoch
     for trial in trials_dict:
+        stat_id = str(uuid.uuid4())
         trial_time = trial.get('time', None)  # Default to None if 'time' is missing
         cursor.execute("""
-        INSERT INTO stat (task, dataset, metric, nn_id, accuracy, batch, lr, momentum, transform, epoch, time)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (task, dataset, metric, nn_id, trial['accuracy'], trial['batch'], trial['lr'],
+        INSERT INTO stat (id, task, dataset, metric, nn_id, accuracy, batch, lr, momentum, transform, epoch, time)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (stat_id, task, dataset, metric, nn_id, trial['accuracy'], trial['batch'], trial['lr'],
               trial['momentum'], trial['transform'], trial['epoch'], trial_time))
 
     conn.commit()
