@@ -32,11 +32,11 @@ python -m ab.nn.train -c img_classification-cifar10-acc-cifar10_complex-ComplexN
 ```
 or for all image segmentation models using a fixed range of training parameters and transformer:
 ```bash
-python run.py -c img_segmentation -f echo --min_learning_rate 1e-4 -l 1e-2 --min_momentum 0.8 -m 0.99 --min_batch_binary_power 2 -b 6
+python run.py -c img_segmentation -f echo --min_learning_rate 1e-4 -l 1e-2 --min_momentum 0.8 -m 0.99 --min_batch_binary_power 2 -b 6 --epochs 1 --trials -1
 ```
 To reproduce the previous result, set the minimum and maximum to the same desired values:
 ```bash
-python run.py -c img_classification-cifar10-acc-AlexNet --min_learning_rate 0.0061 -l 0.0061 --min_momentum 0.7549 -m 0.7549 --min_batch_binary_power 2 -b 2 -f cifar10_norm --trials -1
+python run.py -c img_classification-cifar10-acc-AlexNet --min_learning_rate 0.0061 -l 0.0061 --min_momentum 0.7549 -m 0.7549 --min_batch_binary_power 2 -b 2 -f cifar10_norm --epochs 1 --trials -1
 ```
 
 ## Contribution
