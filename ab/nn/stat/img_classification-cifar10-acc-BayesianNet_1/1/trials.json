@@ -420,6 +420,15 @@
         "transform": "cifar10_norm_32"
     },
     {
+        "lr": 0.00010723942764437238,
+        "momentum": 0.8050103138834692,
+        "batch": 4,
+        "transform": "cifar10_norm_32",
+        "time": 265045213179,
+        "accuracy": 0.2211,
+        "epoch": 1
+    },
+    {
         "accuracy": 0.2109,
         "batch": 8,
         "lr": 0.19857957971148577,
