@@ -1,5 +1,14 @@
 [
     {
+        "lr": 0.0061,
+        "momentum": 0.7549,
+        "batch": 4,
+        "transform": "cifar10_norm",
+        "time": 121742629432,
+        "accuracy": 0.4833,
+        "epoch": 2
+    },
+    {
         "accuracy": 0.4742,
         "batch": 4,
         "lr": 0.003190317450323385,
