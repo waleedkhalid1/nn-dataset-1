@@ -86,7 +86,7 @@ class Train:
             prm.update({'time': time_f.time_ns() - time,
                         'accuracy': accuracy,
                         'epoch': epoch})
-            save_results(self.config, join(self.model_stat_dir, str(epoch)), prm)
+            save_results(self.config, join(self.model_stat_dir, f"{epoch}.json"), prm)
 
         return accuracy
 

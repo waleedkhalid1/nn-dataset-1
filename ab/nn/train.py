@@ -63,8 +63,8 @@ def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
                                 transform_name = trial.suggest_categorical('transform', [transform] if transform is not None else ['cifar10_complex', 'cifar10_norm', 'cifar10_norm_32', 'echo'])
                                 lr = trial.suggest_float('lr', min_learning_rate, max_learning_rate, log=True)
                                 momentum = trial.suggest_float('momentum', min_momentum, max_momentum, log=False)
-                                batch = trial.suggest_categorical('batch_size', [max_batch(x) for x in range(min_batch_binary_power, max_batch_binary_power_local + 1)])
-                                print(f"Initialize training with lr: {lr}, momentum: {momentum}, batch_size: {batch}, transform: {transform_name}")
+                                batch = trial.suggest_categorical('batch', [max_batch(x) for x in range(min_batch_binary_power, max_batch_binary_power_local + 1)])
+                                print(f"Initialize training with lr: {lr}, momentum: {momentum}, batch: {batch}, transform: {transform_name}")
                              # Load dataset with the chosen transformation
                                 loader_path = f"loader.{dataset_name}.loader"
                                 transform_path = f"transform.{transform_name}.transform"
