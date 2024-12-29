@@ -52,9 +52,10 @@ def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
             else:
                 print(f"\nStarting training for the model: {model_name}, task: {task}, dataset: {dataset_name},"
                       f" metric: {metric}, epochs: {n_epochs}")
+                fail_iterations = 10 if transform is None else 0
                 continue_study = True
                 max_batch_binary_power_local = max_batch_binary_power
-                while continue_study and max_batch_binary_power_local > -1:
+                while continue_study and max_batch_binary_power_local > -1 and fail_iterations > -1:
                     try:
                         # Configure Optuna for the current model
                         def objective(trial):
@@ -86,20 +87,11 @@ def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
                                         model = LSTMNet(1, 256, len(train_set.chars), batch, num_layers=2)
                                     else:
                                         raise ValueError(f"Unsupported text generation model: {model_name}")
-                                trainer = Train(
-                                    config=sub_config,
-                                    model_source_package=f"dataset.{model_name}",
-                                    model_stat_dir=model_stat_dir,
-                                    task=task,
-                                    train_dataset=train_set,
-                                    test_dataset=test_set,
-                                    metric=metric,
-                                    output_dimension=output_dimension,
-                                    lr=lr,
-                                    momentum=momentum,
-                                    batch=batch,
-                                    transform=transform_name)
-                                return trainer.evaluate(n_epochs)
+                                trainer = Train(config=sub_config, model_source_package=f"dataset.{model_name}",
+                                                model_stat_dir=model_stat_dir, task=task, train_dataset=train_set,
+                                                test_dataset=test_set, metric=metric, output_dimension=output_dimension, lr=lr,
+                                                momentum=momentum, batch=batch, transform=transform_name)
+                                return trainer.train_n_eval(n_epochs)
                             except Exception as e:
                                 if isinstance(e, OutOfMemoryError):
                                     if max_batch_binary_power_local <= 0:
@@ -108,11 +100,16 @@ def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
                                         raise CudaOutOfMemory(batch)
                                 else:
                                     print(f"error '{model_name}': failed to train. Error: {e}")
-                                    return 0.0
-                        # Launch Optuna for the current model
+                                    if fail_iterations < 0:
+                                        return 0.0
+                                    else:
+                                        raise ModelException()
+                        # Launch Optuna for the current NN model
                         study = optuna.create_study(study_name=model_name, direction='maximize')
                         study.optimize(objective, n_trials=n_optuna_trials_left)
                         continue_study = False
+                    except ModelException:
+                        fail_iterations -= 1
                     except CudaOutOfMemory as e:
                         max_batch_binary_power_local = e.batch_size_power() - 1
                         print(f"Max batch is decreased to {max_batch(max_batch_binary_power_local)} due to a CUDA Out of Memory Exception for model '{model_name}'")

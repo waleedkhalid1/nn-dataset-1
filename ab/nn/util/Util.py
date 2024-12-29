@@ -58,6 +58,11 @@ class CudaOutOfMemory(Exception):
     def batch_size_power(self):
         return self.batch_power
 
+
+class ModelException(Exception):
+    def __init__(self):
+        pass
+
 def args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', type=str, default=default_config,
