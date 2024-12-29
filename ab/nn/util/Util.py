@@ -23,6 +23,12 @@ def is_full_config(s: str):
     return 4 == len(l) and exists(join(Const.dataset_dir_global, l[-1] + '.py'))
 
 
+def merge_prm(prm: dict, d: dict):
+    prm.update(d)
+    prm = dict(sorted(prm.items()))
+    return prm
+
+
 def define_global_paths():
     """
     Defines project paths from current directory.
@@ -51,6 +57,11 @@ class CudaOutOfMemory(Exception):
 
     def batch_size_power(self):
         return self.batch_power
+
+
+class ModelException(Exception):
+    def __init__(self):
+        pass
 
 def args():
     parser = argparse.ArgumentParser()

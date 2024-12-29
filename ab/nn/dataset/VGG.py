@@ -31,16 +31,19 @@ cfgs: Dict[str, List[Union[str, int]]] = {
 class Net(nn.Module):
 
     def train_setup(self, device, prm):
+        self.device = device
         self.criteria = (nn.CrossEntropyLoss().to(device),)
         self.optimizer = torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
 
-    def learn(self, inputs, labels):
-        self.optimizer.zero_grad()
-        outputs = self(inputs)
-        loss = self.criteria[0](outputs, labels)
-        loss.backward()
-        nn.utils.clip_grad_norm_(self.parameters(), 3)
-        self.optimizer.step()
+    def learn(self, train_data):
+        for inputs, labels in train_data:
+            inputs, labels = inputs.to(self.device), labels.to(self.device)
+            self.optimizer.zero_grad()
+            outputs = self(inputs)
+            loss = self.criteria[0](outputs, labels)
+            loss.backward()
+            nn.utils.clip_grad_norm_(self.parameters(), 3)
+            self.optimizer.step()
 
     def __init__(
             self, features: nn.Module = make_layers(cfgs["A"], batch_norm=False), num_classes: int = 1000, init_weights: bool = True, dropout: float = 0.5

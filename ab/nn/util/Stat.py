@@ -1,6 +1,5 @@
 import json
 import os
-import pathlib
 import sqlite3
 from os import listdir, makedirs
 
@@ -223,14 +222,13 @@ def load_all_statistics_from_json_to_db(conn):
 
 
 
-def save_results(config: str, model_stat_dir: str, prm: dict):
+def save_results(config: str, model_stat_file: str, prm: dict):
     """
     Save Optuna study results for a given model in JSON-format.
     :param config: Config (Task, Dataset, Metric, and Model name).
-    :param model_stat_dir: Directory for the model statistics.
+    :param model_stat_file: File for the model statistics.
     :param prm: Dictionary of all saved parameters.
     """
-    makedirs(model_stat_dir, exist_ok=True)
 
     # Extract task, dataset, metric, and nn_name from the config
     try:
@@ -242,22 +240,17 @@ def save_results(config: str, model_stat_dir: str, prm: dict):
     trials_dict = [prm]
     trials_dict_all = trials_dict
 
-    path = f"{model_stat_dir}/trials.json"
-    if os.path.exists(path):
-        with open(path, "r") as f:
+    if os.path.exists(model_stat_file):
+        with open(model_stat_file, "r") as f:
             previous_trials = json.load(f)
             trials_dict_all = previous_trials + trials_dict_all
 
     trials_dict_all = sorted(trials_dict_all, key=lambda x: x['accuracy'], reverse=True)
     # Save trials.json
-    with open(path, "w") as f:
+    with open(model_stat_file, "w") as f:
         json.dump(trials_dict_all, f, indent=4)
 
-    # Save best_trial.json
-    with open(f"{model_stat_dir}/best_trial.json", "w") as f:
-        json.dump(trials_dict_all[0], f, indent=4)
-
-    print(f"Trials for {config} saved at {model_stat_dir}")
+    print(f"Trial (accuracy {prm['accuracy']}) for {config} saved at {model_stat_file}")
 
     # Save results to SQLite DB
     conn = sqlite3.connect(Const.db_dir_global)
@@ -285,11 +278,11 @@ def get_pandas_df_all() -> pd.DataFrame:
     """
     Get the full dataset including its default full statistics as a pandas dataframe
     Returns:
-    pd.Dataframe with columns ["structure", "code", "epochs", "accuracy", "batch_size", "lr", "momentum", "transform"]
+    pd.Dataframe with columns ["structure", "code", "epochs", "accuracy", "batch", "lr", "momentum", "transform"]
     todo: update this to load from the db file
     """
-    out = pd.DataFrame(columns=["structure", "code", "epochs", "accuracy", "batch_size", "lr", "momentum", "transform"])
-    pwd = str(pathlib.Path(__file__).parent.resolve())
+    out = pd.DataFrame(columns=["structure", "code", "epochs", "accuracy", "batch", "lr", "momentum", "transform"])
+    pwd = str(Path(__file__).parent.resolve())
     for stat_dir in listdir(pwd + "/../stat/"):
         structure = stat_dir.split('-')[-1]
 
@@ -297,7 +290,7 @@ def get_pandas_df_all() -> pd.DataFrame:
             code = str(code_file.read())
 
         for epochs in listdir(pwd + "/../stat/" + stat_dir + "/"):
-            with open(pwd + "/../stat/" + stat_dir + "/" + epochs + "/trials.json", "r") as json_file:
+            with open(pwd + "/../stat/" + stat_dir + "/" + epochs + ".json", "r") as json_file:
                 content = json.load(json_file)
 
             for stat in content:
@@ -306,7 +299,7 @@ def get_pandas_df_all() -> pd.DataFrame:
                     code,
                     epochs,
                     stat["accuracy"],
-                    stat["batch_size"],
+                    stat["batch"],
                     stat["lr"],
                     stat["momentum"],
                     stat["transform"]
@@ -318,11 +311,11 @@ def get_pandas_df_best() -> pd.DataFrame:
     """
         Get the full dataset including its best default statistics as a pandas dataframe
         Returns:
-        pd.Dataframe with columns ["structure", "code", "epochs", "accuracy", "batch_size", "lr", "momentum", "transform"]
+        pd.Dataframe with columns ["structure", "code", "epochs", "accuracy", "batch", "lr", "momentum", "transform"]
         todo: update this to load from the db file
     """
-    out = pd.DataFrame(columns=["structure", "code", "epochs", "accuracy", "batch_size", "lr", "momentum", "transform"])
-    pwd = str(pathlib.Path(__file__).parent.resolve())
+    out = pd.DataFrame(columns=["structure", "code", "epochs", "accuracy", "batch", "lr", "momentum", "transform"])
+    pwd = str(Path(__file__).parent.resolve())
     for stat_dir in listdir(pwd + "/../stat/"):
         structure = stat_dir.split('-')[-1]
 
@@ -338,7 +331,7 @@ def get_pandas_df_best() -> pd.DataFrame:
                 code,
                 epochs,
                 stat["accuracy"],
-                stat["batch_size"],
+                stat["batch"],
                 stat["lr"],
                 stat["momentum"],
                 stat["transform"]

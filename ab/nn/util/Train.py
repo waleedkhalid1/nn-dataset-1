@@ -7,7 +7,7 @@ import torch
 from tqdm import tqdm
 
 from ab.nn.util.Stat import save_results
-from ab.nn.util.Util import nn_mod, get_attr
+from ab.nn.util.Util import nn_mod, get_attr, merge_prm
 
 
 class Train:
@@ -69,27 +69,24 @@ class Train:
                 from e
 
 
-    def evaluate(self, num_epochs):
+    def train_n_eval(self, num_epochs):
+        """ Training and evaluation """
         train_loader = torch.utils.data.DataLoader(self.train_dataset, batch_size=self.batch, shuffle=True, num_workers=2)
         test_loader = torch.utils.data.DataLoader(self.test_dataset, batch_size=self.batch, shuffle=False, num_workers=2)
         prm = {'lr': self.lr, 'momentum': self.momentum, 'batch': self.batch, 'transform': self.transform}
         time = time_f.time_ns()
         self.model.train_setup(self.device, prm)
         accuracy = None
-        # --- Training --- #
         for epoch in range(1, num_epochs + 1):
             print(f"epoch {epoch}", flush=True)
             self.model.train()
-            it = tqdm(train_loader)
-            for inputs, labels in it:
-                inputs, labels = inputs.to(self.device), labels.to(self.device)
-                self.model.learn(inputs, labels)
+            self.model.learn(tqdm(train_loader))
             accuracy = self.eval(test_loader)
             accuracy = 0.0 if math.isnan(accuracy) or math.isinf(accuracy) else accuracy
-            prm.update({'time': time_f.time_ns() - time,
+            prm = merge_prm(prm, {'time': time_f.time_ns() - time,
                         'accuracy': accuracy,
                         'epoch': epoch})
-            save_results(self.config, join(self.model_stat_dir, str(epoch)), prm)
+            save_results(self.config, join(self.model_stat_dir, f"{epoch}.json"), prm)
 
         return accuracy
 
