@@ -56,7 +56,7 @@ def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
                 fail_iterations = nn_fail_attempts
                 continue_study = True
                 max_batch_binary_power_local = max_batch_binary_power
-                while continue_study and max_batch_binary_power_local > -1 and fail_iterations > -1:
+                while continue_study and max_batch_binary_power_local >= min_batch_binary_power and fail_iterations > -1:
                     try:
                         # Configure Optuna for the current model
                         def objective(trial):
@@ -95,7 +95,7 @@ def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
                                 return trainer.train_n_eval(n_epochs)
                             except Exception as e:
                                 if isinstance(e, OutOfMemoryError):
-                                    if max_batch_binary_power_local <= 0:
+                                    if max_batch_binary_power_local <= min_batch_binary_power:
                                         return 0.0
                                     else:
                                         raise CudaOutOfMemory(batch)
