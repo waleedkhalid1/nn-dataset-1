@@ -91,6 +91,15 @@
         "transform": "cifar10_complex"
     },
     {
+        "accuracy": 0.4853,
+        "batch": 4,
+        "epoch": 5,
+        "lr": 0.0061,
+        "momentum": 0.7549,
+        "time": 383050791749,
+        "transform": "cifar10_complex"
+    },
+    {
         "accuracy": 0.4822,
         "batch": 16,
         "lr": 0.018884162654966695,
@@ -109,6 +118,15 @@
         "batch": 16,
         "lr": 0.03577175991351037,
         "momentum": 0.020195874753379542,
+        "transform": "cifar10_complex"
+    },
+    {
+        "accuracy": 0.4802,
+        "batch": 4,
+        "epoch": 5,
+        "lr": 0.0061,
+        "momentum": 0.7549,
+        "time": 694464309103,
         "transform": "cifar10_complex"
     },
     {

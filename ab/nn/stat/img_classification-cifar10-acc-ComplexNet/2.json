@@ -49,10 +49,28 @@
         "transform": "cifar10_complex"
     },
     {
+        "accuracy": 0.4468,
+        "batch": 4,
+        "epoch": 2,
+        "lr": 0.0061,
+        "momentum": 0.7549,
+        "time": 151296960940,
+        "transform": "cifar10_complex"
+    },
+    {
         "accuracy": 0.4463,
         "batch": 4,
         "lr": 0.03576765099845877,
         "momentum": 0.01109172601324977,
+        "transform": "cifar10_complex"
+    },
+    {
+        "accuracy": 0.4447,
+        "batch": 4,
+        "epoch": 2,
+        "lr": 0.0061,
+        "momentum": 0.7549,
+        "time": 261977470541,
         "transform": "cifar10_complex"
     },
     {

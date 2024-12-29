@@ -317,6 +317,15 @@
         "epoch": 2
     },
     {
+        "accuracy": 0.6619,
+        "batch": 4,
+        "epoch": 2,
+        "lr": 0.0061,
+        "momentum": 0.7549,
+        "time": 269454893268,
+        "transform": "cifar10_norm"
+    },
+    {
         "accuracy": 0.6586,
         "batch": 32,
         "lr": 0.0893895538280997,
