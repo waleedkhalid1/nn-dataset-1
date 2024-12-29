@@ -1,5 +1,6 @@
 import json
 import os
+import random
 import sqlite3
 from os import listdir, makedirs
 
@@ -42,14 +43,17 @@ def extract_all_configs(config) -> list[str]:
 
 # todo: Request information from database 
 # once the database is loaded, the function will be updated
-def get_configs(config) -> tuple[str]:
+def get_configs(config: str, random_config_order: bool) -> tuple[str]:
     if not isinstance(config, tuple):
         config = (config,)
     all_configs = []
     for c in config:
         all_configs = all_configs + extract_all_configs(c)
     all_configs: list = list(set(all_configs))
-    all_configs.sort()
+    if random_config_order:
+        random.shuffle(all_configs)
+    else:
+        all_configs.sort()
     return tuple(all_configs)
 
 

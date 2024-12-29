@@ -30,8 +30,9 @@ if __name__ == "__main__":
     max_mom = a.max_momentum
     transform = a.transform
     nn_fail_attempts = a.nn_fail_attempts
+    random_config_order = a.random_config_order
 
     ''' !!! Please commit correct statistics whenever it's generated !!! '''
     # Run training with Optuna: detects and saves performance metric values
-    train.main(conf, epochs, trials, min_batch_power, max_batch_power, min_lr, max_lr, min_mom, max_mom, transform, nn_fail_attempts)
+    train.main(conf, epochs, trials, min_batch_power, max_batch_power, min_lr, max_lr, min_mom, max_mom, transform, nn_fail_attempts, random_config_order)
 

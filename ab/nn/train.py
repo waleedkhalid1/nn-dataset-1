@@ -11,7 +11,7 @@ def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
          min_batch_binary_power: int = default_min_batch_power, max_batch_binary_power: int = default_max_batch_power,
          min_learning_rate: float = default_min_lr, max_learning_rate: float = default_max_lr,
          min_momentum: float = default_min_momentum, max_momentum: float = default_max_momentum,
-         transform: str = None, nn_fail_attempts: int = default_nn_fail_attempts):
+         transform: str = None, nn_fail_attempts: int = default_nn_fail_attempts, random_config_order:bool = default_random_config_order):
     """
     Main function for training models using Optuna optimization.
     :param config: Configuration specifying the model training pipelines. The default value for all configurations.
@@ -25,6 +25,7 @@ def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
     :param max_momentum: Maximum value of momentum.
     :param transform: The transformation algorithm name. If None (default), all available algorithms are used by Optuna.
     :param nn_fail_attempts: Number of attempts if the neural network model throws exceptions.
+    :param random_config_order: If random shuffling of the config list is required before training.
     """
 
     if min_batch_binary_power > max_batch_binary_power: raise Exception(f"min_batch_binary_power {min_batch_binary_power} > max_batch_binary_power {max_batch_binary_power}")
@@ -37,7 +38,7 @@ def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
     # Initialize the SQLite database
     initialize_database()
     # Determine configurations based on the provided config
-    sub_configs = get_configs(config)
+    sub_configs = get_configs(config, random_config_order)
 
     print(f"Training configurations ({n_epochs} epochs):")
     for idx, sub_config in enumerate(sub_configs, start=1):
@@ -119,4 +120,5 @@ def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
 if __name__ == "__main__":
     a = args()
     main(a.config, a.epochs, a.trials, a.min_batch_binary_power, a.max_batch_binary_power,
-         a.min_learning_rate, a.max_learning_rate, a.min_momentum, a.max_momentum, a.transform, a.nn_fail_attempts)
+         a.min_learning_rate, a.max_learning_rate, a.min_momentum, a.max_momentum, a.transform,
+         a.nn_fail_attempts, a.random_config_order)
