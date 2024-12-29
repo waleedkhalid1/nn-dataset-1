@@ -58,6 +58,11 @@ class CudaOutOfMemory(Exception):
     def batch_size_power(self):
         return self.batch_power
 
+
+class ModelException(Exception):
+    def __init__(self):
+        pass
+
 def args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', type=str, default=default_config,
@@ -80,6 +85,8 @@ def args():
                         help="Maximum value of momentum.")
     parser.add_argument('-f', '--transform', type=str, default=default_transform,
                         help="The transformation algorithm name. If None (default), all available algorithms are used by Optuna.")
+    parser.add_argument('-a', '--nn_fail_attempts', type=int, default=default_nn_fail_attempts,
+                        help="Number of attempts if the neural network model throws exceptions.")
     return parser.parse_args()
 
 

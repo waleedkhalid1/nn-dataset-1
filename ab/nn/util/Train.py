@@ -69,14 +69,14 @@ class Train:
                 from e
 
 
-    def evaluate(self, num_epochs):
+    def train_n_eval(self, num_epochs):
+        """ Training and evaluation """
         train_loader = torch.utils.data.DataLoader(self.train_dataset, batch_size=self.batch, shuffle=True, num_workers=2)
         test_loader = torch.utils.data.DataLoader(self.test_dataset, batch_size=self.batch, shuffle=False, num_workers=2)
         prm = {'lr': self.lr, 'momentum': self.momentum, 'batch': self.batch, 'transform': self.transform}
         time = time_f.time_ns()
         self.model.train_setup(self.device, prm)
         accuracy = None
-        # --- Training --- #
         for epoch in range(1, num_epochs + 1):
             print(f"epoch {epoch}", flush=True)
             self.model.train()
