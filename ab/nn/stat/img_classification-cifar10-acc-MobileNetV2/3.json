@@ -7,5 +7,14 @@
         "time": 457433489199,
         "accuracy": 0.6732,
         "epoch": 3
+    },
+    {
+        "accuracy": 0.6716,
+        "batch": 4,
+        "epoch": 3,
+        "lr": 0.0061,
+        "momentum": 0.7549,
+        "time": 285336376116,
+        "transform": "cifar10_norm"
     }
 ]

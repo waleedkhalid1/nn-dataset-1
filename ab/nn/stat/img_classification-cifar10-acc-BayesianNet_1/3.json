@@ -18,6 +18,24 @@
         "transform": "echo"
     },
     {
+        "accuracy": 0.5145,
+        "batch": 4,
+        "epoch": 3,
+        "lr": 0.0061,
+        "momentum": 0.7549,
+        "time": 148009505519,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.493,
+        "batch": 4,
+        "epoch": 3,
+        "lr": 0.0061,
+        "momentum": 0.7549,
+        "time": 147716371398,
+        "transform": "echo"
+    },
+    {
         "accuracy": 0.4927,
         "batch": 4,
         "epoch": 3,

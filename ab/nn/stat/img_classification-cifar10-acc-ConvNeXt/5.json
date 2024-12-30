@@ -4,6 +4,7 @@
         "batch": 5,
         "lr": 0.20827398525759025,
         "momentum": 0.5195407108007387,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -11,6 +12,7 @@
         "batch": 5,
         "lr": 0.3705575989268924,
         "momentum": 0.02115222162096158,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -18,6 +20,7 @@
         "batch": 5,
         "lr": 0.36622828547934067,
         "momentum": 0.012911625047656836,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -25,6 +28,7 @@
         "batch": 4,
         "lr": 0.054178092714743255,
         "momentum": 0.6562618171094244,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -32,6 +36,7 @@
         "batch": 8,
         "lr": 0.1409734833434643,
         "momentum": 0.5360459021066013,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -39,6 +44,7 @@
         "batch": 8,
         "lr": 0.3090111244360553,
         "momentum": 0.1239437219069183,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -46,6 +52,7 @@
         "batch": 8,
         "lr": 0.3134830689090654,
         "momentum": 0.010848995646918254,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -53,6 +60,7 @@
         "batch": 5,
         "lr": 0.07833450896739591,
         "momentum": 0.5854988122798181,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -60,6 +68,7 @@
         "batch": 8,
         "lr": 0.184274939703678,
         "momentum": 0.44163466903229953,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -67,6 +76,7 @@
         "batch": 5,
         "lr": 0.06014426922625671,
         "momentum": 0.7096152878526586,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -74,6 +84,7 @@
         "batch": 8,
         "lr": 0.11698258154057517,
         "momentum": 0.03491980657291284,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -81,6 +92,7 @@
         "batch": 5,
         "lr": 0.06293916966872443,
         "momentum": 0.8630848735599537,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -88,6 +100,7 @@
         "batch": 8,
         "lr": 0.07080563435552606,
         "momentum": 0.6358587721958435,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -95,6 +108,7 @@
         "batch": 8,
         "lr": 0.19741585273761053,
         "momentum": 0.07195379068946028,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -102,6 +116,7 @@
         "batch": 8,
         "lr": 0.14468665849259554,
         "momentum": 0.01680714466327578,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -109,6 +124,7 @@
         "batch": 5,
         "lr": 0.29769287199388655,
         "momentum": 0.36963430968224853,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -116,6 +132,7 @@
         "batch": 8,
         "lr": 0.10653741832199531,
         "momentum": 0.07646667214906323,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -123,6 +140,7 @@
         "batch": 5,
         "lr": 0.19715456285330363,
         "momentum": 0.5498777056608504,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -130,6 +148,7 @@
         "batch": 8,
         "lr": 0.08696600540372197,
         "momentum": 0.5927413311825555,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -137,6 +156,7 @@
         "batch": 5,
         "lr": 0.07618927615451429,
         "momentum": 0.8140616584401589,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -144,6 +164,7 @@
         "batch": 8,
         "lr": 0.3663380641349209,
         "momentum": 0.1023989327214802,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -151,6 +172,7 @@
         "batch": 8,
         "lr": 0.21844758198866654,
         "momentum": 0.06230214956472459,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -158,6 +180,7 @@
         "batch": 8,
         "lr": 0.17328692284358344,
         "momentum": 0.38910035762666195,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -165,6 +188,7 @@
         "batch": 4,
         "lr": 0.09839082732711713,
         "momentum": 0.01981605675844224,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -172,6 +196,7 @@
         "batch": 8,
         "lr": 0.219778324583088,
         "momentum": 0.1355094818286895,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -179,6 +204,7 @@
         "batch": 8,
         "lr": 0.20296794746835706,
         "momentum": 0.08284655291542291,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -186,6 +212,7 @@
         "batch": 16,
         "lr": 0.15190097726002652,
         "momentum": 0.5657892986983751,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -193,6 +220,7 @@
         "batch": 8,
         "lr": 0.11004517091052046,
         "momentum": 0.09679702475421006,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -200,6 +228,7 @@
         "batch": 8,
         "lr": 0.004255328565958116,
         "momentum": 0.970433669658241,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -207,6 +236,7 @@
         "batch": 5,
         "lr": 0.2915552248039225,
         "momentum": 0.26412980182285845,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -214,6 +244,7 @@
         "batch": 8,
         "lr": 0.24120623765402244,
         "momentum": 0.5459178536452856,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -221,6 +252,7 @@
         "batch": 16,
         "lr": 0.13395889619005277,
         "momentum": 0.32171631022379893,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -228,6 +260,7 @@
         "batch": 8,
         "lr": 0.2252231724161906,
         "momentum": 0.2632169473684665,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -235,6 +268,7 @@
         "batch": 8,
         "lr": 0.11377656992501946,
         "momentum": 0.12486544136928159,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -242,6 +276,7 @@
         "batch": 16,
         "lr": 0.12909992008981036,
         "momentum": 0.47986577664685626,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -249,6 +284,7 @@
         "batch": 8,
         "lr": 0.051858453903804516,
         "momentum": 0.674625288950748,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -256,6 +292,7 @@
         "batch": 4,
         "lr": 0.15093651585071508,
         "momentum": 0.473617698580532,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -263,6 +300,7 @@
         "batch": 8,
         "lr": 0.08010211034399978,
         "momentum": 0.43957315673410735,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -270,6 +308,7 @@
         "batch": 5,
         "lr": 0.05244669164370601,
         "momentum": 0.3038019448940168,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -277,6 +316,7 @@
         "batch": 32,
         "lr": 0.10622983307038134,
         "momentum": 0.7218541077223508,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -284,6 +324,7 @@
         "batch": 5,
         "lr": 0.07090371920870168,
         "momentum": 0.16044212030903432,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -291,6 +332,7 @@
         "batch": 8,
         "lr": 0.19574007268062898,
         "momentum": 0.18411365409695327,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -298,6 +340,7 @@
         "batch": 8,
         "lr": 0.41527205254138005,
         "momentum": 0.03765016983016081,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -305,6 +348,7 @@
         "batch": 32,
         "lr": 0.07295561771189477,
         "momentum": 0.7598020473444641,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -312,6 +356,7 @@
         "batch": 8,
         "lr": 0.1260935883411542,
         "momentum": 0.09120111020584383,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -319,6 +364,7 @@
         "batch": 5,
         "lr": 0.08664149024309024,
         "momentum": 0.2409973204451759,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -326,6 +372,7 @@
         "batch": 8,
         "lr": 0.17433584005862485,
         "momentum": 0.0434275015557138,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -333,6 +380,7 @@
         "batch": 16,
         "lr": 0.13402905474477597,
         "momentum": 0.36425116134155194,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -340,6 +388,7 @@
         "batch": 5,
         "lr": 0.45650304507372763,
         "momentum": 0.017222737840602843,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -347,6 +396,7 @@
         "batch": 5,
         "lr": 0.29428273874598426,
         "momentum": 0.014721114966570394,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -354,6 +404,7 @@
         "batch": 5,
         "lr": 0.24783824267707164,
         "momentum": 0.02705867323614642,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -361,6 +412,7 @@
         "batch": 5,
         "lr": 0.030886590607247827,
         "momentum": 0.6788303016436986,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -368,6 +420,7 @@
         "batch": 8,
         "lr": 0.26920823181259584,
         "momentum": 0.019995187546974737,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -375,6 +428,7 @@
         "batch": 8,
         "lr": 0.1107903135613322,
         "momentum": 0.02692426968384486,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -382,6 +436,7 @@
         "batch": 8,
         "lr": 0.33780400735995914,
         "momentum": 0.011265707240409406,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -389,6 +444,7 @@
         "batch": 4,
         "lr": 0.2515242119454608,
         "momentum": 0.4144191341471539,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -396,6 +452,7 @@
         "batch": 16,
         "lr": 0.42800389001625716,
         "momentum": 0.012469924602439961,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -403,6 +460,7 @@
         "batch": 8,
         "lr": 0.019968197520788794,
         "momentum": 0.3495877889480975,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -410,6 +468,7 @@
         "batch": 5,
         "lr": 0.003356453695760639,
         "momentum": 0.8329290808387627,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -417,22 +476,25 @@
         "batch": 32,
         "lr": 0.1726798915112588,
         "momentum": 0.037417501004792623,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
+        "accuracy": 0.3735,
+        "batch": 4,
+        "epoch": 5,
         "lr": 0.0061,
         "momentum": 0.7549,
-        "batch": 4,
-        "transform": "cifar10_norm",
+        "stochastic_depth_prob": 0.0,
         "time": 2530780190389,
-        "accuracy": 0.3735,
-        "epoch": 5
+        "transform": "cifar10_norm"
     },
     {
         "accuracy": 0.3675,
         "batch": 8,
         "lr": 0.02721390558778911,
         "momentum": 0.014249115206367485,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -440,6 +502,7 @@
         "batch": 5,
         "lr": 0.3461089058426753,
         "momentum": 0.0198179360657882,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -447,6 +510,7 @@
         "batch": 8,
         "lr": 0.25864694250614684,
         "momentum": 0.40554168515281663,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -454,6 +518,7 @@
         "batch": 32,
         "lr": 0.32622181457815214,
         "momentum": 0.22159917745417596,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -461,6 +526,7 @@
         "batch": 8,
         "lr": 0.13356120992067191,
         "momentum": 0.05647926774121608,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -468,6 +534,7 @@
         "batch": 64,
         "lr": 0.1670967716033755,
         "momentum": 0.27491810154567436,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -475,6 +542,7 @@
         "batch": 4,
         "lr": 0.0011913946056668068,
         "momentum": 0.632478041003102,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -482,6 +550,7 @@
         "batch": 8,
         "lr": 0.32183628102833406,
         "momentum": 0.011223580126544879,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -489,6 +558,7 @@
         "batch": 32,
         "lr": 0.05124347389723937,
         "momentum": 0.20061659338928517,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -496,6 +566,7 @@
         "batch": 64,
         "lr": 0.1864407173687122,
         "momentum": 0.6312859097167162,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -503,6 +574,7 @@
         "batch": 5,
         "lr": 0.5133377261026459,
         "momentum": 0.01629877958889454,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -511,6 +583,7 @@
         "epoch": 5,
         "lr": 0.0061,
         "momentum": 0.7549,
+        "stochastic_depth_prob": 0.0,
         "time": 2224927321043,
         "transform": "cifar10_norm"
     },
@@ -519,6 +592,7 @@
         "batch": 64,
         "lr": 0.040073690178179064,
         "momentum": 0.789176841460287,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -526,6 +600,7 @@
         "batch": 16,
         "lr": 0.006154643878792831,
         "momentum": 0.7228096268912466,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -533,6 +608,7 @@
         "batch": 64,
         "lr": 0.2293661882098384,
         "momentum": 0.6368052170664052,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -540,6 +616,7 @@
         "batch": 64,
         "lr": 0.398541095030868,
         "momentum": 0.013766976837600007,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -547,6 +624,7 @@
         "batch": 5,
         "lr": 0.3163809652126275,
         "momentum": 0.023117573575332926,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -554,6 +632,7 @@
         "batch": 5,
         "lr": 0.43436583200610246,
         "momentum": 0.04973474151967691,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -561,6 +640,7 @@
         "batch": 64,
         "lr": 0.33638957376098755,
         "momentum": 0.024408419537094245,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -568,6 +648,7 @@
         "batch": 16,
         "lr": 0.03510233876168521,
         "momentum": 0.9758466615349941,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -575,6 +656,7 @@
         "batch": 32,
         "lr": 0.7226845951283793,
         "momentum": 0.7623018592732469,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -582,6 +664,7 @@
         "batch": 64,
         "lr": 0.6060689225906489,
         "momentum": 0.1563115559845048,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -589,6 +672,7 @@
         "batch": 4,
         "lr": 0.6732768383018273,
         "momentum": 0.022503821184766872,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -596,6 +680,7 @@
         "batch": 5,
         "lr": 0.4808362423980106,
         "momentum": 0.14570089757453636,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -603,6 +688,7 @@
         "batch": 4,
         "lr": 0.33078166890566074,
         "momentum": 0.6383970425671104,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -610,6 +696,7 @@
         "batch": 32,
         "lr": 0.6499384949103735,
         "momentum": 0.024320604223846114,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -617,6 +704,7 @@
         "batch": 8,
         "lr": 0.9944096906891804,
         "momentum": 0.06045378587157714,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -624,6 +712,7 @@
         "batch": 5,
         "lr": 0.47485940894629813,
         "momentum": 0.20562239940882746,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -631,6 +720,7 @@
         "batch": 8,
         "lr": 0.8879490652039784,
         "momentum": 0.10280445626060411,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -638,6 +728,7 @@
         "batch": 5,
         "lr": 0.39465710402376997,
         "momentum": 0.5070643092706908,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -645,6 +736,7 @@
         "batch": 5,
         "lr": 0.15019248808315067,
         "momentum": 0.9703878337807937,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -652,6 +744,7 @@
         "batch": 4,
         "lr": 0.5508939375706058,
         "momentum": 0.3290686874246008,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -659,6 +752,7 @@
         "batch": 4,
         "lr": 0.7740930743452532,
         "momentum": 0.4418725167842422,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -666,6 +760,7 @@
         "batch": 4,
         "lr": 0.2762195194562166,
         "momentum": 0.7470182479478589,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -673,6 +768,7 @@
         "batch": 4,
         "lr": 0.3623544798915944,
         "momentum": 0.48606758883280327,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -680,6 +776,7 @@
         "batch": 4,
         "lr": 0.712605722797338,
         "momentum": 0.03232474857678555,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -687,6 +784,7 @@
         "batch": 5,
         "lr": 0.2118784675191478,
         "momentum": 0.5383077867056297,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -694,6 +792,7 @@
         "batch": 8,
         "lr": 0.5551319526611226,
         "momentum": 0.8398980881871848,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -701,6 +800,7 @@
         "batch": 5,
         "lr": 0.3641637490736196,
         "momentum": 0.012957178881167184,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -708,6 +808,7 @@
         "batch": 5,
         "lr": 0.2977387434792561,
         "momentum": 0.010015526814894017,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -715,6 +816,7 @@
         "batch": 5,
         "lr": 0.37254492942379913,
         "momentum": 0.011396882422236406,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -722,6 +824,7 @@
         "batch": 4,
         "lr": 0.27048981927574545,
         "momentum": 0.2861636525944109,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -729,6 +832,7 @@
         "batch": 8,
         "lr": 0.3994446832848365,
         "momentum": 0.010092298595107397,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     },
     {
@@ -736,6 +840,7 @@
         "batch": 32,
         "lr": 0.988180539034138,
         "momentum": 0.9127589822650579,
+        "stochastic_depth_prob": 0.0,
         "transform": "cifar10_norm"
     }
 ]

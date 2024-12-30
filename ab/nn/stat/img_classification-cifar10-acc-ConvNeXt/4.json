@@ -1,12 +1,13 @@
 [
     {
+        "accuracy": 0.3073,
+        "batch": 4,
+        "epoch": 4,
         "lr": 0.0061,
         "momentum": 0.7549,
-        "batch": 4,
-        "transform": "cifar10_norm",
+        "stochastic_depth_prob": 0.0,
         "time": 2023563234420,
-        "accuracy": 0.3073,
-        "epoch": 4
+        "transform": "cifar10_norm"
     },
     {
         "accuracy": 0.1336,
@@ -14,6 +15,7 @@
         "epoch": 4,
         "lr": 0.0061,
         "momentum": 0.7549,
+        "stochastic_depth_prob": 0.0,
         "time": 1779770560206,
         "transform": "cifar10_norm"
     }

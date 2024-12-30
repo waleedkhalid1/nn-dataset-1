@@ -1,5 +1,14 @@
 [
     {
+        "accuracy": 0.5628,
+        "batch": 4,
+        "epoch": 4,
+        "lr": 0.0061,
+        "momentum": 0.7549,
+        "time": 197669421941,
+        "transform": "echo"
+    },
+    {
         "accuracy": 0.5503,
         "batch": 4,
         "epoch": 4,
@@ -25,6 +34,15 @@
         "momentum": 0.7549,
         "time": 541715581684,
         "transform": "cifar10_norm_32"
+    },
+    {
+        "accuracy": 0.5052,
+        "batch": 4,
+        "epoch": 4,
+        "lr": 0.0061,
+        "momentum": 0.7549,
+        "time": 198298433415,
+        "transform": "echo"
     },
     {
         "lr": 0.00010723942764437238,

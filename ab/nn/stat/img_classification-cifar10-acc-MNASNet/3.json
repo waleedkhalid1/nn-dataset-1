@@ -7,5 +7,23 @@
         "time": 452372440512,
         "accuracy": 0.5672,
         "epoch": 3
+    },
+    {
+        "accuracy": 0.1675,
+        "batch": 4,
+        "epoch": 3,
+        "lr": 0.0061,
+        "momentum": 0.7549,
+        "time": 215858299487,
+        "transform": "cifar10_norm_32"
+    },
+    {
+        "accuracy": 0.127,
+        "batch": 4,
+        "epoch": 3,
+        "lr": 0.0061,
+        "momentum": 0.7549,
+        "time": 279527195288,
+        "transform": "echo"
     }
 ]

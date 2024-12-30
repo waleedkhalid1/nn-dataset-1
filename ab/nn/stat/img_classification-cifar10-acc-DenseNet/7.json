@@ -1,0 +1,12 @@
+[
+    {
+        "accuracy": 0.6197,
+        "batch": 4,
+        "dropout": 0.5,
+        "epoch": 7,
+        "lr": 0.0061,
+        "momentum": 0.7549,
+        "time": 1382302951785,
+        "transform": "echo"
+    }
+]

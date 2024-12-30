@@ -1,0 +1,14 @@
+[
+    {
+        "accuracy": 0.8049,
+        "attention_dropout": 0.0,
+        "batch": 4,
+        "dropout": 0.0,
+        "epoch": 17,
+        "lr": 0.0061,
+        "momentum": 0.7549,
+        "stochastic_depth_prob": 0.2,
+        "time": 6757685511801,
+        "transform": "cifar10_norm"
+    }
+]

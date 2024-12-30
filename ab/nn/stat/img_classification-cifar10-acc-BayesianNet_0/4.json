@@ -9,6 +9,15 @@
         "transform": "echo"
     },
     {
+        "accuracy": 0.5955,
+        "batch": 4,
+        "epoch": 4,
+        "lr": 0.0061,
+        "momentum": 0.7549,
+        "time": 225210167117,
+        "transform": "echo"
+    },
+    {
         "accuracy": 0.5877,
         "batch": 4,
         "epoch": 4,
@@ -24,6 +33,15 @@
         "lr": 0.0061,
         "momentum": 0.7549,
         "time": 646097494990,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.5747,
+        "batch": 4,
+        "epoch": 4,
+        "lr": 0.0061,
+        "momentum": 0.7549,
+        "time": 228954592442,
         "transform": "echo"
     },
     {

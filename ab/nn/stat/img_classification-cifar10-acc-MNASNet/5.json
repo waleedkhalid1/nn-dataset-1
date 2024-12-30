@@ -639,11 +639,29 @@
         "transform": "cifar10_norm"
     },
     {
+        "accuracy": 0.1964,
+        "batch": 4,
+        "epoch": 5,
+        "lr": 0.0061,
+        "momentum": 0.7549,
+        "time": 461229518605,
+        "transform": "echo"
+    },
+    {
         "accuracy": 0.1715,
         "batch": 64,
         "lr": 0.38975946137984097,
         "momentum": 0.7415676068177713,
         "transform": "cifar10_norm"
+    },
+    {
+        "accuracy": 0.169,
+        "batch": 4,
+        "epoch": 5,
+        "lr": 0.0061,
+        "momentum": 0.7549,
+        "time": 356887128568,
+        "transform": "cifar10_norm_32"
     },
     {
         "accuracy": 0.1592,

@@ -1,0 +1,12 @@
+[
+    {
+        "accuracy": 0.7529,
+        "batch": 4,
+        "dropout": 0.5,
+        "epoch": 25,
+        "lr": 0.0061,
+        "momentum": 0.7549,
+        "time": 1430487226909,
+        "transform": "cifar10_norm"
+    }
+]
