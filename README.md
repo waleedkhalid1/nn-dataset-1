@@ -49,7 +49,7 @@ To add more neural network models to the dataset, the following criteria must be
 1. The code for each model must be provided in a respective ".py" file for the model in the directory <strong>/ab/nn/dataset</strong>. This file must be named after the name of the model structure.
 2. The main class for each model must be named <strong>Net</strong>.
 3. The implementation of this <strong>Net</strong> class must provide non-mutable default parameters for its constructor.
-4. For each pull request involving a new neural network, please generate and submit training statistics for 100 Optuna trials (or at least 3 trials for very large models) in the <strong>ab/nn/stat</strong> directory. The trials should cover 5 epochs of training. Ensure that this statistics is included along with the model in your pull request. For example, the statistics for the ComplexNet model are stored in five files <strong>&#x003C;epoch number&#x003E;.json</strong> inside folder <strong>img_classification-cifar10-acc-ComplexNet</strong>, e.g.:<br/>
+4. For each pull request involving a new neural network, please generate and submit training statistics for 100 Optuna trials (or at least 3 trials for very large models) in the <strong>ab/nn/stat</strong> directory. The trials should cover 5 epochs of training. Ensure that this statistics is included along with the model in your pull request. For example, the statistics for the ComplexNet model are stored in files <strong>&#x003C;epoch number&#x003E;.json</strong> inside folder <strong>img_classification-cifar10-acc-ComplexNet</strong>, e.g.:<br/>
 ```bash
 python run.py -c img_classification-cifar10-acc-ComplexNet -t 100 -e 5
 ```
