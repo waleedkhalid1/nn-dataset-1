@@ -1,4 +1,3 @@
-import warnings
 from collections import namedtuple
 from typing import Any, Callable, List, Optional, Tuple
 
@@ -14,36 +13,41 @@ _GoogLeNetOutputs = GoogLeNetOutputs
 
 
 class Net(nn.Module):
+
+
+    def train_setup(self, device, prm):
+        self.device = device
+        self.criteria = (nn.CrossEntropyLoss().to(device),)
+        self.optimizer = torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
+
+    def learn(self, train_data):
+        for inputs, labels in train_data:
+            inputs, labels = inputs.to(self.device), labels.to(self.device)
+            self.optimizer.zero_grad()
+            outputs = self(inputs)
+            loss = self.criteria[0](outputs, labels)
+            loss.backward()
+            self.optimizer.step()
+
     __constants__ = ["aux_logits", "transform_input"]
 
-    def __init__(
-        self,
-        num_classes: int = 1000,
-        aux_logits: bool = True,
-        transform_input: bool = False,
-        init_weights: Optional[bool] = None,
-        blocks: Optional[List[Callable[..., nn.Module]]] = None,
-        dropout: float = 0.2,
-        dropout_aux: float = 0.7,
-    ) -> None:
+    def __init__(self, num_classes: int = 1000) -> None:
         super().__init__()
+        transform_input: bool = False
+        blocks: Optional[List[Callable[..., nn.Module]]] = None
+        dropout: float = 0.2
+        dropout_aux: float = 0.7
+
         if blocks is None:
             blocks = [BasicConv2d, Inception, InceptionAux]
-        if init_weights is None:
-            warnings.warn(
-                "The default weight initialization of GoogleNet will be changed in future releases of "
-                "torchvision. If you wish to keep the old behavior (which leads to long initialization times"
-                " due to scipy/scipy#11299), please set init_weights=True.",
-                FutureWarning,
-            )
-            init_weights = True
+        init_weights = True
         if len(blocks) != 3:
             raise ValueError(f"blocks length should be 3 instead of {len(blocks)}")
         conv_block = blocks[0]
         inception_block = blocks[1]
         inception_aux_block = blocks[2]
 
-        self.aux_logits = aux_logits
+        self.aux_logits = True
         self.transform_input = transform_input
 
         self.conv1 = conv_block(3, 64, kernel_size=7, stride=2, padding=3)
@@ -66,7 +70,7 @@ class Net(nn.Module):
         self.inception5a = inception_block(832, 256, 160, 320, 32, 128, 128)
         self.inception5b = inception_block(832, 384, 192, 384, 48, 128, 128)
 
-        if aux_logits:
+        if self.aux_logits:
             self.aux1 = inception_aux_block(512, num_classes, dropout=dropout_aux)
             self.aux2 = inception_aux_block(528, num_classes, dropout=dropout_aux)
         else:

@@ -12,16 +12,28 @@ _InceptionOutputs = InceptionOutputs
 
 
 class Net(nn.Module):
-    def __init__(
-        self,
-        num_classes: int = 1000,
-        aux_logits: bool = False,
-        transform_input: bool = False,
-        inception_blocks: Optional[List[Callable[..., nn.Module]]] = None,
-        init_weights: Optional[bool] = None,
-        dropout: float = 0.5,
-    ) -> None:
+
+    def train_setup(self, device, prm):
+        self.device = device
+        self.criteria = (nn.CrossEntropyLoss().to(device),)
+        self.optimizer = torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
+
+    def learn(self, train_data):
+        for inputs, labels in train_data:
+            inputs, labels = inputs.to(self.device), labels.to(self.device)
+            self.optimizer.zero_grad()
+            outputs = self(inputs)
+            loss = self.criteria[0](outputs, labels)
+            loss.backward()
+            nn.utils.clip_grad_norm_(self.parameters(), 3)
+            self.optimizer.step()
+
+    def __init__(self, num_classes: int = 1000) -> None:
         super().__init__()
+        transform_input: bool = False
+        inception_blocks: Optional[List[Callable[..., nn.Module]]] = None
+        init_weights: Optional[bool] = None
+        dropout: float = 0.5
         if inception_blocks is None:
             inception_blocks = [BasicConv2d, InceptionA, InceptionB, InceptionC, InceptionD, InceptionE, InceptionAux]
         if init_weights is None:
@@ -36,7 +48,7 @@ class Net(nn.Module):
         inception_e = inception_blocks[5]
         inception_aux = inception_blocks[6]
 
-        self.aux_logits = aux_logits
+        self.aux_logits = False
         self.transform_input = transform_input
         self.Conv2d_1a_3x3 = conv_block(3, 32, kernel_size=3, stride=2)
         self.Conv2d_2a_3x3 = conv_block(32, 32, kernel_size=3)
@@ -54,7 +66,7 @@ class Net(nn.Module):
         self.Mixed_6d = inception_c(768, channels_7x7=160)
         self.Mixed_6e = inception_c(768, channels_7x7=192)
         self.AuxLogits: Optional[nn.Module] = None
-        if aux_logits:
+        if self.aux_logits:
             self.AuxLogits = inception_aux(768, num_classes)
         self.Mixed_7a = inception_d(768)
         self.Mixed_7b = inception_e(1280)

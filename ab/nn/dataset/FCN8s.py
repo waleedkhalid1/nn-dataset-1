@@ -6,9 +6,7 @@ from torch import nn
 
 
 class VGG(nn.Module):
-    def __init__(
-            self, features: nn.Module, num_classes: int = 1000, init_weights: bool = True, dropout: float = 0.5
-    ) -> None:
+    def __init__(self, features: nn.Module, num_classes: int = 1000, init_weights: bool = True, dropout: float = 0.5) -> None:
         super().__init__()
         self.features = features
         self.avgpool = nn.AdaptiveAvgPool2d((7, 7))
@@ -79,10 +77,31 @@ class FCNHead(nn.Sequential):
 
 
 class Net(nn.Module):
-    def __init__(self, num_classes = 100, backbone:VGG = None, backbone_num_classes = None, init_weights=True, dropout=0.5, **kwargs):
+
+    def train_setup(self, device, prm):
+        self.device = device
+        self.criteria = (nn.CrossEntropyLoss(ignore_index=-1).to(device),)
+        params_list = [{'params': self.backbone.parameters(), 'lr': prm['lr']}]
+        for module in self.exclusive:
+            params_list.append({'params': getattr(self, module).parameters(), 'lr': prm['lr'] * 10})
+        self.optimizer = torch.optim.SGD(params_list, lr=prm['lr'], momentum=prm['momentum'])
+
+    def learn(self, train_data):
+        for inputs, labels in train_data:
+            inputs, labels = inputs.to(self.device), labels.to(self.device)
+            self.optimizer.zero_grad()
+            outputs = self(inputs)
+            loss = self.criteria[0](outputs, labels)
+            loss.backward()
+            nn.utils.clip_grad_norm_(self.parameters(), 3)
+            self.optimizer.step()
+
+    def __init__(self, num_classes = 21):
         super(Net, self).__init__()
-        if backbone == None:
-            backbone = VGG(make_layers(vgg_cfgs["D"]),num_classes=num_classes if (backbone_num_classes == None) else backbone_num_classes,init_weights=init_weights,dropout=dropout, **kwargs)
+        backbone_num_classes = None
+        init_weights = True
+        dropout = 0.5
+        backbone = VGG(make_layers(vgg_cfgs["D"]),num_classes=num_classes if (backbone_num_classes == None) else backbone_num_classes,init_weights=init_weights,dropout=dropout)
 
         features = list(backbone.features.children())
         self.backbone = backbone.features

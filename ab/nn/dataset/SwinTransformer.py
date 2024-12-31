@@ -366,6 +366,21 @@ class SwinTransformerBlockV2(SwinTransformerBlock):
 
 
 class Net(nn.Module):
+
+    def train_setup(self, device, prm):
+        self.device = device
+        self.criteria = (nn.CrossEntropyLoss().to(device),)
+        self.optimizer = torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
+
+    def learn(self, train_data):
+        for inputs, labels in train_data:
+            inputs, labels = inputs.to(self.device), labels.to(self.device)
+            self.optimizer.zero_grad()
+            outputs = self(inputs)
+            loss = self.criteria[0](outputs, labels)
+            loss.backward()
+            self.optimizer.step()
+
     def __init__(
             self,
             patch_size=None,

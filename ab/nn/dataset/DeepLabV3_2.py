@@ -315,20 +315,34 @@ class ResNet(nn.Module):
 
 
 class Net(nn.Module):
+
+
+    def train_setup(self, device, prm):
+        self.device = device
+        self.criteria = (nn.CrossEntropyLoss(ignore_index=-1).to(device),)
+        params_list = [{'params': self.backbone.parameters(), 'lr': prm['lr']}]
+        for module in self.exclusive:
+            params_list.append({'params': getattr(self, module).parameters(), 'lr': prm['lr'] * 10})
+        self.optimizer = torch.optim.SGD(params_list, lr=prm['lr'], momentum=prm['momentum'])
+
+    def learn(self, train_data):
+        for inputs, labels in train_data:
+            inputs, labels = inputs.to(self.device), labels.to(self.device)
+            self.optimizer.zero_grad()
+            outputs = self(inputs)
+            loss = self.criteria[0](outputs, labels)
+            loss.backward()
+            nn.utils.clip_grad_norm_(self.parameters(), 3)
+            self.optimizer.step()
+
     __constants__ = ["aux_classifier"]
 
-    def __init__(
-            self,
-            backbone: nn.Module = ResNet(Bottleneck, [3, 4, 23, 3], num_classes=100, replace_stride_with_dilation=[False, True, True]),
-            classifier: nn.Module = DeepLabHead(2048, 21),
-            aux_classifier: Optional[nn.Module] = None,
-            **kwargs
-    ) -> None:
+    def __init__(self) -> None:
         super(Net, self).__init__()
-        self.backbone = backbone
-        self.classifier = classifier
-        self.aux_classifier = aux_classifier
-        self.__setattr__('exclusive', ['classifier'] if aux_classifier == None else ['classifier', 'aux_classifier'])
+        self.backbone: nn.Module = ResNet(Bottleneck, [3, 4, 23, 3], num_classes=100, replace_stride_with_dilation=[False, True, True])
+        self.classifier: nn.Module = DeepLabHead(2048, 21)
+        self.aux_classifier: Optional[nn.Module] = None
+        self.__setattr__('exclusive', ['classifier'] if self.aux_classifier == None else ['classifier', 'aux_classifier'])
 
     def forward(self, x: Tensor) -> Union[Dict[str, Tensor], Tensor]:
         input_shape = x.shape[-2:]

@@ -63,22 +63,40 @@ class OutConv(nn.Module):
 
 
 class Net(nn.Module):
-    def __init__(self, num_classes = 21, bilinear=False, **args):
+
+    def train_setup(self, device, prm):
+        self.device = device
+        self.criteria = (nn.CrossEntropyLoss(ignore_index=-1).to(device),)
+        params_list = []
+        for module in self.exclusive:
+            params_list.append({'params': getattr(self, module).parameters(), 'lr': prm['lr'] * 10})
+        self.optimizer = torch.optim.SGD(params_list, lr=prm['lr'], momentum=prm['momentum'])
+
+    def learn(self, train_data):
+        for inputs, labels in train_data:
+            inputs, labels = inputs.to(self.device), labels.to(self.device)
+            self.optimizer.zero_grad()
+            outputs = self(inputs)
+            loss = self.criteria[0](outputs, labels)
+            loss.backward()
+            self.optimizer.step()
+
+    def __init__(self, num_classes = 21):
         super(Net, self).__init__()
         self.n_channels = 3
         self.n_classes = num_classes
-        self.bilinear = bilinear
+        self.bilinear = False
 
         self.inc = (DoubleConv(3, 64))
         self.down1 = (Down(64, 128))
         self.down2 = (Down(128, 256))
         self.down3 = (Down(256, 512))
-        factor = 2 if bilinear else 1
+        factor = 2 if self.bilinear else 1
         self.down4 = (Down(512, 1024 // factor))
-        self.up1 = (Up(1024, 512 // factor, bilinear))
-        self.up2 = (Up(512, 256 // factor, bilinear))
-        self.up3 = (Up(256, 128 // factor, bilinear))
-        self.up4 = (Up(128, 64, bilinear))
+        self.up1 = (Up(1024, 512 // factor, self.bilinear))
+        self.up2 = (Up(512, 256 // factor, self.bilinear))
+        self.up3 = (Up(256, 128 // factor, self.bilinear))
+        self.up4 = (Up(128, 64, self.bilinear))
         self.outc = (OutConv(64, num_classes))
         self.__setattr__('exclusive',
                          ['inc','outc','down1','down2','down3','down4','up1','up2','up3','up4'])

@@ -179,6 +179,23 @@ class BBBConv2d(ModuleWrapper):
 
 
 class Net(ModuleWrapper):
+
+
+    def train_setup(self, device, prm):
+        self.device = device
+        self.criteria = (nn.CrossEntropyLoss().to(device),)
+        self.optimizer = torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
+
+    def learn(self, train_data):
+        for inputs, labels in train_data:
+            inputs, labels = inputs.to(self.device), labels.to(self.device)
+            self.optimizer.zero_grad()
+            outputs = self(inputs)
+            loss = self.criteria[0](outputs, labels)
+            loss.backward()
+            nn.utils.clip_grad_norm_(self.parameters(), 3)
+            self.optimizer.step()
+
     def __init__(self, inputs: int = 3, outputs: int = 10):
         super(Net, self).__init__()
 
@@ -211,3 +228,6 @@ class Net(ModuleWrapper):
 
         self.flatten = FlattenLayer(1 * 1 * 128)
         self.classifier = BBBLinear(1 * 1 * 128, outputs, bias=True, priors=self.priors)
+
+    def __call__(self, *args):
+        return super().__call__(*args)[0]

@@ -1,218 +1,124 @@
-import json
-import os
-
 import optuna
+from torch.cuda import OutOfMemoryError
 
 from ab.nn.util.Loader import Loader
+from ab.nn.util.Stat import *
 from ab.nn.util.Train import Train
 
 
-def ensure_directory_exists(model_dir):
-    """
-    Ensures that the directory for the given path exists.
-    :param model_dir: Path to the target directory or file.
-    :return: Creates the directory if it does not exist.
-    """
-    directory = os.path.dirname(model_dir)
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-
-def save_results(config_model_name, study, n_epochs):
-    """
-    Save Optuna study results for a given model in JSON-format.
-    :param config_model_name: Config (Task, Dataset, Normalization) and Model name.
-    :param study: Optuna study object.
-    :param n_epochs: Number of epochs.
-    """
-    model_dir = f"stat/{config_model_name}/{n_epochs}/"
-    ensure_directory_exists(model_dir)
-
-    # Save all trials as trials.json
-    trials_df = study.trials_dataframe()
-    filtered_trials = trials_df[["value", "params_batch_size", "params_lr", "params_momentum"]]
-
-    filtered_trials = filtered_trials.rename(columns={
-        "value": "accuracy",
-        "params_batch_size": "batch_size",
-        "params_lr": "lr",
-        "params_momentum": "momentum"
-    })
-
-    filtered_trials = filtered_trials.astype({
-        "accuracy": float,
-        "batch_size": int,
-        "lr": float,
-        "momentum": float
-    })
-
-    trials_dict = filtered_trials.to_dict(orient='records')
-    path = f"{model_dir}/trials.json"
-    if os.path.exists(path):
-        with open(path, "r") as f:
-            previous_trials = json.load(f)
-            trials_dict = previous_trials + trials_dict
-
-    trials_dict = sorted(trials_dict, key=lambda x: x['accuracy'], reverse=True)
-    # Save trials.json
-    with open(path, "w") as f:
-        json.dump(trials_dict, f, indent=4)
-
-    # Save best_trial.json
-    with open(f"{model_dir}/best_trial.json", "w") as f:
-        json.dump(trials_dict[0], f, indent=4)
-
-    print(f"Trials for {config_model_name} saved at {model_dir}")
-
-
-def count_trials_left(config_model_name, model_name, n_epochs, n_optuna_trials):
-    """
-    Calculates the remaining Optuna trials based on the completed ones. Checks for a "trials.json" file in the
-    specified directory to determine how many trials have been completed, and returns the number of trials left.
-    :param config_model_name: Configuration model name.
-    :param model_name: Name of the model.
-    :param n_epochs: Number of epochs.
-    :param n_optuna_trials: Total number of Optuna trials.
-    :return: n_trials_left: Remaining trials.
-    """
-    model_dir = f"stat/{config_model_name}/{n_epochs}/"
-    path = f"{model_dir}/trials.json"
-    n_passed_trials = 0
-    if os.path.exists(path):
-        with open(path, "r") as f:
-            trials = json.load(f)
-            n_passed_trials = len(trials)
-    n_trials_left = int(n_optuna_trials) if isinstance(n_optuna_trials, str) else max(0, n_optuna_trials - n_passed_trials)
-    if n_passed_trials > 0:
-        print(f"The {model_name} passed {n_passed_trials} trials, {n_trials_left} left.")
-    return n_trials_left
-
-
-def extract_all_configs(config):
-    """
-    Collect models matching the given configuration prefix
-    """
-    return [sub_config
-            for sub_config in os.listdir("stat")
-            if sub_config.startswith(config) and os.path.isdir(os.path.join("stat", sub_config))]
-
-
-# todo: move to the ab.nn.util.Start and request information from database
-def provide_all_configs(config):
-    if not isinstance(config, list):
-        config = [config]
-    all_configs = []
-    for c in config:
-        all_configs = all_configs + extract_all_configs(c)
-    return all_configs
-
-
-def main(config: str | list ='', n_epochs: int | list = 1, n_optuna_trials: int | str = 100):
+def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
+         n_optuna_trials: int | str = default_trials,
+         min_batch_binary_power: int = default_min_batch_power, max_batch_binary_power: int = default_max_batch_power,
+         min_learning_rate: float = default_min_lr, max_learning_rate: float = default_max_lr,
+         min_momentum: float = default_min_momentum, max_momentum: float = default_max_momentum,
+         transform: str = None, nn_fail_attempts: int = default_nn_fail_attempts, random_config_order:bool = default_random_config_order):
     """
     Main function for training models using Optuna optimization.
-    :param config: Configuration specifying the models to train. The default value for all configurations.
-    :param n_epochs: Number or list of numbers of epochs for training.
+    :param config: Configuration specifying the model training pipelines. The default value for all configurations.
+    :param n_epochs: Number of training epochs.
     :param n_optuna_trials: Number of Optuna trials.
+    :param min_batch_binary_power: Minimum power of two for batch size. E.g., with a value of 0, batch size equals 2**0 = 1.
+    :param max_batch_binary_power: Maximum power of two for batch size. E.g., with a value of 12, batch size equals 2**12 = 4096.
+    :param min_learning_rate: Minimum value of learning rate.
+    :param max_learning_rate: Maximum value of learning rate.
+    :param min_momentum: Minimum value of momentum.
+    :param max_momentum: Maximum value of momentum.
+    :param transform: The transformation algorithm name. If None (default), all available algorithms are used by Optuna.
+    :param nn_fail_attempts: Number of attempts if the neural network model throws exceptions.
+    :param random_config_order: If random shuffling of the config list is required before training.
     """
 
+    if min_batch_binary_power > max_batch_binary_power: raise Exception(f"min_batch_binary_power {min_batch_binary_power} > max_batch_binary_power {max_batch_binary_power}")
+    if min_learning_rate > max_learning_rate: raise Exception(f"min_learning_rate {min_learning_rate} > max_learning_rate {max_learning_rate}")
+    if min_momentum > max_momentum: raise Exception(f"min_momentum {min_momentum} > max_momentum {max_momentum}")
+
+
     # Parameters specific to dataset loading.
-    dataset_params = {}
-
+    define_global_paths()
+    # Initialize the SQLite database
+    initialize_database()
     # Determine configurations based on the provided config
-    sub_configs = provide_all_configs(config)
+    sub_configs = get_configs(config, random_config_order)
 
-    if not isinstance(n_epochs, list):
-        n_epochs = [n_epochs]
-    for epoch in n_epochs:
-        print(f"Configurations found for training for {epoch} epochs:")
-        for idx, sub_config in enumerate(sub_configs, start=1):
-            print(f"{idx}. {sub_config}")
-        for sub_config in sub_configs:
-                try:
-                    task, dataset_name, metric, transform_name, model_name = sub_config.split('-')
-                except (ValueError, IndexError) as e:
-                    print(f"Skipping config '{sub_config}': failed to parse. Error: {e}")
-                    continue
-
-                n_optuna_trials_left = count_trials_left(sub_config, model_name, epoch, n_optuna_trials)
-                if n_optuna_trials_left == 0:
-                    print(f"The model {model_name} has already passed all trials for task: {task}, dataset: {dataset_name},"
-                          f" metric: {metric}, transform: {transform_name}, epochs: {epoch}")
-                else:
-                    print(f"\nStarting training for the model: {model_name}, task: {task}, dataset: {dataset_name},"
-                          f" metric: {metric}, transform: {transform_name}, epochs: {epoch}")
-                    if task == "img_segmentation":
-                        import ab.nn.loader.coco as coco
-                        dataset_params['class_list'] = coco.class_list()
-                        dataset_params['path'] = "./data/coco"
-                    # Paths for loader and transform
-                    loader_path = f"loader.{dataset_name}.loader"
-                    transform_path = f"transform.{transform_name}.transform" if transform_name else None
-
-                    # Load dataset
+    print(f"Training configurations ({n_epochs} epochs):")
+    for idx, sub_config in enumerate(sub_configs, start=1):
+        print(f"{idx}. {sub_config}")
+    for sub_config in sub_configs:
+            task, dataset_name, metric, model_name = conf_to_names(sub_config)
+            model_stat_dir: str = join(Const.stat_dir_global, sub_config)
+            trials_file = join(model_stat_dir, str(n_epochs), 'trials.json')
+            n_optuna_trials_left = count_trials_left(trials_file, model_name, n_optuna_trials)
+            if n_optuna_trials_left == 0:
+                print(f"The model {model_name} has already passed all trials for task: {task}, dataset: {dataset_name},"
+                      f" metric: {metric}, epochs: {n_epochs}")
+            else:
+                print(f"\nStarting training for the model: {model_name}, task: {task}, dataset: {dataset_name},"
+                      f" metric: {metric}, epochs: {n_epochs}")
+                fail_iterations = nn_fail_attempts
+                continue_study = True
+                max_batch_binary_power_local = max_batch_binary_power
+                while continue_study and max_batch_binary_power_local >= min_batch_binary_power and fail_iterations > -1:
                     try:
-                        output_dimension, train_set, test_set = Loader.load_dataset(loader_path, transform_path,
-                                                                                    **dataset_params)
-                    except Exception as e:
-                        print(f"Skipping model '{model_name}': failed to load dataset. Error: {e}")
-                        continue
+                        # Configure Optuna for the current model
+                        def objective(trial):
+                            try:
+                                # Suggest hyperparameters
+                                transform_name = trial.suggest_categorical('transform', [transform] if transform is not None else ['cifar10_complex', 'cifar10_norm', 'cifar10_norm_32', 'echo'])
+                                lr = trial.suggest_float('lr', min_learning_rate, max_learning_rate, log=True)
+                                momentum = trial.suggest_float('momentum', min_momentum, max_momentum, log=False)
+                                batch = trial.suggest_categorical('batch', [max_batch(x) for x in range(min_batch_binary_power, max_batch_binary_power_local + 1)])
+                                print(f"Initialize training with lr: {lr}, momentum: {momentum}, batch: {batch}, transform: {transform_name}")
+                             # Load dataset with the chosen transformation
+                                loader_path = f"loader.{dataset_name}.loader"
+                                transform_path = f"transform.{transform_name}.transform"
+                                # Load dataset
+                                try:
+                                    output_dimension, train_set, test_set = Loader.load_dataset(loader_path, transform_path)
+                                except Exception as e:
+                                    print(f"Skipping model '{model_name}': failed to load dataset. Error: {e}")
+                                    return 0.0
 
-                    # Configure Optuna for the current model
-                    def objective(trial):
-                        if task == 'img_segmentation':
-                            lr = trial.suggest_float('lr', 1e-4, 1e-2, log=False)
-                            momentum = trial.suggest_float('momentum', 0.8, 0.99, log=True)
-                        else:
-                            lr = trial.suggest_float('lr', 1e-4, 1, log=False)
-                            momentum = trial.suggest_float('momentum', 0.01, 0.99, log=True)
-                        batch_size = trial.suggest_categorical('batch_size', [4, 8, 16, 32, 64])
-                        print(f"Initialize training with lr = {lr}, momentum = {momentum}, batch_size = {batch_size}")
-
-                        if task == 'txt_generation':
-                            # Dynamically import RNN or LSTM model
-                            if model_name.lower() == 'rnn':
-                                from dataset.RNN import Net as RNNNet
-                                model = RNNNet(1, 256, len(train_set.chars), batch_size)
-                            elif model_name.lower() == 'lstm':
-                                from ab.nn.dataset.LSTM import Net as LSTMNet
-                                model = LSTMNet(1, 256, len(train_set.chars), batch_size, num_layers=2)
-                            else:
-                                raise ValueError(f"Unsupported text generation model: {model_name}")
-
-                        trainer = Train(
-                            model_source_package=f"dataset.{model_name}",
-                            task_type=task,
-                            train_dataset=train_set,
-                            test_dataset=test_set,
-                            metric=metric,
-                            output_dimension=output_dimension,
-                            lr=lr,
-                            momentum=momentum,
-                            batch_size=batch_size)
-                        return trainer.evaluate(epoch)
-
-                    # Launch Optuna for the current model
-                    study_name = f"{model_name}_study"
-                    study = optuna.create_study(study_name=study_name, direction='maximize')
-                    study.optimize(objective, n_trials=n_optuna_trials_left)
-
-                    # Save results
-                    save_results(sub_config, study, epoch)
+                                # Initialize model and trainer
+                                if task == 'txt_generation':
+                                    # Dynamically import RNN or LSTM model
+                                    if model_name.lower() == 'rnn':
+                                        from ab.nn.dataset.RNN import Net as RNNNet
+                                        model = RNNNet(1, 256, len(train_set.chars), batch)
+                                    elif model_name.lower() == 'lstm':
+                                        from ab.nn.dataset.LSTM import Net as LSTMNet
+                                        model = LSTMNet(1, 256, len(train_set.chars), batch, num_layers=2)
+                                    else:
+                                        raise ValueError(f"Unsupported text generation model: {model_name}")
+                                trainer = Train(config=sub_config, model_source_package=f"dataset.{model_name}",
+                                                model_stat_dir=model_stat_dir, task=task, train_dataset=train_set,
+                                                test_dataset=test_set, metric=metric, output_dimension=output_dimension, lr=lr,
+                                                momentum=momentum, batch=batch, transform=transform_name)
+                                return trainer.train_n_eval(n_epochs)
+                            except Exception as e:
+                                if isinstance(e, OutOfMemoryError):
+                                    if max_batch_binary_power_local <= min_batch_binary_power:
+                                        return 0.0
+                                    else:
+                                        raise CudaOutOfMemory(batch)
+                                else:
+                                    print(f"error '{model_name}': failed to train. Error: {e}")
+                                    if fail_iterations < 0:
+                                        return 0.0
+                                    else:
+                                        raise ModelException()
+                        # Launch Optuna for the current NN model
+                        study = optuna.create_study(study_name=model_name, direction='maximize')
+                        study.optimize(objective, n_trials=n_optuna_trials_left)
+                        continue_study = False
+                    except ModelException:
+                        fail_iterations -= 1
+                    except CudaOutOfMemory as e:
+                        max_batch_binary_power_local = e.batch_size_power() - 1
+                        print(f"Max batch is decreased to {max_batch(max_batch_binary_power_local)} due to a CUDA Out of Memory Exception for model '{model_name}'")
 
 
 if __name__ == "__main__":
-    # NN pipeline configuration examples
-    conf = ''  # For all configurations
-    # conf = 'img_classification' # For all image classification configurations
-    # conf = 'img_classification-cifar10-acc-cifar10_norm' # For a particular configuration for all models
-    # conf = 'img_classification-cifar10-acc-cifar10_norm-GoogLeNet'  # For a particular configuration and model
-    # conf = ['img_classification', 'img_segmentation']  # For all image classification and segmentation configurations
-
-    # Number of Optuna trial examples.
-    optuna_trials = 100 # 100 trials
-    # optuna_trials = "+1"  # Try once more. For quick verification of model training after code modifications.
-    # optuna_trials = "+5"  # Try 5 more times. To thoroughly verify model training after code modifications.
-
-    ''' !!! Commit updated statistics whenever it's available !!! '''
-    # Run training with Optuna: detects and saves performance metric values for a varying number of epochs
-    main(conf, [1, 2, 5], optuna_trials)
+    a = args()
+    main(a.config, a.epochs, a.trials, a.min_batch_binary_power, a.max_batch_binary_power,
+         a.min_learning_rate, a.max_learning_rate, a.min_momentum, a.max_momentum, a.transform,
+         a.nn_fail_attempts, a.random_config_order)
