@@ -47,7 +47,7 @@ To add more neural network models to the dataset, the following criteria must be
 3. The implementation of this <strong>Net</strong> class must provide non-mutable default parameters for its constructor.
 4. For each pull request involving a new neural network, please generate and submit training statistics for 100 Optuna trials (or at least 3 trials for very large models) in the <strong>ab/nn/stat</strong> directory. The trials should cover 5 epochs of training. Ensure that this statistics is included along with the model in your pull request. For example, the statistics for the ComplexNet model are stored in five files <strong>&#x003C;epoch number&#x003E;.json</strong> inside folder <strong>img_classification-cifar10-acc-ComplexNet</strong><br/>
 
-For examples, see the models in the <strong>/ab/nn/dataset</strong> directory and statistics in the <strong>ab/nn/stat</strong> directory.
+<p>See examples of models in <code>/ab/nn/dataset</code> and generated statistics in <code>/ab/nn/stat</code>.</p>
 
 ### Available Modules
 
