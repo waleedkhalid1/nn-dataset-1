@@ -1,0 +1,16 @@
+try:
+    subprocess.check_call(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "--extra-index-url",
+            "https://download.pytorch.org/whl/cu124",
+            "torch==2.5.1+cu124",
+        ]
+    )
+except subprocess.CalledProcessError as e:
+    print(f"Error installing PyTorch: {e}")
+    print("Consider running the command with elevated permissions or use the --user flag.")
+    sys.exit(1)
