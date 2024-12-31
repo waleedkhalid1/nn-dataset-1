@@ -28,7 +28,7 @@ Standard use cases:
 1. Add a new neural network model into the `ab/nn/dataset` directory.
 2. Run the automated training process for this model (e.g., a new ComplexNet training pipeline configuration):
 ```bash
-python -m ab.nn.train -c img_classification-cifar10-acc-cifar10_complex-ComplexNet
+python -m ab.nn.train -c img_classification-cifar10-acc-ComplexNet
 ```
 or for all image segmentation models using a fixed range of training parameters and transformer:
 ```bash
@@ -45,11 +45,7 @@ To add more neural network models to the dataset, the following criteria must be
 1. The code for each model must be provided in a respective ".py" file for the model in the directory <strong>/ab/nn/dataset</strong>. This file must be named after the name of the model structure.
 2. The main class for each model must be named <strong>Net</strong>.
 3. The implementation of this <strong>Net</strong> class must provide non-mutable default parameters for its constructor.
-4. For each pull request involving a new neural network, please generate and submit training statistics for 100 Optuna trials (or at least 3 trials for very large models) in the <strong>ab/nn/stat</strong> directory. The trials should cover 1, 2, and 5 epochs of training. Ensure that this statistics is included along with the model in your pull request. For example, the statistics for the ComplexNet model are stored in three separate folders, each containing two files - <strong>trials.json</strong> and <strong>best_trials.json</strong>:<br/>
-img_classification-cifar10-acc-cifar10_complex-ComplexNet/1<br/>
-img_classification-cifar10-acc-cifar10_complex-ComplexNet/2<br/>
-img_classification-cifar10-acc-cifar10_complex-ComplexNet/5<br/>
-
+4. For each pull request involving a new neural network, please generate and submit training statistics for 100 Optuna trials (or at least 3 trials for very large models) in the <strong>ab/nn/stat</strong> directory. The trials should cover 5 epochs of training. Ensure that this statistics is included along with the model in your pull request. For example, the statistics for the ComplexNet model are stored in five files <strong>&#x003C;epoch number&#x003E;.json</strong> inside folder <strong>img_classification-cifar10-acc-ComplexNet</strong><br/>
 
 For examples, see the models in the <strong>/ab/nn/dataset</strong> directory and statistics in the <strong>ab/nn/stat</strong> directory.
 
