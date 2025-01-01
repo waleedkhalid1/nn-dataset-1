@@ -140,10 +140,61 @@ class COCOSegDataset(torch.utils.data.Dataset):
         ## Test on first image to figure out if dataset itself exists
         first_image_info = coco.loadImgs(ids[0])[0]
         first_file_Path = os.path.join(self.root,spilt+"2017",first_image_info['file_name'])
+        list_file_path = os.path.join(self.root,spilt+"2017.list")
         if not os.path.exists(first_file_Path):
             print("Image dataset doesn't exists! Downloading...")
             download_and_extract_archive(coco_img_url.format(spilt), self.root, filename=f"{spilt}2017.zip") ## Download using torchvision download API
             print("Image dataset preparation complete")
+        ## Check whether the configuration matches or not.
+        no_mismatch = False
+        if os.path.exists(list_file_path):
+            print("List file found, loading...")
+            no_mismatch = True
+            length = 0
+            with open(list_file_path,"r") as f:
+                for line in f:
+                    if line.startswith("#"):
+                        para = line.replace("#","").split(";")
+                        ## Check parameter `num_limit`
+                        if (int(para[0]) != self.num_limit and self.num_limit!=None) or (int(para[0]) != 0 and self.num_limit==None):
+                            no_mismatch = False
+                            print("num_limit not matched!")
+                        ## Check parameter `class_limit`
+                        if (int(para[1]) != self.limit_classes and self.limit_classes!=None) or (int(para[1]) != 0 and self.limit_classes==None):
+                            no_mismatch = False
+                            print("num_limit not matched!")
+                        ## Check `class_list`
+                        classes = para[2].split(",")
+                        if len(classes)==len(self.class_list):
+                            for it in classes:
+                                if not (int(it) in self.class_list):
+                                    no_mismatch = False
+                                    print(f"class_list not matched! None-existing class:{it}")
+                        else:
+                            no_mismatch = False
+                            print("class_list not matched!")
+                        ## Check `least_pix`
+                        if int(para[3])!=least_pix:
+                            no_mismatch = False
+                            print("least_pix not matched!")
+                        if no_mismatch:
+                            print("All configuration matches!")
+                        length = int(para[4])
+                    else:
+                        if no_mismatch:
+                            self.ids.append(int(line))
+                        else:
+                            print("Configuration not matched! Overwrite...")
+                            break
+                
+            if no_mismatch:
+                if(length==len(self.ids)):
+                    print("Loaded from file:"+list_file_path)
+                    return
+                else:
+                    print(f"Mismatched length({length}) of ids({len(self.ids)}). List file ignored")
+                    no_mismatch=False
+        print("Perform preprocess from scratch, this will take a while...")
         tbar = tqdm.trange(len(ids))
         for i in tbar:
             if not self.num_limit==None and len(self.ids)+1>self.num_limit:
@@ -173,6 +224,18 @@ class COCOSegDataset(torch.utils.data.Dataset):
             if (mask > 0).sum() > least_pix:
                 self.ids.append(img_id)
             tbar.set_description(f"Accepted {len(self.ids)} of {i+1} images.")
+        ## Create a list file to store the information
+        print("Creating list file...")
+        with open(list_file_path,"w") as f:
+            list_str = ""
+            if not(self.class_list == None):
+                for it in self.class_list:
+                    list_str += str(it)+","
+                list_str = list_str[:-1]
+            f.write(f"#{0 if self.num_limit==None else self.num_limit};{0 if self.limit_classes==None else self.limit_classes};"+list_str+f";{least_pix};{len(self.ids)}\n")
+            for it in self.ids:
+                f.write(f"{it}\n")
+        print("Preprocess Complete!")
 
     def __len__(self):
         return len(self.ids)
