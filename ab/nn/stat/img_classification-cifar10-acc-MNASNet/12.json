@@ -2,6 +2,7 @@
     {
         "accuracy": 0.2756,
         "batch": 4,
+        "dropout": 0.2,
         "epoch": 12,
         "lr": 0.0061,
         "momentum": 0.7549,
@@ -11,6 +12,7 @@
     {
         "accuracy": 0.2522,
         "batch": 4,
+        "dropout": 0.2,
         "epoch": 12,
         "lr": 0.0061,
         "momentum": 0.7549,
