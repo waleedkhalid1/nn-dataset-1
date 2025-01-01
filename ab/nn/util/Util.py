@@ -15,7 +15,7 @@ def get_attr (mod, f):
 
 
 def conf_to_names(c: str) -> list[str]:
-    return c.split('-')
+    return c.split('_')
 
 
 def is_full_config(s: str):
@@ -88,7 +88,7 @@ def args():
     parser.add_argument('-a', '--nn_fail_attempts', type=int, default=default_nn_fail_attempts,
                         help="Number of attempts if the neural network model throws exceptions.")
     parser.add_argument('-r', '--random_config_order', type=bool, default=default_random_config_order,
-                        help="If random shuffling of the config list is required before training.")
+                        help="If random shuffling of the config list is required.")
     return parser.parse_args()
 
 

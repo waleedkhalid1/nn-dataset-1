@@ -76,6 +76,10 @@ class FCNHead(nn.Sequential):
         super().__init__(*layers)
 
 
+def supported_hyperparameters():
+    return {'lr', 'momentum', 'dropout'}
+
+
 class Net(nn.Module):
 
     def train_setup(self, device, prm):
@@ -96,11 +100,12 @@ class Net(nn.Module):
             nn.utils.clip_grad_norm_(self.parameters(), 3)
             self.optimizer.step()
 
-    def __init__(self, num_classes = 21):
+    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict):
         super(Net, self).__init__()
+        num_classes = out_shape[0]
         backbone_num_classes = None
         init_weights = True
-        dropout = 0.5
+        dropout = args['dropout']
         backbone = VGG(make_layers(vgg_cfgs["D"]),num_classes=num_classes if (backbone_num_classes == None) else backbone_num_classes,init_weights=init_weights,dropout=dropout)
 
         features = list(backbone.features.children())

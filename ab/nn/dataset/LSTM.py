@@ -2,7 +2,12 @@ import torch
 import torch.nn as nn
 
 
+def supported_hyperparameters():
+    return {'lr', 'momentum'}
+
+
 class Net(nn.Module):
+
 
     def train_setup(self, device, prm):
         self.device = device

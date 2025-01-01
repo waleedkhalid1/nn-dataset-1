@@ -30,7 +30,7 @@ def loader(resize=(128,128), **kwargs):
     path= os.path.join(Const.data_dir_global, 'coco')
     train_set = COCOSegDataset(root=path,spilt="train",resize=resize,preprocess=True,**kwargs)
     val_set = COCOSegDataset(root=path,spilt="val",resize=resize,preprocess=True,**kwargs)
-    return class_n(), train_set, val_set
+    return (class_n(),), train_set, val_set
 
 
 class COCOSegDataset(torch.utils.data.Dataset):

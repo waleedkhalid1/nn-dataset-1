@@ -1,6 +1,10 @@
 import torch
 import torch.nn as nn
 
+
+def supported_hyperparameters():
+    return {'lr', 'momentum', 'dropout'}  # 'dropout' = 0.5
+
 class Net(nn.Module):
 
     def train_setup(self, device, prm):
@@ -18,10 +22,11 @@ class Net(nn.Module):
             nn.utils.clip_grad_norm_(self.parameters(), 3)
             self.optimizer.step()
 
-    def __init__(self, num_classes: int = 1000, dropout: float = 0.5) -> None:
+
+    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
         super().__init__()
         self.features = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=11, stride=4, padding=2),
+            nn.Conv2d(in_shape[1], 64, kernel_size=11, stride=4, padding=2),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=2),
             nn.Conv2d(64, 192, kernel_size=5, padding=2),
@@ -35,6 +40,7 @@ class Net(nn.Module):
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=2),
         )
+        dropout: float = args['dropout']
         self.avgpool = nn.AdaptiveAvgPool2d((6, 6))
         self.classifier = nn.Sequential(
             nn.Dropout(p=dropout),
@@ -43,7 +49,7 @@ class Net(nn.Module):
             nn.Dropout(p=dropout),
             nn.Linear(4096, 4096),
             nn.ReLU(inplace=True),
-            nn.Linear(4096, num_classes),
+            nn.Linear(4096, out_shape[0]),
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:

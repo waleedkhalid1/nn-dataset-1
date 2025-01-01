@@ -399,6 +399,11 @@ args = [
     0.2,
 ]
 
+
+def supported_hyperparameters():
+    return {'lr', 'momentum', 'dropout', 'attention_dropout', 'stochastic_depth_prob'}
+
+
 class Net(nn.Module):
 
     def train_setup(self, device, prm):
@@ -416,31 +421,29 @@ class Net(nn.Module):
             nn.utils.clip_grad_norm_(self.parameters(), 3)
             self.optimizer.step()
 
-    def __init__(
-        self,
-        input_size: Tuple[int, int] = (299, 299),
-        stem_channels: int = 64,
-        partition_size: int = 1,
-            block_channels=None,
-            block_layers=None,
-        head_dim: int = 32,
-        stochastic_depth_prob: float = 0.2,
-        norm_layer: Optional[Callable[..., nn.Module]] = None,
-        activation_layer: Callable[..., nn.Module] = nn.GELU,
-        squeeze_ratio: float = 0.25,
-        expansion_ratio: float = 4,
-        mlp_ratio: int = 4,
-        mlp_dropout: float = 0.0,
-        attention_dropout: float = 0.0,
-        num_classes: int = 1000,
-    ) -> None:
+    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
         super().__init__()
+        input_size: Tuple[int, int] = in_shape[:2]
+        stem_channels: int = 64
+        partition_size: int = 1
+        block_channels = None
+        block_layers = None
 
+        head_dim: int = 32
+        stochastic_depth_prob: float = args['stochastic_depth_prob']
+        norm_layer: Optional[Callable[..., nn.Module]] = None
+        activation_layer: Callable[..., nn.Module] = nn.GELU
+        squeeze_ratio: float = 0.25
+        expansion_ratio: float = 4
+        mlp_ratio: int = 4
+        mlp_dropout: float = args['dropout']
+        attention_dropout: float = args['attention_dropout']
+        num_classes: int = out_shape[0]
         if block_layers is None:
             block_layers = [2, 2, 5, 2]
         if block_channels is None:
             block_channels = [64, 128, 256, 512]
-        input_channels = 3
+        input_channels = in_shape[1]
 
         if norm_layer is None:
             norm_layer = partial(nn.BatchNorm2d, eps=1e-3, momentum=0.01)

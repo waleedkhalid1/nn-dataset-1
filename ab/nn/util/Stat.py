@@ -1,13 +1,12 @@
 import json
 import os
-import random
 import sqlite3
+import uuid
 from os import listdir, makedirs
 
 import pandas as pd
 
 from ab.nn.util.Util import *
-import uuid
 
 
 def count_trials_left(trial_file, model_name, n_optuna_trials):
@@ -31,31 +30,21 @@ def count_trials_left(trial_file, model_name, n_optuna_trials):
         print(f"The {model_name} passed {n_passed_trials} trials, {n_trials_left} left.")
     return n_trials_left
 
-def extract_all_configs(config) -> list[str]:
+
+# todo: Request from the database unique names of all configures corresponding to config-patterns
+# once the database is loaded, the function will be updated
+def unique_configs(patterns) -> list[str]:
     """
     Collect models matching the given configuration prefix
     """
-    l = [c for c in listdir(Const.stat_dir_global) if c.startswith(config)]
-    if not l and is_full_config(config):
-        makedirs(join(Const.stat_dir_global, config))
-        l = [config]
-    return l
-
-
-# todo: Request information from database 
-# once the database is loaded, the function will be updated
-def get_configs(config: str, random_config_order: bool) -> tuple[str]:
-    if not isinstance(config, tuple):
-        config = (config,)
     all_configs = []
-    for c in config:
-        all_configs = all_configs + extract_all_configs(c)
+    for pattern in patterns:
+        l = [c for c in listdir(Const.stat_dir_global) if c.startswith(pattern)]
+        if not l and is_full_config(pattern):
+            makedirs(join(Const.stat_dir_global, patterns))
+        all_configs = all_configs + l
     all_configs: list = list(set(all_configs))
-    if random_config_order:
-        random.shuffle(all_configs)
-    else:
-        all_configs.sort()
-    return tuple(all_configs)
+    return all_configs
 
 
 def initialize_database():
@@ -273,15 +262,13 @@ def load_all_statistics_from_json_to_db(conn):
     """
     stat_base_path = Path(Const.stat_dir_global)
     sub_configs = [d.name for d in stat_base_path.iterdir() if d.is_dir()]
-    epochs = list(range(1, 10))
 
-    for epoch in epochs:
-        for sub_config in sub_configs:
-            model_stat_file = stat_base_path / sub_config / f"{epoch}.json"
+    for sub_config in sub_configs:
+        model_stat_dir = stat_base_path / sub_config
 
-            if not model_stat_file.exists():
-                print(f"Skipping {sub_config}: {epoch}.json not found.")
-                continue
+        for epoch_file in Path(model_stat_dir).iterdir():
+            model_stat_file = model_stat_dir / epoch_file
+            epoch = int(epoch_file[: epoch_file.index('.')])
 
             with open(model_stat_file, 'r') as f:
                 trials = json.load(f)
@@ -366,7 +353,7 @@ def save_results(config: str, model_stat_file: str, prm: dict):
 
     # Extract task, dataset, metric, and nn_name from the config
     try:
-        task, dataset, metric, nn_name = config.split('-')
+        task, dataset, metric, nn_name = conf_to_names(config)
     except ValueError:
         print(f"Invalid config format: {config}.")
         return
@@ -385,6 +372,8 @@ def save_results(config: str, model_stat_file: str, prm: dict):
         json.dump(trials_dict_all, f, indent=4)
 
     print(f"Trial (accuracy {prm['accuracy']}) for {config} saved at {model_stat_file}")
+
+    return # todo Change to align with the new functionality
 
     # Save results to SQLite DB
     conn = sqlite3.connect(Const.db_dir_global)

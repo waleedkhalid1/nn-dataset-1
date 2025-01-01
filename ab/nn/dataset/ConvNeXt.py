@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Any, Callable, List, Optional, Sequence
+from typing import Callable, List, Optional, Sequence
 
 import torch
 from torch import nn, Tensor
@@ -67,6 +67,10 @@ class CNBlockConfig:
         return s.format(**self.__dict__)
 
 
+def supported_hyperparameters():
+    return {'lr', 'momentum', 'stochastic_depth_prob'}
+
+
 class Net(nn.Module):
 
     def train_setup(self, device, prm):
@@ -83,18 +87,14 @@ class Net(nn.Module):
             loss.backward()
             self.optimizer.step()
 
-    def __init__(
-        self,
-        block_setting=None,
-        stochastic_depth_prob: float = 0.0,
-        layer_scale: float = 1e-6,
-        num_classes: int = 1000,
-        block: Optional[Callable[..., nn.Module]] = None,
-        norm_layer: Optional[Callable[..., nn.Module]] = None,
-        **kwargs: Any,
-    ) -> None:
+    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
         super().__init__()
-
+        num_classes: int = out_shape[0]
+        stochastic_depth_prob: float = 0.0
+        layer_scale: float = 1e-6
+        block_setting = None
+        block: Optional[Callable[..., nn.Module]] = None
+        norm_layer: Optional[Callable[..., nn.Module]] = None
         if block_setting is None:
             block_setting = [
                 CNBlockConfig(96, 192, 3),
@@ -115,7 +115,7 @@ class Net(nn.Module):
         firstconv_output_channels = block_setting[0].input_channels
         layers.append(
             Conv2dNormActivation(
-                3,
+                in_shape[1],
                 firstconv_output_channels,
                 kernel_size=4,
                 stride=4,

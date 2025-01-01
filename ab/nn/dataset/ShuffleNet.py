@@ -77,8 +77,10 @@ class InvertedResidual(nn.Module):
         return out
 
 
-class Net(nn.Module):
+def supported_hyperparameters():
+    return {'lr', 'momentum'}
 
+class Net(nn.Module):
 
     def train_setup(self, device, prm):
         self.device = device
@@ -95,14 +97,12 @@ class Net(nn.Module):
             nn.utils.clip_grad_norm_(self.parameters(), 3)
             self.optimizer.step()
 
-    def __init__(
-        self,
-        stages_repeats=None,
-        stages_out_channels=None,
-        num_classes: int = 1000,
-        inverted_residual: Callable[..., nn.Module] = InvertedResidual,
-    ) -> None:
+    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
         super().__init__()
+        stages_repeats = None
+        stages_out_channels = None
+        num_classes: int = out_shape[0]
+        inverted_residual: Callable[..., nn.Module] = InvertedResidual
         if stages_out_channels is None:
             stages_out_channels = [24, 116, 232, 464, 1024]
         if stages_repeats is None:
@@ -113,7 +113,7 @@ class Net(nn.Module):
             raise ValueError("expected stages_out_channels as list of 5 positive ints")
         self._stage_out_channels = stages_out_channels
 
-        input_channels = 3
+        input_channels = in_shape[1]
         output_channels = self._stage_out_channels[0]
         self.conv1 = nn.Sequential(
             nn.Conv2d(input_channels, output_channels, 3, 2, 1, bias=False),

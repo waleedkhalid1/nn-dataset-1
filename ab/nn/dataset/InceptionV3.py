@@ -11,6 +11,10 @@ InceptionOutputs.__annotations__ = {"logits": Tensor, "aux_logits": Optional[Ten
 _InceptionOutputs = InceptionOutputs
 
 
+def supported_hyperparameters():
+    return {'lr', 'momentum', 'dropout'}
+
+
 class Net(nn.Module):
 
     def train_setup(self, device, prm):
@@ -28,12 +32,13 @@ class Net(nn.Module):
             nn.utils.clip_grad_norm_(self.parameters(), 3)
             self.optimizer.step()
 
-    def __init__(self, num_classes: int = 1000) -> None:
+    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
         super().__init__()
+        num_classes: int = out_shape[0]
         transform_input: bool = False
         inception_blocks: Optional[List[Callable[..., nn.Module]]] = None
         init_weights: Optional[bool] = None
-        dropout: float = 0.5
+        dropout: float = args['dropout']
         if inception_blocks is None:
             inception_blocks = [BasicConv2d, InceptionA, InceptionB, InceptionC, InceptionD, InceptionE, InceptionAux]
         if init_weights is None:
@@ -50,7 +55,7 @@ class Net(nn.Module):
 
         self.aux_logits = False
         self.transform_input = transform_input
-        self.Conv2d_1a_3x3 = conv_block(3, 32, kernel_size=3, stride=2)
+        self.Conv2d_1a_3x3 = conv_block(in_shape[1], 32, kernel_size=3, stride=2)
         self.Conv2d_2a_3x3 = conv_block(32, 32, kernel_size=3)
         self.Conv2d_2b_3x3 = conv_block(32, 64, kernel_size=3, padding=1)
         self.maxpool1 = nn.MaxPool2d(kernel_size=3, stride=2)

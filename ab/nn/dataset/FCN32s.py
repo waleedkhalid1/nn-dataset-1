@@ -6,13 +6,13 @@ from torch import nn, Tensor
 
 
 class FCNHead(nn.Sequential):
-    def __init__(self, in_channels: int, channels: int) -> None:
+    def __init__(self, in_channels: int, channels: int, dropout) -> None:
         inter_channels = in_channels // 4
         layers = [
             nn.Conv2d(in_channels, inter_channels, 3, padding=1, bias=False),
             nn.BatchNorm2d(inter_channels),
             nn.ReLU(),
-            nn.Dropout(0.1),
+            nn.Dropout(dropout),
             nn.Conv2d(inter_channels, channels, 1),
         ]
 
@@ -312,6 +312,10 @@ vgg_cfgs: Dict[str, List[Union[str, int]]] = {
 }
 
 
+def supported_hyperparameters():
+    return {'lr', 'momentum', 'dropout'}
+
+
 class Net(nn.Module):
 
     def train_setup(self, device, prm):
@@ -332,9 +336,11 @@ class Net(nn.Module):
             nn.utils.clip_grad_norm_(self.parameters(), 3)
             self.optimizer.step()
 
-    def __init__(self) -> None:
+    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
         super().__init__()
-        backbone : List[nn.Module] = [ResNet(Bottleneck, [3, 4, 6, 3], num_classes=100, replace_stride_with_dilation=[False, True, True]), FCNHead(2048, 21)]
+        dropout = args['dropout']
+        num_classes = out_shape[0]
+        backbone : List[nn.Module] = [ResNet(Bottleneck, [3, 4, 6, 3], num_classes=100, replace_stride_with_dilation=[False, True, True]), FCNHead(2048, num_classes, dropout)]
         self.backbone = backbone[0].features
         self.classifier = backbone[1]
         self.__setattr__('exclusive',['classifier'])
