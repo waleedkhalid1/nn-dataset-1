@@ -423,7 +423,7 @@ class Net(nn.Module):
 
     def __init__(self, in_shape: tuple, out_shape: tuple, prms: dict) -> None:
         super().__init__()
-        input_size: Tuple[int, int] = in_shape[:2]
+        input_size: Tuple[int, int] = in_shape[2:]
         stem_channels: int = 64
         partition_size: int = 1
         block_channels = None

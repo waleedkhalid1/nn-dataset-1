@@ -2,20 +2,6 @@ import numpy as np
 import torch
 import torchvision.transforms as transforms
 
-
-class Reshape:
-    """ 
-    Custom transformation to reshape the input to (3, 32, 32).
-    """
-    def __call__(self, x):
-        if isinstance(x, np.ndarray):
-            x = x.reshape(3, 32, 32)
-        elif isinstance(x, torch.Tensor):
-            x = x.reshape(3, 32, 32)
-        else:
-            x = np.array(x).reshape(3, 32, 32)
-        return x
-
 class NormalizeToFloat:
     """ 
     Custom transformation to normalize image data to float32 and scale to [0, 1].
@@ -50,7 +36,6 @@ def transform():
     :return: A transformation pipeline using torchvision.transforms.
     """
     return transforms.Compose([
-        Reshape(),
         NormalizeToFloat(),
         transforms.ToTensor(),
         ToComplex64()])

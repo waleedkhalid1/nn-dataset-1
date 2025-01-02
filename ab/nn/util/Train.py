@@ -44,7 +44,7 @@ class Train:
         self.test_loader = torch.utils.data.DataLoader(self.test_dataset, batch_size=self.batch, shuffle=False, num_workers=2)
 
         for input_tensor, _ in self.train_loader:
-            self.in_shape = np.array(input_tensor).shape # Model input tensor shape (e.g., (32, 32, 3) for a 32x32 px RGB image).
+            self.in_shape = np.array(input_tensor).shape # Model input tensor shape (e.g., (8, 3, 32, 32) for a batch size 8, RGB image 32x32 px).
             break
 
         # Load model

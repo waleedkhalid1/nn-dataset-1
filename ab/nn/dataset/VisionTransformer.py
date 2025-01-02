@@ -29,22 +29,22 @@ class MLPBlock(MLP):
                     nn.init.normal_(m.bias, std=1e-6)
 
     def _load_from_state_dict(
-        self,
-        state_dict,
-        prefix,
-        local_metadata,
-        strict,
-        missing_keys,
-        unexpected_keys,
-        error_msgs,
+            self,
+            state_dict,
+            prefix,
+            local_metadata,
+            strict,
+            missing_keys,
+            unexpected_keys,
+            error_msgs,
     ):
         version = local_metadata.get("version", None)
 
         if version is None or version < 2:
             for i in range(2):
                 for type in ["weight", "bias"]:
-                    old_key = f"{prefix}linear_{i+1}.{type}"
-                    new_key = f"{prefix}{3*i}.{type}"
+                    old_key = f"{prefix}linear_{i + 1}.{type}"
+                    new_key = f"{prefix}{3 * i}.{type}"
                     if old_key in state_dict:
                         state_dict[new_key] = state_dict.pop(old_key)
 
@@ -61,13 +61,13 @@ class MLPBlock(MLP):
 
 class EncoderBlock(nn.Module):
     def __init__(
-        self,
-        num_heads: int,
-        hidden_dim: int,
-        mlp_dim: int,
-        dropout: float,
-        attention_dropout: float,
-        norm_layer: Callable[..., torch.nn.Module] = partial(nn.LayerNorm, eps=1e-6),
+            self,
+            num_heads: int,
+            hidden_dim: int,
+            mlp_dim: int,
+            dropout: float,
+            attention_dropout: float,
+            norm_layer: Callable[..., torch.nn.Module] = partial(nn.LayerNorm, eps=1e-6),
     ):
         super().__init__()
         self.num_heads = num_heads
@@ -93,15 +93,15 @@ class EncoderBlock(nn.Module):
 
 class Encoder(nn.Module):
     def __init__(
-        self,
-        seq_length: int,
-        num_layers: int,
-        num_heads: int,
-        hidden_dim: int,
-        mlp_dim: int,
-        dropout: float,
-        attention_dropout: float,
-        norm_layer: Callable[..., torch.nn.Module] = partial(nn.LayerNorm, eps=1e-6),
+            self,
+            seq_length: int,
+            num_layers: int,
+            num_heads: int,
+            hidden_dim: int,
+            mlp_dim: int,
+            dropout: float,
+            attention_dropout: float,
+            norm_layer: Callable[..., torch.nn.Module] = partial(nn.LayerNorm, eps=1e-6),
     ):
         super().__init__()
         self.pos_embedding = nn.Parameter(torch.empty(1, seq_length, hidden_dim).normal_(std=0.02))
@@ -129,6 +129,24 @@ def supported_hyperparameters():
     return {'lr', 'momentum', 'dropout', 'attention_dropout', 'patch_size'}
 
 
+def get_divisors(n, res=None):
+    res = res or []
+    i = 1
+    while i <= n:
+        if n % i == 0:
+            res.append(i),
+        i = i + 1
+    return res
+
+def get_closest_split(n, close_to):
+    all_divisors = get_divisors(n)
+    for ix, val in enumerate(all_divisors):
+        if close_to < val:
+            if ix == 0: return val
+            if (val-close_to)>(close_to - all_divisors[ix-1]):
+                return all_divisors[ix-1]
+            return val
+
 class Net(nn.Module):
 
     def train_setup(self, device, prms):
@@ -149,7 +167,7 @@ class Net(nn.Module):
     def __init__(self, in_shape: tuple, out_shape: tuple, prms: dict):
         super().__init__()
         image_size: int = in_shape[2]
-        patch_size: int = int(image_size * prms['patch_size'])
+        patch_size: int = get_closest_split(image_size ,int(image_size * prms['patch_size']))
         num_layers: int = 12
         num_heads: int = 12
         hidden_dim: int = 768

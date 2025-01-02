@@ -4,6 +4,8 @@
         "batch": 4,
         "lr": 0.0061,
         "momentum": 0.7549,
+        "norm_eps": 1e-06,
+        "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
         "time": 1515493320865,
         "transform": "cifar-10_norm_299"
@@ -13,6 +15,8 @@
         "batch": 4,
         "lr": 0.0061,
         "momentum": 0.7549,
+        "norm_eps": 1e-06,
+        "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
         "time": 1335238339649,
         "transform": "cifar-10_norm_299"
@@ -22,6 +26,8 @@
         "batch": 4,
         "lr": 0.0061,
         "momentum": 0.7549,
+        "norm_eps": 1e-06,
+        "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
         "time": 536457389693,
         "transform": "echo"
