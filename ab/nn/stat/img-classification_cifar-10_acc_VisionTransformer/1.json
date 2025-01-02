@@ -1,5 +1,16 @@
 [
     {
+        "accuracy": 0.2953,
+        "attention_dropout": 0.11492964996289734,
+        "batch": 64,
+        "dropout": 0.3649512106932653,
+        "lr": 0.0008414270103390952,
+        "momentum": 0.9934172655719724,
+        "patch_size": 0.07857152911935805,
+        "time": 182836461456,
+        "transform": "cifar-10_norm_299"
+    },
+    {
         "accuracy": 0.2045,
         "attention_dropout": 0.5654407845231938,
         "batch": 4096,
