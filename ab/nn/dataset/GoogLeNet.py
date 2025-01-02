@@ -19,10 +19,10 @@ def supported_hyperparameters():
 class Net(nn.Module):
 
 
-    def train_setup(self, device, prm):
+    def train_setup(self, device, prms):
         self.device = device
         self.criteria = (nn.CrossEntropyLoss().to(device),)
-        self.optimizer = torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
+        self.optimizer = torch.optim.SGD(self.parameters(), lr=prms['lr'], momentum=prms['momentum'])
 
     def learn(self, train_data):
         for inputs, labels in train_data:
@@ -35,13 +35,13 @@ class Net(nn.Module):
 
     __constants__ = ["aux_logits", "transform_input"]
 
-    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
+    def __init__(self, in_shape: tuple, out_shape: tuple, prms: dict) -> None:
         super().__init__()
         transform_input: bool = False
         blocks: Optional[List[Callable[..., nn.Module]]] = None
         num_classes: int = out_shape[0]
-        dropout = args['dropout']
-        dropout_aux: float = args['dropout_aux']
+        dropout = prms['dropout']
+        dropout_aux: float = prms['dropout_aux']
 
         if blocks is None:
             blocks = [BasicConv2d, Inception, InceptionAux]

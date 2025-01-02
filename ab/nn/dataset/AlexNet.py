@@ -7,10 +7,10 @@ def supported_hyperparameters():
 
 class Net(nn.Module):
 
-    def train_setup(self, device, prm):
+    def train_setup(self, device, prms):
         self.device = device
         self.criteria = (nn.CrossEntropyLoss().to(device),)
-        self.optimizer = torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
+        self.optimizer = torch.optim.SGD(self.parameters(), lr=prms['lr'], momentum=prms['momentum'])
 
     def learn(self, train_data):
         for inputs, labels in train_data:
@@ -23,7 +23,7 @@ class Net(nn.Module):
             self.optimizer.step()
 
 
-    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
+    def __init__(self, in_shape: tuple, out_shape: tuple, prms: dict) -> None:
         super().__init__()
         self.features = nn.Sequential(
             nn.Conv2d(in_shape[1], 64, kernel_size=11, stride=4, padding=2),
@@ -40,7 +40,7 @@ class Net(nn.Module):
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=2),
         )
-        dropout: float = args['dropout']
+        dropout: float = prms['dropout']
         self.avgpool = nn.AdaptiveAvgPool2d((6, 6))
         self.classifier = nn.Sequential(
             nn.Dropout(p=dropout),

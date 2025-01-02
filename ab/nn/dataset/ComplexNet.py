@@ -240,10 +240,10 @@ def supported_hyperparameters():
 class Net(nn.Module):
 
 
-    def train_setup(self, device, prm):
+    def train_setup(self, device, prms):
         self.device = device
         self.criteria = (nn.CrossEntropyLoss().to(device),)
-        self.optimizer = torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
+        self.optimizer = torch.optim.SGD(self.parameters(), lr=prms['lr'], momentum=prms['momentum'])
 
     def learn(self, train_data):
         for inputs, labels in train_data:
@@ -255,7 +255,7 @@ class Net(nn.Module):
             nn.utils.clip_grad_norm_(self.parameters(), 3)
             self.optimizer.step()
 
-    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict):
+    def __init__(self, in_shape: tuple, out_shape: tuple, prms: dict):
         super(Net, self).__init__()
         self.conv1 = ComplexConv2d(in_shape[1], 10, 5, 1)
         self.bn  = ComplexBatchNorm2d(10)

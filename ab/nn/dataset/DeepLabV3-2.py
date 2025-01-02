@@ -322,13 +322,13 @@ def supported_hyperparameters():
 class Net(nn.Module):
 
 
-    def train_setup(self, device, prm):
+    def train_setup(self, device, prms):
         self.device = device
         self.criteria = (nn.CrossEntropyLoss(ignore_index=-1).to(device),)
-        params_list = [{'params': self.backbone.parameters(), 'lr': prm['lr']}]
+        params_list = [{'params': self.backbone.parameters(), 'lr': prms['lr']}]
         for module in self.exclusive:
-            params_list.append({'params': getattr(self, module).parameters(), 'lr': prm['lr'] * 10})
-        self.optimizer = torch.optim.SGD(params_list, lr=prm['lr'], momentum=prm['momentum'])
+            params_list.append({'params': getattr(self, module).parameters(), 'lr': prms['lr'] * 10})
+        self.optimizer = torch.optim.SGD(params_list, lr=prms['lr'], momentum=prms['momentum'])
 
     def learn(self, train_data):
         for inputs, labels in train_data:
@@ -342,7 +342,7 @@ class Net(nn.Module):
 
     __constants__ = ["aux_classifier"]
 
-    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
+    def __init__(self, in_shape: tuple, out_shape: tuple, prms: dict) -> None:
         super(Net, self).__init__()
         num_classes = out_shape[0]
         self.backbone: nn.Module = ResNet(in_shape[1], Bottleneck, [3, 4, 23, 3], num_classes=100, replace_stride_with_dilation=[False, True, True])

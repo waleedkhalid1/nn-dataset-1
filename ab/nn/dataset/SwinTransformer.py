@@ -371,10 +371,10 @@ def supported_hyperparameters():
 
 class Net(nn.Module):
 
-    def train_setup(self, device, prm):
+    def train_setup(self, device, prms):
         self.device = device
         self.criteria = (nn.CrossEntropyLoss().to(device),)
-        self.optimizer = torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
+        self.optimizer = torch.optim.SGD(self.parameters(), lr=prms['lr'], momentum=prms['momentum'])
 
     def learn(self, train_data):
         for inputs, labels in train_data:
@@ -385,7 +385,7 @@ class Net(nn.Module):
             loss.backward()
             self.optimizer.step()
 
-    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict):
+    def __init__(self, in_shape: tuple, out_shape: tuple, prms: dict):
         super().__init__()
         patch_size = None
         embed_dim: int = 96
@@ -393,9 +393,9 @@ class Net(nn.Module):
         num_heads = None
         window_size = None
         mlp_ratio: float = 4.0
-        dropout: float = args['dropout']
-        attention_dropout: float = args['attention_dropout']
-        stochastic_depth_prob: float = args['stochastic_depth_prob']
+        dropout: float = prms['dropout']
+        attention_dropout: float = prms['attention_dropout']
+        stochastic_depth_prob: float = prms['stochastic_depth_prob']
         num_classes: int = out_shape[0]
         norm_layer: Optional[Callable[..., nn.Module]] = None
         block: Optional[Callable[..., nn.Module]] = None
