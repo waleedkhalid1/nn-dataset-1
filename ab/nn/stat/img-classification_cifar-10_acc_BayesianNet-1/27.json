@@ -1,10 +1,18 @@
 [
     {
-        "accuracy": 0.5892,
+        "accuracy": 0.6662,
         "batch": 4,
         "lr": 0.0061,
         "momentum": 0.7549,
-        "time": 1334186941896,
+        "time": 1528045328311,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.6522,
+        "batch": 4,
+        "lr": 0.0061,
+        "momentum": 0.7549,
+        "time": 1549016519351,
         "transform": "echo"
     }
 ]
