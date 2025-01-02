@@ -45,7 +45,7 @@ python run.py -h
 
 ## Contribution
 
-To contribute a new neural network model to the NN-Dataset, please ensure the following criteria are met:
+To contribute a new neural network (NN) model to the NN-Dataset, please ensure the following criteria are met:
 
 1. The code for each model is provided in a respective ".py" file within the <strong>/ab/nn/dataset</strong> directory, and the file is named after the name of the model's structure.
 2. The main class for each model is named <strong>Net</strong>.
