@@ -50,7 +50,7 @@ To contribute a new neural network model to the NN-Dataset, please ensure the fo
 1. The code for each model is provided in a respective ".py" file within the <strong>/ab/nn/dataset</strong> directory, and the file is named after the name of the model's structure.
 2. The main class for each model is named <strong>Net</strong>.
 3. The constructor of this <strong>Net</strong> class has following parameters: <strong> in_shape: tuple, out_shape: tuple, prms: dict </strong>
-   - <strong>in_shape</strong> is extracted from the first tensor of dataset iterator and describes a shape of this tensor, e.g., for images (batch, channel, width, hight)
+   - <strong>in_shape</strong> is a shape of the first tensor of dataset iterator, e.g., for images (batch, channel, width, hight)
    - <strong>out_shape</strong> is provided by dataset loader and describes a shape of output tensor, e.g., for the classification task (number of classes,)
    - <strong>prms</strong> is a dictionary of the hyperparameters, e.g., `{'lr' : 0.24, 'momentum' : 0.93, 'dropout' : 0.51}`
 4. All external information required for correct build and training of NN model for certain dataset/transformer and list of hyperparameters is extracted from the <strong>in_shape</strong>, <strong>out_shape</strong> or <strong>prms</strong>, e.g., `batch = in_shape[0]`, `channel_number = in_shape[1]`, `image_size = in_shape[2]`, `class_number = out_shape[0]`, `learning_rate = prms['lr']`, `momentum = prms['momentum']`, `dropout = prms['dropout']`.
