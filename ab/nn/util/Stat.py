@@ -15,7 +15,7 @@ def count_trials_left(trial_file, model_name, n_optuna_trials):
     specified directory to determine how many trials have been completed, and returns the number of trials left.
     :param trial_file: Trial file path
     :param model_name: Name of the model.
-    :param n_optuna_trials: Either the total number of Optuna trials, or if the value is negative or a string, it is considered the number of additional Optuna trials.
+    :param n_optuna_trials: The total number of Optuna trials the model should have. If negative, its absolute value represents the number of additional trials.
     :return: n_trials_left: Remaining trials.
     """
     n_passed_trials = 0

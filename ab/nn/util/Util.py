@@ -70,7 +70,7 @@ def args():
     parser.add_argument('-e', '--epochs', type=int, default=default_epochs,
                         help="Numbers of training epochs.")
     parser.add_argument('-t', '--trials', type=int, default=default_trials,
-                        help="The total number of Optuna trials the model should have. If negative, its absolute value corresponds to the number of additional trials.")
+                        help="The total number of Optuna trials the model should have. If negative, its absolute value represents the number of additional trials.")
     parser.add_argument('--min_batch_binary_power', type=int, default=default_min_batch_power,
                         help="Minimum power of two for batch size. E.g., with a value of 0, batch size equals 2**0 = 1.")
     parser.add_argument('-b', '--max_batch_binary_power', type=int, default=default_max_batch_power,
