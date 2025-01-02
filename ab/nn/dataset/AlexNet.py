@@ -3,7 +3,7 @@ import torch.nn as nn
 
 
 def supported_hyperparameters():
-    return {'lr', 'momentum', 'dropout'}  # 'dropout' = 0.5
+    return {'lr', 'momentum', 'dropout'}
 
 class Net(nn.Module):
 
