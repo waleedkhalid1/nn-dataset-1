@@ -20,11 +20,9 @@ def count_trials_left(trial_file, model_name, n_optuna_trials):
     """
     n_passed_trials = 0
     if exists(trial_file):
-        with open(trial_file, "r") as f:
+        with open(trial_file, 'r') as f:
             trials = json.load(f)
             n_passed_trials = len(trials)
-    if isinstance(n_optuna_trials, str):
-        n_optuna_trials = - int(n_optuna_trials)
     n_trials_left = abs(n_optuna_trials) if n_optuna_trials < 0 else max(0, n_optuna_trials - n_passed_trials)
     if n_passed_trials > 0:
         print(f"The {model_name} passed {n_passed_trials} trials, {n_trials_left} left.")

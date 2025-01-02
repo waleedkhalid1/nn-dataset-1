@@ -60,7 +60,7 @@ To contribute a new neural network model to the NN-Dataset, please ensure the fo
 ```bash
 python run.py -c img-classification_cifar-10_acc_ComplexNet -t 100 -e 5
 ```
-<p>See examples of models in <code>/ab/nn/dataset</code> and generated statistics in <code>/ab/nn/stat</code>.</p>
+<p>See more examples of models in <code>/ab/nn/dataset</code> and generated statistics in <code>/ab/nn/stat</code>.</p>
 
 ### Available Modules
 
