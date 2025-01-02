@@ -194,6 +194,8 @@ class COCOSegDataset(torch.utils.data.Dataset):
                 else:
                     print(f"Mismatched length({length}) of ids({len(self.ids)}). List file ignored")
                     no_mismatch=False
+                    ## Clear self.ids
+                    self.ids = []
         print("Perform preprocess from scratch, this will take a while...")
         tbar = tqdm.trange(len(ids))
         for i in tbar:
