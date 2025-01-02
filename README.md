@@ -50,9 +50,9 @@ To contribute a new neural network (NN) model to the NN-Dataset, please ensure t
 1. The code for each model is provided in a respective ".py" file within the <strong>/ab/nn/dataset</strong> directory, and the file is named after the name of the model's structure.
 2. The main class for each model is named <strong>Net</strong>.
 3. The constructor of the <strong>Net</strong> class takes the following parameters:
-   - <strong>in_shape</strong> (tuple): The shape of the first tensor from the dataset iterator. E.g., for images, it would be in the format `(batch, channel, width, height)`.
+   - <strong>in_shape</strong> (tuple): The shape of the first tensor from the dataset iterator. For images it is typically structured as `(batch, channel, height, width)`.
    - <strong>out_shape</strong> (tuple): Provided by the dataset loader, it describes the shape of the output tensor. For a classification task, this could be `(number of classes,)`.
-   - <strong>prms</strong> (dict): A dictionary of hyperparameters. E.g., `{'lr': 0.24, 'momentum': 0.93, 'dropout': 0.51}`.
+   - <strong>prms</strong> (dict): A dictionary of hyperparameters, e.g., `{'lr': 0.24, 'momentum': 0.93, 'dropout': 0.51}`.
 4. All external information required for the correct building and training of the NN model for a specific dataset/transformer, as well as the list of hyperparameters, is extracted from <strong>in_shape</strong>, <strong>out_shape</strong> or <strong>prms</strong>, e.g.: </br>`batch = in_shape[0]` </br>`channel_number = in_shape[1]` </br>`image_size = in_shape[2]` </br>`class_number = out_shape[0]` </br>`learning_rate = prms['lr']` </br>`momentum = prms['momentum']` </br>`dropout = prms['dropout']`.
 5. Every model script has function returning set of supported hyperparameters, e.g.: </br>`def supported_hyperparameters(): return {'lr', 'momentum', 'dropout'}`</br> The value of each hyperparameter lies within the range of 0.0 to 1.0.
 6. Every class <strong>Net</strong> implements two functions: </br>`train_setup(self, device, prms)`</br> and </br>`learn(self, train_data)`</br> The first function initializes the `criteria` and `optimizer`, while the second implements the training pipeline. See a simple implementation in the <a href="https://github.com/ABrain-One/nn-dataset/blob/main/ab/nn/dataset/AlexNet.py">AlexNet model</a>.
