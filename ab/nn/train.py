@@ -1,10 +1,10 @@
 import optuna
-import torch
 from torch.cuda import OutOfMemoryError
 
 from ab.nn.util.Loader import Loader
 from ab.nn.util.StatFlow import *
 from ab.nn.util.Train import Train
+from ab.nn.util.Util import merge_prm, get_attr
 
 
 def main(config: str | tuple = default_config, n_epochs: int = default_epochs,

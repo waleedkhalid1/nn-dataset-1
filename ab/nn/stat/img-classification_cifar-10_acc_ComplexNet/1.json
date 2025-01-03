@@ -8,6 +8,14 @@
         "transform": "cifar-10_complex_32"
     },
     {
+        "accuracy": 0.5122,
+        "batch": 4,
+        "lr": 0.0010909456879350363,
+        "momentum": 0.8094527909676157,
+        "time": 65790102655,
+        "transform": "cifar-10_complex_32"
+    },
+    {
         "accuracy": 0.4398,
         "batch": 32,
         "lr": 0.001883632789657308,
