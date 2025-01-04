@@ -4,7 +4,7 @@
         "batch": 4,
         "lr": 0.0061,
         "momentum": 0.7549,
-        "time": 255146839533,
+        "duration": 255146839533,
         "transform": "echo"
     },
     {
@@ -12,7 +12,7 @@
         "batch": 4,
         "lr": 0.0061,
         "momentum": 0.7549,
-        "time": 418748059016,
+        "duration": 418748059016,
         "transform": "echo"
     },
     {
@@ -27,9 +27,8 @@
         "momentum": 0.8638483980462572,
         "batch": 64,
         "transform": "cifar-10_norm_32",
-        "time": 34682419210,
-        "accuracy": 0.2174,
-        "epoch": 5
+        "duration": 34682419210,
+        "accuracy": 0.2174
     },
     {
         "accuracy": 0.0,

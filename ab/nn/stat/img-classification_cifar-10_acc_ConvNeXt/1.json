@@ -7,7 +7,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.8934817195948984,
-        "time": 282052786815,
+        "duration": 282052786815,
         "transform": "cifar-10_norm_32"
     },
     {
@@ -18,7 +18,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
-        "time": 17828408390,
+        "duration": 17828408390,
         "transform": "echo"
     },
     {
@@ -29,7 +29,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.5957784484098669,
-        "time": 141533579193,
+        "duration": 141533579193,
         "transform": "echo"
     },
     {
@@ -40,7 +40,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
-        "time": 562167224939,
+        "duration": 562167224939,
         "transform": "cifar-10_norm_32"
     },
     {
@@ -51,7 +51,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
-        "time": 178803385354,
+        "duration": 178803385354,
         "transform": "echo"
     },
     {
@@ -62,7 +62,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
-        "time": 560637681851,
+        "duration": 560637681851,
         "transform": "echo"
     },
     {
@@ -73,7 +73,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
-        "time": 5295359527,
+        "duration": 5295359527,
         "transform": "cifar-10_norm_32"
     },
     {
@@ -84,7 +84,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.8037504764285464,
-        "time": 35309150350,
+        "duration": 35309150350,
         "transform": "echo"
     },
     {
@@ -255,7 +255,7 @@
         "norm_eps": 0.8466184295821645,
         "norm_std": 0.27126849264352293,
         "stochastic_depth_prob": 0.6495010196283777,
-        "time": 401219806169,
+        "duration": 401219806169,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -276,7 +276,7 @@
         "norm_eps": 0.17021207613711997,
         "norm_std": 0.15332910371924757,
         "stochastic_depth_prob": 0.6057862992465606,
-        "time": 377112994982,
+        "duration": 377112994982,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -327,7 +327,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
-        "time": 673611126104,
+        "duration": 673611126104,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -368,7 +368,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.30408538228438786,
-        "time": 4493002970,
+        "duration": 4493002970,
         "transform": "cifar-10_norm_32"
     },
     {
@@ -509,7 +509,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
-        "time": 4237046424,
+        "duration": 4237046424,
         "transform": "echo"
     },
     {
@@ -520,7 +520,7 @@
         "norm_eps": 0.9518859033869638,
         "norm_std": 0.41013058756689336,
         "stochastic_depth_prob": 0.05192244316875916,
-        "time": 373506576519,
+        "duration": 373506576519,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -531,7 +531,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
-        "time": 441206645790,
+        "duration": 441206645790,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -562,7 +562,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
-        "time": 371350578986,
+        "duration": 371350578986,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -583,7 +583,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
-        "time": 440999501284,
+        "duration": 440999501284,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -634,7 +634,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
-        "time": 581885584779,
+        "duration": 581885584779,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -685,7 +685,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
-        "time": 504122704508,
+        "duration": 504122704508,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -706,7 +706,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
-        "time": 445366951961,
+        "duration": 445366951961,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -1047,7 +1047,7 @@
         "norm_eps": 0.6174427541234895,
         "norm_std": 0.4830275672800136,
         "stochastic_depth_prob": 0.47522892243753345,
-        "time": 402916158573,
+        "duration": 402916158573,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -1079,6 +1079,17 @@
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
         "transform": "cifar-10_norm_299"
+    },
+    {
+        "accuracy": 0.1005,
+        "batch": 4096,
+        "duration": 4428920354,
+        "lr": 0.00028169184034943233,
+        "momentum": 0.827024877897741,
+        "norm_eps": 0.7586972601284128,
+        "norm_std": 0.8403541103141159,
+        "stochastic_depth_prob": 0.43514834828966586,
+        "transform": "echo"
     },
     {
         "accuracy": 0.1,
@@ -1348,7 +1359,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.1571698025693331,
-        "time": 610884705007,
+        "duration": 610884705007,
         "transform": "echo"
     },
     {
@@ -1359,7 +1370,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.805023250115408,
-        "time": 77386213261,
+        "duration": 77386213261,
         "transform": "cifar-10_norm_32"
     },
     {
@@ -1370,7 +1381,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.9277588863860952,
-        "time": 500346368590,
+        "duration": 500346368590,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -1381,7 +1392,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.6036426817038676,
-        "time": 370339379071,
+        "duration": 370339379071,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -1392,7 +1403,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.8772510721062219,
-        "time": 4446939636,
+        "duration": 4446939636,
         "transform": "echo"
     },
     {
@@ -1403,8 +1414,19 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
-        "time": 4552785791,
+        "duration": 4552785791,
         "transform": "echo"
+    },
+    {
+        "accuracy": 0.1,
+        "batch": 4,
+        "duration": 705901448949,
+        "lr": 0.0045069554422315266,
+        "momentum": 0.09589669803140777,
+        "norm_eps": 0.7371387919594787,
+        "norm_std": 0.783150436012778,
+        "stochastic_depth_prob": 0.5838286368918852,
+        "transform": "cifar-10_norm_299"
     },
     {
         "accuracy": 0.0,

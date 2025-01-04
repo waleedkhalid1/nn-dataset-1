@@ -7,7 +7,7 @@
         "lr": 0.0061,
         "momentum": 0.7549,
         "stochastic_depth_prob": 0.2,
-        "time": 2775848005370,
+        "duration": 2775848005370,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -18,7 +18,7 @@
         "lr": 0.0061,
         "momentum": 0.7549,
         "stochastic_depth_prob": 0.2,
-        "time": 2782643136978,
+        "duration": 2782643136978,
         "transform": "cifar-10_norm_299"
     }
 ]

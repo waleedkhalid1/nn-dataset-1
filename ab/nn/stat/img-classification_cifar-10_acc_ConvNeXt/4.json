@@ -7,7 +7,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
-        "time": 2023563234420,
+        "duration": 2023563234420,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -18,7 +18,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
-        "time": 1779770560206,
+        "duration": 1779770560206,
         "transform": "cifar-10_norm_299"
     }
 ]

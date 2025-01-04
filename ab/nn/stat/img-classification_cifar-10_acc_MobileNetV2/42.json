@@ -5,7 +5,7 @@
         "dropout": 0.2,
         "lr": 0.0061,
         "momentum": 0.7549,
-        "time": 3996904039790,
+        "duration": 3996904039790,
         "transform": "cifar-10_norm_299"
     }
 ]

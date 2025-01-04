@@ -4,8 +4,7 @@
         "momentum": 0.3721325987391966,
         "batch": 8,
         "transform": "echo",
-        "time": 1295537072554,
-        "accuracy": 0.04069376736879349,
-        "epoch": 3
+        "duration": 1295537072554,
+        "accuracy": 0.04069376736879349
     }
 ]

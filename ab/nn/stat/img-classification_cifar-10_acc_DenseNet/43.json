@@ -5,7 +5,7 @@
         "dropout": 0.5,
         "lr": 0.0061,
         "momentum": 0.7549,
-        "time": 8502600038257,
+        "duration": 8502600038257,
         "transform": "echo"
     }
 ]

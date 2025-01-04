@@ -487,7 +487,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
-        "time": 882798021639,
+        "duration": 882798021639,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -618,7 +618,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
-        "time": 1008077721857,
+        "duration": 1008077721857,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -739,7 +739,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
-        "time": 890306543861,
+        "duration": 890306543861,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -880,7 +880,7 @@
         "norm_eps": 1e-06,
         "norm_std": 0.02,
         "stochastic_depth_prob": 0.0,
-        "time": 358337824029,
+        "duration": 358337824029,
         "transform": "echo"
     },
     {
