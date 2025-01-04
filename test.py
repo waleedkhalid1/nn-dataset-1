@@ -1,7 +1,5 @@
 import unittest
 
-import pandas as pd
-
 import ab.nn.api as api
 
 
