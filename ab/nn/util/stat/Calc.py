@@ -1,4 +1,4 @@
-from ab.nn.util.Stat import *
+from ab.nn.util.stat.DB import *
 import random
 
 def patterns_to_configs(config_pattern: str | tuple, random_config_order: bool) -> tuple[str]:

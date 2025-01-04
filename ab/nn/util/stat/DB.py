@@ -4,14 +4,12 @@ import sqlite3
 import uuid
 from os import listdir, makedirs
 
-import pandas as pd
-
 from ab.nn.util.Util import *
 
 
 def count_trials_left(trial_file, model_name, n_optuna_trials):
     """
-    Calculates the remaining Optuna trials based on the completed ones. Checks for a "trials.json" file in the
+    Calculates the remaining Optuna trials based on the completed ones. Checks for a 'trials.json' file in the
     specified directory to determine how many trials have been completed, and returns the number of trials left.
     :param trial_file: Trial file path
     :param model_name: Name of the model.
@@ -37,9 +35,9 @@ def unique_configs(patterns) -> list[str]:
     """
     all_configs = []
     for pattern in patterns:
-        l = [c for c in listdir(Const.stat_dir_global) if c.startswith(pattern)]
+        l = [c for c in listdir(Const.stat_dir) if c.startswith(pattern)]
         if not l and is_full_config(pattern):
-            makedirs(join(Const.stat_dir_global, patterns))
+            makedirs(join(Const.stat_dir, patterns))
         all_configs = all_configs + l
     all_configs: list = list(set(all_configs))
     return all_configs
@@ -49,8 +47,8 @@ def initialize_database():
     """
     Initialize the SQLite database, create tables, and add indexes for optimized reads.
     """
-    makedirs(Path(Const.db_dir_global).parent.absolute(), exist_ok=True)
-    conn = sqlite3.connect(Const.db_dir_global)
+    makedirs(Path(db_dir).parent.absolute(), exist_ok=True)
+    conn = sqlite3.connect(db_dir)
     cursor = conn.cursor()
 
     # Create `nn` table
@@ -116,7 +114,7 @@ def initialize_database():
 
     conn.commit()
     conn.close()
-    print(f"Database initialized at {Const.db_dir_global}")
+    print(f"Database initialized at {Const.db_dir}")
 
 
 
@@ -124,9 +122,9 @@ def populate_nn_table(conn):
     """
     Populate the `nn` table with models from the dataset directory.
     """
-    nn_directory = Path(Const.dataset_dir_global)
+    nn_directory = Path(Const.dataset_dir)
     nn_files = [
-        Path(f) for f in nn_directory.iterdir() if f.is_file() and f.suffix == ".py" and f.name != "__init__.py"
+        Path(f) for f in nn_directory.iterdir() if f.is_file() and f.suffix == '.py' and f.name != '__init__.py'
     ]
 
     cursor = conn.cursor()
@@ -158,17 +156,17 @@ def populate_transform_table(conn):
     """
     Populate the `transform` table with transform names and code.
     """
-    transform_directory = Path("ab/nn/transform")
+    transform_directory = Path('ab/nn/transform')
     print(f"Populating `transform` table with transforms from {transform_directory}.")
     
     transform_files = [
-        f for f in transform_directory.iterdir() if f.is_file() and f.suffix == ".py" and f.name != "__init__.py"
+        f for f in transform_directory.iterdir() if f.is_file() and f.suffix == '.py' and f.name != '__init__.py'
     ]
 
     cursor = conn.cursor()
     for transform_file in transform_files:
         transform_name = transform_file.stem
-        with open(transform_file, "r") as f:
+        with open(transform_file, 'r') as f:
             code = f.read()
 
         # Check if the transform exists in the database
@@ -196,17 +194,17 @@ def populate_metric_table(conn):
     """
     Populate the `metric` table with names and code from the metric directory.
     """
-    metric_directory = Path("ab/nn/metric")
+    metric_directory = Path('ab/nn/metric')
     print(f"Populating `metric` table with metrics from {metric_directory}.")
     
     metric_files = [
-        f for f in metric_directory.iterdir() if f.is_file() and f.suffix == ".py" and f.name != "__init__.py"
+        f for f in metric_directory.iterdir() if f.is_file() and f.suffix == '.py' and f.name != '__init__.py'
     ]
 
     cursor = conn.cursor()
     for metric_file in metric_files:
         metric_name = metric_file.stem
-        with open(metric_file, "r") as f:
+        with open(metric_file, 'r') as f:
             metric_code = f.read()
 
         # Check if the metric exists in the database
@@ -234,9 +232,9 @@ def clear_and_reload_database():
     """
     Clear the database and reload all NN models and statistics.
     """
-    makedirs(Path(Const.db_dir_global).parent.absolute(), exist_ok=True)
-    print(f"Clearing and reloading database at {Const.db_dir_global}")
-    conn = sqlite3.connect(Const.db_dir_global)
+    makedirs(Path(Const.db_dir).parent.absolute(), exist_ok=True)
+    print(f"Clearing and reloading database at {Const.db_dir}")
+    conn = sqlite3.connect(Const.db_dir)
     cursor = conn.cursor()
 
     # Drop existing tables
@@ -258,7 +256,7 @@ def load_all_statistics_from_json_to_db(conn):
     """
     Reload all statistics into the database for all subconfigs and epochs.
     """
-    stat_base_path = Path(Const.stat_dir_global)
+    stat_base_path = Path(Const.stat_dir)
     sub_configs = [d.name for d in stat_base_path.iterdir() if d.is_dir()]
 
     for sub_config in sub_configs:
@@ -280,7 +278,7 @@ def load_all_statistics_from_json_to_db(conn):
                 nn_id = cursor.fetchone()
                 if not nn_id:
                     print(f"Model {nn_name} not found in `nn` table. Adding it.")
-                    nn_directory = Path(Const.dataset_dir_global)
+                    nn_directory = Path(Const.dataset_dir)
                     nn_file = nn_directory / f"{nn_name}.py"
 
                     if nn_file.exists():
@@ -309,7 +307,7 @@ def load_all_statistics_from_json_to_db(conn):
                     metric_id = metric_id[0]
 
                 # Get or add Transform ID
-                transform_name = trial.get("transform")
+                transform_name = trial.get('transform')
                 cursor.execute("SELECT id FROM transform WHERE name = ?", (transform_name,))
                 transform_id = cursor.fetchone()
                 if not transform_id:
@@ -324,13 +322,13 @@ def load_all_statistics_from_json_to_db(conn):
                 # Insert into stat table
                 try:
                     trial_uuid = str(uuid.uuid4())
-                    trial_time = trial.get('time', None)
+                    trial_time = trial.get('duration', None)
                     conn.execute("""
                     INSERT INTO stat (id, task, dataset, metric_id, nn_id, transform_id, accuracy, batch, lr, momentum, epoch, time)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, (
-                        trial_uuid, task, dataset, metric_id, nn_id, transform_id, trial["accuracy"],
-                        trial["batch"], trial["lr"], trial["momentum"], epoch, trial_time
+                        trial_uuid, task, dataset, metric_id, nn_id, transform_id, trial['accuracy'],
+                        trial['batch'], trial['lr'], trial['momentum'], epoch, trial_time
                     ))
                 except Exception as e:
                     print(f"Error inserting trial for {sub_config}, epoch {epoch}: {e}")
@@ -360,13 +358,13 @@ def save_results(config: str, model_stat_file: str, prm: dict):
     trials_dict_all = trials_dict
 
     if os.path.exists(model_stat_file):
-        with open(model_stat_file, "r") as f:
+        with open(model_stat_file, 'r') as f:
             previous_trials = json.load(f)
             trials_dict_all = previous_trials + trials_dict_all
 
     trials_dict_all = sorted(trials_dict_all, key=lambda x: x['accuracy'], reverse=True)
     # Save trials.json
-    with open(model_stat_file, "w") as f:
+    with open(model_stat_file, 'w') as f:
         json.dump(trials_dict_all, f, indent=4)
 
     print(f"Trial (accuracy {prm['accuracy']}) for {config} saved at {model_stat_file}")
@@ -374,7 +372,7 @@ def save_results(config: str, model_stat_file: str, prm: dict):
     return # todo Change to align with the new functionality
 
     # Save results to SQLite DB
-    conn = sqlite3.connect(Const.db_dir_global)
+    conn = sqlite3.connect(Const.db_dir)
     cursor = conn.cursor()
 
     # Get IDs from `nn`, `transform`, and `metric` tables
@@ -385,7 +383,7 @@ def save_results(config: str, model_stat_file: str, prm: dict):
         return
     nn_id = nn_id[0]
 
-    cursor.execute("SELECT id FROM transform WHERE name = ?", (prm["transform"],))
+    cursor.execute("SELECT id FROM transform WHERE name = ?", (prm['transform'],))
     transform_id = cursor.fetchone()
     if not transform_id:
         print(f"Transform {prm['transform']} not found. Skipping save.")
@@ -403,7 +401,7 @@ def save_results(config: str, model_stat_file: str, prm: dict):
     # Insert each trial into the database with epoch
     for trial in trials_dict:
         stat_id = str(uuid.uuid4())
-        trial_time = trial.get('time', None)  # Default to None if 'time' is missing
+        trial_time = trial.get('duration', None)  # Default to None if 'duration' is missing
         cursor.execute("""
         INSERT INTO stat (id, task, dataset, metric_id, nn_id, transform_id, accuracy, batch, lr, momentum, epoch, time)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -413,67 +411,70 @@ def save_results(config: str, model_stat_file: str, prm: dict):
     conn.commit()
     conn.close()
 
-def get_pandas_df_all() -> pd.DataFrame:
-    """
-    Get the full dataset including its default full statistics as a pandas dataframe
-    Returns:
-    pd.Dataframe with columns ["structure", "code", "epochs", "accuracy", "batch", "lr", "momentum", "transform"]
-    todo: update this to load from the db file
-    """
-    out = pd.DataFrame(columns=["structure", "code", "epochs", "accuracy", "batch", "lr", "momentum", "transform"])
-    pwd = str(Path(__file__).parent.resolve())
-    for stat_dir in listdir(pwd + "/../stat/"):
-        structure = stat_dir.split('-')[-1]
 
-        with open(pwd + "/../dataset/" + structure + ".py", "r") as code_file:
-            code = str(code_file.read())
+def get_data(only_best_accuracy=False, task=None, dataset=None, metric=None, nn=None, epoch=None) -> tuple:
+    # todo: update this function to load data from dataset
+    """
+    Get the NN model code and all related statistics
+    :param only_best_accuracy: if True returns for every NN model only statistics for the best accuracy, else all collected statistics
+    :param task: Name of the task. If provided, it is used to filter the data.
+    :param dataset: Name of dataset. If provided, it is used to filter the data.If provided, it is used to filter the data.
+    :param metric: Name of the NN performance metric. If provided, it is used to filter the data.
+    :param nn: Neural network name. If provided, it is used to filter the data.
+    :param epoch: Epoch of the NN training process. If provided, it is used to filter the data.
 
-        for epochs in listdir(pwd + "/../stat/" + stat_dir + "/"):
-            with open(pwd + "/../stat/" + stat_dir + "/" + epochs + ".json", "r") as json_file:
+    Returns: Tuple of dictionaries with key-type pairs
+                                  {'nn': str, 'nn_code': str,
+                                   'task': str, 'dataset': str,
+                                   'metric': str, 'metric_code': str,
+                                   'epoch': int, 'accuracy': float,
+                                   'prms': dict, 'ext-prms': dict}
+    where prms is dict[str, int | float | str] of NN training hyperparameters including, but not limiting to
+    following keys:
+    {
+        "batch": 4,
+        "dropout": 0.17920158482473114,
+        "lr": 0.02487720458587122,
+        "momentum": 0.3867297180491852,
+        "transform": "cifar-10_norm_299"
+    },
+    extra-prm is dict[str, int | str] of parameters which are not required to be predicted:
+    {
+        "duration": 69697901519,
+        "transform_code": <transformer code: str>
+    }
+    """
+
+    out = []
+    for stat_folder in listdir(stat_dir):
+        curr_task, curr_dataset, curr_metric, nn = conf_to_names(stat_folder)
+
+        with open(metric_dir / (curr_metric + '.py'), 'r') as code_file:
+            metric_code = str(code_file.read())
+
+        with open(dataset_dir / (nn + '.py'), 'r') as code_file:
+            nn_code = str(code_file.read())
+
+        for epoch_file in listdir(stat_dir / stat_folder):
+            with open(stat_dir / stat_folder / epoch_file, 'r') as json_file:
                 content = json.load(json_file)
 
             for stat in content:
-                next_row = [
-                    structure,
-                    code,
-                    epochs,
-                    stat["accuracy"],
-                    stat["batch"],
-                    stat["lr"],
-                    stat["momentum"],
-                    stat["transform"]
-                ]
-                out.loc[len(out)] = next_row
-    return out
-
-def get_pandas_df_best() -> pd.DataFrame:
-    """
-        Get the full dataset including its best default statistics as a pandas dataframe
-        Returns:
-        pd.Dataframe with columns ["structure", "code", "epochs", "accuracy", "batch", "lr", "momentum", "transform"]
-        todo: update this to load from the db file
-    """
-    out = pd.DataFrame(columns=["structure", "code", "epochs", "accuracy", "batch", "lr", "momentum", "transform"])
-    pwd = str(Path(__file__).parent.resolve())
-    for stat_dir in listdir(pwd + "/../stat/"):
-        structure = stat_dir.split('-')[-1]
-
-        with open(pwd + "/../dataset/" + structure + ".py", "r") as code_file:
-            code = str(code_file.read())
-
-        for epochs in listdir(pwd + "/../stat/" + stat_dir + "/"):
-            with open(pwd + "/../stat/" + stat_dir + "/" + epochs + "/best_trial.json", "r") as json_file:
-                stat = json.load(json_file)
-
-            next_row = [
-                structure,
-                code,
-                epochs,
-                stat["accuracy"],
-                stat["batch"],
-                stat["lr"],
-                stat["momentum"],
-                stat["transform"]
-            ]
-            out.loc[len(out)] = next_row
-    return out
+                with open(transform_dir / (stat['transform'] + '.py'), 'r') as code_file:
+                    transform_code = str(code_file.read())
+                ext_prms = {'duration': stat.pop('duration', None), 'transform_code': transform_code}
+                next_row = {
+                    'task': curr_task,
+                    'dataset': curr_dataset,
+                    'metric': curr_metric,
+                    'metric_code': metric_code,
+                    'nn': nn,
+                    'nn_code': nn_code,
+                    'epoch': epoch_file[:epoch_file.index('.')],
+                    'accuracy': stat.pop('accuracy'),
+                    'prms': stat,
+                    'ext-prms': ext_prms
+                }
+                out.append(next_row)
+                if only_best_accuracy: break
+    return tuple(out)

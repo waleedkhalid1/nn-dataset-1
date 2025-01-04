@@ -1,7 +1,6 @@
 import argparse
 import math
 from os.path import exists, join
-from pathlib import Path
 
 import ab.nn.util.Const as Const
 from ab.nn.util.Const import *
@@ -20,32 +19,13 @@ def conf_to_names(c: str) -> list[str]:
 
 def is_full_config(s: str):
     l = conf_to_names(s)
-    return 4 == len(l) and exists(join(Const.dataset_dir_global, l[-1] + '.py'))
+    return 4 == len(l) and exists(join(dataset_dir, l[-1] + '.py'))
 
 
 def merge_prm(prm: dict, d: dict):
     prm.update(d)
     prm = dict(sorted(prm.items()))
     return prm
-
-
-def define_global_paths():
-    """
-    Defines project paths from current directory.
-    """
-    stat_dir = 'stat'
-
-    import ab.nn.__init__ as init_file
-    pref = Path(init_file.__file__).parent.absolute()
-    Const.stat_dir_global = join(pref, stat_dir)
-    Const.dataset_dir_global = join(pref, 'dataset')
-
-    Const.data_dir_global = 'data'
-    Const.db_dir_global = join('db', 'ab.nn.db')
-    if exists(stat_dir):
-        project_root = ['..'] * len(to_nn)
-        Const.data_dir_global = join(*project_root, Const.data_dir_global)
-        Const.db_dir_global = join(*project_root, Const.db_dir_global)
 
 def max_batch (binary_power):
     return 2 ** binary_power

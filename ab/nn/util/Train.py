@@ -7,7 +7,7 @@ from os.path import join
 import torch
 from tqdm import tqdm
 
-from ab.nn.util.Stat import save_results
+from ab.nn.util.stat.DB import save_results
 from ab.nn.util.Util import nn_mod, merge_prm, get_attr
 
 
@@ -79,7 +79,7 @@ class Train:
     def train_n_eval(self, num_epochs):
         """ Training and evaluation """
 
-        time = time_f.time_ns()
+        duration = time_f.time_ns()
         self.model.train_setup(self.device, self.prms)
         accuracy = None
         for epoch in range(1, num_epochs + 1):
@@ -88,7 +88,7 @@ class Train:
             self.model.learn(tqdm(self.train_loader))
             accuracy = self.eval(self.test_loader)
             accuracy = 0.0 if math.isnan(accuracy) or math.isinf(accuracy) else accuracy
-            prms = merge_prm(self.prms, {'time': time_f.time_ns() - time,
+            prms = merge_prm(self.prms, {'duration': time_f.time_ns() - duration,
                         'accuracy': accuracy})
             save_results(self.config, join(self.model_stat_dir, f"{epoch}.json"), prms)
 

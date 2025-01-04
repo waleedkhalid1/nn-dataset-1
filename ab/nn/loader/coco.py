@@ -11,8 +11,7 @@ from pycocotools import mask as cocmask
 from pycocotools.coco import COCO
 from torchvision import transforms
 from torchvision.datasets.utils import download_and_extract_archive
-
-import ab.nn.util.Const as Const
+from ab.nn.util.Const import data_dir
 
 coco_ann_url = "http://images.cocodataset.org/annotations/annotations_trainval2017.zip"
 coco_img_url = "http://images.cocodataset.org/zips/{}2017.zip"
@@ -28,7 +27,7 @@ def get_class_list():
     return MIN_CLASS_LIST
 
 def loader(resize=(128,128), **kwargs):
-    path = join(Const.data_dir_global, 'coco')
+    path = join(data_dir, 'coco')
     train_set = COCOSegDataset(root=path,spilt="train",resize=resize,preprocess=True,**kwargs)
     val_set = COCOSegDataset(root=path,spilt="val",resize=resize,preprocess=True,**kwargs)
     return (class_n(),), train_set, val_set
