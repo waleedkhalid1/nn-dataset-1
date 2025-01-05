@@ -412,7 +412,7 @@ def save_results(config: str, model_stat_file: str, prm: dict):
     conn.close()
 
 
-def get_data(only_best_accuracy=False, task=None, dataset=None, metric=None, nn=None, epoch=None) -> tuple:
+def data(only_best_accuracy=False, task=None, dataset=None, metric=None, nn=None, epoch=None) -> tuple:
     # todo: update this function to load data from dataset
     """
     Get the NN model code and all related statistics
