@@ -7,5 +7,14 @@
         "momentum": 0.7549,
         "duration": 4548660496274,
         "transform": "echo"
+    },
+    {
+        "accuracy": 0.74,
+        "batch": 16,
+        "dropout": 0.1834021974747484,
+        "duration": 1408950519201,
+        "lr": 0.0005491397462551408,
+        "momentum": 0.9528167666147869,
+        "transform": "cifar-10_norm_32"
     }
 ]

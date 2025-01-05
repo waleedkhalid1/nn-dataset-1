@@ -720,6 +720,14 @@
         "transform": "cifar-10_norm_32"
     },
     {
+        "accuracy": 0.1556,
+        "batch": 2,
+        "duration": 98161102140,
+        "lr": 3.533754618628154e-05,
+        "momentum": 0.09005827735182825,
+        "transform": "cifar-10_norm_32"
+    },
+    {
         "accuracy": 0.1387,
         "batch": 256,
         "lr": 0.00044906589228104106,

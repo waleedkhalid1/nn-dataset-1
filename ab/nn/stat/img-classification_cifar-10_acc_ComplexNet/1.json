@@ -16,6 +16,14 @@
         "transform": "cifar-10_complex_32"
     },
     {
+        "accuracy": 0.4862,
+        "batch": 16,
+        "duration": 17328755147,
+        "lr": 0.00045389180019338415,
+        "momentum": 0.8929252318727656,
+        "transform": "cifar-10_complex_32"
+    },
+    {
         "accuracy": 0.4398,
         "batch": 32,
         "lr": 0.001883632789657308,
