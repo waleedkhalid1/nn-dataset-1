@@ -37,7 +37,7 @@ def populate_code_table(table_name, cursor, name=None):
     """
     Populate the code table with models from the appropriate directory.
     """
-    code_dir = Path(dataset_dir if table_name == 'nn' else nn_path(table_name))
+    code_dir = nn_path(table_name)
     code_files = [code_dir / f"{name}.py"] if name is not None else [Path(f) for f in code_dir.iterdir() if f.is_file() and f.suffix == '.py' and f.name != '__init__.py']
     for code_file in code_files:
         code_to_db(code_file, table_name, cursor)

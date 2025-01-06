@@ -17,7 +17,7 @@ def conf_to_names(c: str) -> list[str]:
 
 def is_full_config(s: str):
     l = conf_to_names(s)
-    return 4 == len(l) and exists(join(dataset_dir, l[-1] + '.py'))
+    return 4 == len(l) and exists(join(nn_dir, l[-1] + '.py'))
 
 
 def merge_prm(prm: dict, d: dict):

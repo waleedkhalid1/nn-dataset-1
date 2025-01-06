@@ -675,6 +675,15 @@
         "transform": "cifar-10_norm_299"
     },
     {
+        "accuracy": 0.1315,
+        "batch": 128,
+        "dropout": 0.4644849904466154,
+        "duration": 107667154299,
+        "lr": 0.006250222934492287,
+        "momentum": 0.3790944842358932,
+        "transform": "cifar-10_norm_512"
+    },
+    {
         "accuracy": 0.126,
         "batch": 4,
         "dropout": 0.5,

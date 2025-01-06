@@ -48,7 +48,7 @@ class Train:
             break
 
         # Load model
-        self.model = get_attr(f"dataset.{model_name}", "Net")(self.in_shape, out_shape, prm)
+        self.model = get_attr(f"nn.{model_name}", "Net")(self.in_shape, out_shape, prm)
 
         if torch.cuda.is_available():
             device = torch.device("cuda")

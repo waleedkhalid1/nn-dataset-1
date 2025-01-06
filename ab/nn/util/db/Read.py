@@ -46,7 +46,7 @@ def data(only_best_accuracy=False, task=None, dataset=None, metric=None, nn=None
         with open(metric_dir / (curr_metric + '.py'), 'r') as code_file:
             metric_code = str(code_file.read())
 
-        with open(dataset_dir / (nn + '.py'), 'r') as code_file:
+        with open(nn_dir / (nn + '.py'), 'r') as code_file:
             nn_code = str(code_file.read())
 
         for epoch_file in listdir(stat_dir / stat_folder):

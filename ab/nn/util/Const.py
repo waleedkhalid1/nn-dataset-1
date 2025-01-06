@@ -26,7 +26,7 @@ def nn_path(dr):
 
 
 metric_dir = nn_path('metric')
-dataset_dir = nn_path('dataset')
+nn_dir = nn_path('nn')
 transform_dir = nn_path('transform')
 
 stat_dir = nn_path('stat')

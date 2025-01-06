@@ -61,7 +61,7 @@ def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
                         def objective(trial):
                             try:
                                 # Load model
-                                s_prm: set = get_attr(f"dataset.{model_name}", "supported_hyperparameters")()
+                                s_prm: set = get_attr(f"nn.{model_name}", "supported_hyperparameters")()
                                 # Suggest hyperparameters
                                 prms = {}
                                 for prm in s_prm:
@@ -90,10 +90,10 @@ def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
                                 if task == 'txt-generation':
                                     # Dynamically import RNN or LSTM model
                                     if model_name.lower() == 'rnn':
-                                        from ab.nn.dataset.RNN import Net as RNNNet
+                                        from ab.nn.nn.RNN import Net as RNNNet
                                         model = RNNNet(1, 256, len(train_set.chars), batch)
                                     elif model_name.lower() == 'lstm':
-                                        from ab.nn.dataset.LSTM import Net as LSTMNet
+                                        from ab.nn.nn.LSTM import Net as LSTMNet
                                         model = LSTMNet(1, 256, len(train_set.chars), batch, num_layers=2)
                                     else:
                                         raise ValueError(f"Unsupported text generation model: {model_name}")
