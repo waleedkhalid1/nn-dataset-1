@@ -33,6 +33,17 @@
         "transform": "cifar-10_norm_299"
     },
     {
+        "accuracy": 0.3004,
+        "attention_dropout": 0.5570800108324728,
+        "batch": 2,
+        "dropout": 0.39939526390598457,
+        "duration": 3409666343497,
+        "lr": 0.0004935958553570921,
+        "momentum": 0.7061701346354543,
+        "stochastic_depth_prob": 0.4239057709728352,
+        "transform": "echo"
+    },
+    {
         "accuracy": 0.1,
         "attention_dropout": 0.0,
         "batch": 1,

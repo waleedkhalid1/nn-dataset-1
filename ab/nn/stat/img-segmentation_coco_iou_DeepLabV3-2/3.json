@@ -5,7 +5,6 @@
         "batch": 4,
         "transform": "echo",
         "duration": 2210663405211,
-        "accuracy": 0.03842032700777054,
-        "epoch": 3
+        "accuracy": 0.03842032700777054
     }
 ]

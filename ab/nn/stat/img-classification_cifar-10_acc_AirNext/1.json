@@ -9,6 +9,15 @@
         "transform": "echo"
     },
     {
+        "accuracy": 0.4482,
+        "batch": 32,
+        "dropout": 0.821137144716172,
+        "duration": 13031810866,
+        "lr": 0.0050783128887756795,
+        "momentum": 0.6350601307085119,
+        "transform": "cifar-10_norm_32"
+    },
+    {
         "accuracy": 0.3493,
         "batch": 128,
         "dropout": 0.9672821663480031,

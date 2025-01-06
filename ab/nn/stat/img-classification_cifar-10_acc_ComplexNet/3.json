@@ -1,5 +1,13 @@
 [
     {
+        "accuracy": 0.5519,
+        "batch": 16,
+        "duration": 51974891061,
+        "lr": 0.00045389180019338415,
+        "momentum": 0.8929252318727656,
+        "transform": "cifar-10_complex_32"
+    },
+    {
         "accuracy": 0.4747,
         "batch": 4,
         "lr": 0.0061,
@@ -21,7 +29,6 @@
         "batch": 32,
         "transform": "cifar-10_complex_32",
         "duration": 44301504970,
-        "accuracy": 0.264,
-        "epoch": 3
+        "accuracy": 0.264
     }
 ]

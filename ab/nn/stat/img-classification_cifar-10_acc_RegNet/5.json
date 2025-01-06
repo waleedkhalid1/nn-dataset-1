@@ -670,8 +670,7 @@
         "batch": 4,
         "transform": "cifar-10_norm_299",
         "duration": 896336243479,
-        "accuracy": 0.6885,
-        "epoch": 5
+        "accuracy": 0.6885
     },
     {
         "accuracy": 0.6707,
