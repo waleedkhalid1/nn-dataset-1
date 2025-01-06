@@ -5,8 +5,8 @@ from ab.nn.util.Const import *
 from ab.nn.util.Loader import Loader
 from ab.nn.util.Train import Train
 from ab.nn.util.Util import merge_prm, get_attr, conf_to_names, max_batch, CudaOutOfMemory, ModelException, args
-from ab.nn.util.stat.Calc import patterns_to_configs
-from ab.nn.util.stat.DB import count_trials_left
+from ab.nn.util.db.Calc import patterns_to_configs
+from ab.nn.util.db.Read import remaining_trials
 
 
 def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
@@ -35,8 +35,6 @@ def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
     if min_learning_rate > max_learning_rate: raise Exception(f"min_learning_rate {min_learning_rate} > max_learning_rate {max_learning_rate}")
     if min_momentum > max_momentum: raise Exception(f"min_momentum {min_momentum} > max_momentum {max_momentum}")
 
-    # Initialize the SQLite database
-    # initialize_database() # todo Change to align with the new functionality
     # Determine configurations based on the provided config
     sub_configs = patterns_to_configs(config, random_config_order)
 
@@ -47,7 +45,7 @@ def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
             task, dataset_name, metric, model_name = conf_to_names(sub_config)
             model_stat_dir: str = join(stat_dir, sub_config)
             trials_file = join(model_stat_dir, str(n_epochs), 'trials.json')
-            n_optuna_trials_left = count_trials_left(trials_file, model_name, n_optuna_trials)
+            n_optuna_trials_left = remaining_trials(trials_file, model_name, n_optuna_trials)
             if n_optuna_trials_left == 0:
                 print(f"The model {model_name} has already passed all trials for task: {task}, dataset: {dataset_name},"
                       f" metric: {metric}, epochs: {n_epochs}")

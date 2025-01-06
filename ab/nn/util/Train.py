@@ -7,13 +7,13 @@ from os.path import join
 import torch
 from tqdm import tqdm
 
-from ab.nn.util.stat.DB import save_results
+from ab.nn.util.db.Calc import save_results
 from ab.nn.util.Util import nn_mod, merge_prm, get_attr
 
 
 class Train:
     def __init__(self, config, out_shape: tuple, batch: int, model_name, model_stat_dir, task,
-                 train_dataset, test_dataset, metric, prms: dict):
+                 train_dataset, test_dataset, metric, prm: dict):
         """
         Universal class for training CV, Text Generation and other models.
         :param config: Config (Task, Dataset, Metric, and Model name).
@@ -25,7 +25,7 @@ class Train:
         :param metric: The name of the evaluation metric (e.g., 'acc', 'iou').
         :param out_shape: The shape of output tensor of the model (e.g., number of classes for classification tasks).
         :param batch: Batch size used for both training and evaluation.
-        :param prms: dictionary of hyperparameters and their values (e.g., {'lr': 0.11, 'momentum': 0.2})
+        :param prm: dictionary of hyperparameters and their values (e.g., {'lr': 0.11, 'momentum': 0.2})
         """
         self.config = config
         self.model_stat_dir = model_stat_dir
@@ -35,7 +35,7 @@ class Train:
         self.out_shape = out_shape
         self.batch = batch
         self.task = task
-        self.prms = prms
+        self.prm = prm
 
         self.metric_name = metric
         self.metric_function = self.load_metric_function(metric)
@@ -48,7 +48,7 @@ class Train:
             break
 
         # Load model
-        self.model = get_attr(f"dataset.{model_name}", "Net")(self.in_shape, out_shape, prms)
+        self.model = get_attr(f"dataset.{model_name}", "Net")(self.in_shape, out_shape, prm)
 
         if torch.cuda.is_available():
             device = torch.device("cuda")
@@ -80,7 +80,7 @@ class Train:
         """ Training and evaluation """
 
         duration = time_f.time_ns()
-        self.model.train_setup(self.device, self.prms)
+        self.model.train_setup(self.device, self.prm)
         accuracy = None
         for epoch in range(1, num_epochs + 1):
             print(f"epoch {epoch}", flush=True)
@@ -88,9 +88,9 @@ class Train:
             self.model.learn(tqdm(self.train_loader))
             accuracy = self.eval(self.test_loader)
             accuracy = 0.0 if math.isnan(accuracy) or math.isinf(accuracy) else accuracy
-            prms = merge_prm(self.prms, {'duration': time_f.time_ns() - duration,
+            prm = merge_prm(self.prm, {'duration': time_f.time_ns() - duration,
                         'accuracy': accuracy})
-            save_results(self.config, join(self.model_stat_dir, f"{epoch}.json"), prms)
+            save_results(self.config, epoch, join(self.model_stat_dir, f"{epoch}.json"), prm)
 
         return accuracy
 

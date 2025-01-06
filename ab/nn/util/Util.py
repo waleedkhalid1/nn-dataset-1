@@ -2,9 +2,7 @@ import argparse
 import math
 from os.path import exists, join
 
-import ab.nn.util.Const as Const
 from ab.nn.util.Const import *
-
 
 def nn_mod(*nms):
     return ".".join(to_nn + nms)
