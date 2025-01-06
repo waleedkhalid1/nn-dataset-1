@@ -46,11 +46,11 @@ class Net(nn.Module):
             nn.utils.clip_grad_norm_(self.parameters(), 3)
             self.optimizer.step()
 
-    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
+    def __init__(self, in_shape: tuple, out_shape: tuple, prm: dict) -> None:
         super().__init__()
         version: str = "1_1"
         num_classes: int = out_shape[0]
-        dropout: float = args['dropout']
+        dropout: float = prm['dropout']
         self.num_classes = num_classes
         if version == "1_0":
             self.features = nn.Sequential(

@@ -48,12 +48,12 @@ class Net(nn.Module):
             nn.utils.clip_grad_norm_(self.parameters(), 3)
             self.optimizer.step()
 
-    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
+    def __init__(self, in_shape: tuple, out_shape: tuple, prm: dict) -> None:
         super().__init__()
         features: nn.Module = make_layers(in_shape[1], cfgs["A"], batch_norm=False)
         num_classes: int = out_shape[0]
         init_weights: bool = True
-        dropout: float = args['dropout']
+        dropout: float = prm['dropout']
         self.features = features
         self.avgpool = nn.AdaptiveAvgPool2d((7, 7))
         self.classifier = nn.Sequential(

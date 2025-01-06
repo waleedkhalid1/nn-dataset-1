@@ -184,11 +184,11 @@ def supported_hyperparameters():
 
 class Net(ModuleWrapper):
 
-
     def train_setup(self, device, prm):
         self.device = device
         self.criteria = (nn.CrossEntropyLoss().to(device),)
         self.optimizer = torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
+
 
     def learn(self, train_data):
         for inputs, labels in train_data:
@@ -200,39 +200,39 @@ class Net(ModuleWrapper):
             nn.utils.clip_grad_norm_(self.parameters(), 3)
             self.optimizer.step()
 
-    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict):
+    def __init__(self, in_shape: tuple, out_shape: tuple, prm: dict):
         super(Net, self).__init__()
         inputs: int = in_shape[1]
         outputs: int = out_shape[0]
         self.num_classes = outputs
-        self.priors = self.priors = {
+        self.priors = {
             'prior_mu': 0,
             'prior_sigma': 0.1,
             'posterior_mu_initial': (0, 0.1),
             'posterior_rho_initial': (-5, 0.1),
         }
         self.act = nn.Softplus
-        
-        self.conv1 = BBBConv2d(inputs, 64, 11, stride=4, padding=5, bias=True, priors=self.priors)
+
+        self.conv1 = BBBConv2d(inputs, 32, 5, padding=2, bias=True, priors=self.priors)
         self.act1 = self.act()
-        self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.pool1 = nn.MaxPool2d(kernel_size=3, stride=2)
 
-        self.conv2 = BBBConv2d(64, 192, 5, padding=2, bias=True, priors=self.priors)
+        self.conv2 = BBBConv2d(32, 64, 5, padding=2, bias=True, priors=self.priors)
         self.act2 = self.act()
-        self.pool2 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.pool2 = nn.MaxPool2d(kernel_size=3, stride=2)
 
-        self.conv3 = BBBConv2d(192, 384, 3, padding=1, bias=True, priors=self.priors)
+        self.conv3 = BBBConv2d(64, 128, 5, padding=1, bias=True, priors=self.priors)
         self.act3 = self.act()
+        self.pool3 = nn.MaxPool2d(kernel_size=3, stride=2)
 
-        self.conv4 = BBBConv2d(384, 256, 3, padding=1, bias=True, priors=self.priors)
+        self.flatten = FlattenLayer(2 * 2 * 128)
+        self.fc1 = BBBLinear(2 * 2 * 128, 1000, bias=True, priors=self.priors)
         self.act4 = self.act()
 
-        self.conv5 = BBBConv2d(256, 128, 3, padding=1, bias=True, priors=self.priors)
+        self.fc2 = BBBLinear(1000, 1000, bias=True, priors=self.priors)
         self.act5 = self.act()
-        self.pool3 = nn.MaxPool2d(kernel_size=2, stride=2)
 
-        self.flatten = FlattenLayer(1 * 1 * 128)
-        self.classifier = BBBLinear(1 * 1 * 128, outputs, bias=True, priors=self.priors)
+        self.fc3 = BBBLinear(1000, outputs, bias=True, priors=self.priors)
 
     def __call__(self, *args):
         return super().__call__(*args)[0]

@@ -3,11 +3,9 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 
-# Function to return the supported hyperparameters
 def supported_hyperparameters():
-    return {'lr', 'momentum', 'dropout'}
+    return {'lr', 'momentum'}
 
-# Initial Block for ICNet
 class ICInitBlock(nn.Module):
     def __init__(self, in_channels, out_channels):
         super(ICInitBlock, self).__init__()
@@ -23,7 +21,6 @@ class ICInitBlock(nn.Module):
         x = F.relu(self.conv3(x))
         return x
 
-# Pyramid Spatial Pooling Block
 class PSPBlock(nn.Module):
     def __init__(self, in_channels, pool_sizes):
         super(PSPBlock, self).__init__()
@@ -41,7 +38,6 @@ class PSPBlock(nn.Module):
         pooled_features = [F.interpolate(stage(x), size=size, mode='bilinear', align_corners=False) for stage in self.stages]
         return F.relu(self.bottleneck(torch.cat([x] + pooled_features, dim=1)))
 
-# ICNet for classification
 class ICNetClassification(nn.Module):
     def __init__(self, num_classes, in_channels):
         super(ICNetClassification, self).__init__()
@@ -59,30 +55,19 @@ class ICNetClassification(nn.Module):
         x = self.classifier(x)
         return x
 
-# Wrapper Class Net
 class Net(nn.Module):
-    def __init__(self, in_shape, out_shape, prms):
+    def __init__(self, in_shape, out_shape, prm):
         super(Net, self).__init__()
-
-        # Extracting information from in_shape and out_shape
-        batch = in_shape[0]
         channel_number = in_shape[1]
-        image_size = in_shape[2]  # Assuming square images
         class_number = out_shape[0]
-
-        # Initialize the model
         self.model = ICNetClassification(num_classes=class_number, in_channels=channel_number)
-
-        # Extracting hyperparameters from prms with default values
-        self.learning_rate = prms.get('lr', 0.001)
-        self.momentum = prms.get('momentum', 0.9)
-        self.dropout = prms.get('dropout', 0.5)
+        self.learning_rate = prm['lr']
+        self.momentum = prm['momentum']
 
     def forward(self, x):
         return self.model(x)
 
-    def train_setup(self, device, prms):
-        """ Initialize loss function and optimizer. """
+    def train_setup(self, device, prm):
         self.device = device
         self.to(device)
         self.criteria = nn.CrossEntropyLoss().to(device)
@@ -93,7 +78,6 @@ class Net(nn.Module):
         )
 
     def learn(self, train_data):
-        """ Training loop for the model. """
         self.train()
         for inputs, labels in train_data:
             inputs, labels = inputs.to(self.device), labels.to(self.device)
@@ -101,7 +85,7 @@ class Net(nn.Module):
             outputs = self(inputs)
             loss = self.criteria(outputs, labels)
             loss.backward()
-            nn.utils.clip_grad_norm_(self.parameters(), 3)  # Gradient clipping
+            nn.utils.clip_grad_norm_(self.parameters(), 3)
             self.optimizer.step()
 
 

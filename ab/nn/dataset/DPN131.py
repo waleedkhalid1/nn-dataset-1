@@ -1,11 +1,9 @@
-
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
 
 def supported_hyperparameters():
-    return {'lr', 'momentum', 'dropout'}
+    return {'lr', 'momentum'}
 class DPNBlock(nn.Module):
     def __init__(self, in_channels, out_channels, stride=1):
         super(DPNBlock, self).__init__()
@@ -35,11 +33,7 @@ class DPN131(nn.Module):
         self.blocks = nn.ModuleList()
         for _ in range(num_blocks):
             self.blocks.append(DPNBlock(growth_rate, growth_rate))
-        
-        # Adaptive average pooling to ensure a fixed feature size
-        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))  # Output size (1, 1)
-        
-        # Adjust fc layer's in_features to match the pooled feature size
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(growth_rate, num_classes)
 
     def forward(self, x):
@@ -54,27 +48,21 @@ class DPN131(nn.Module):
         return x
 
 class Net(nn.Module):
-    def __init__(self, in_shape, out_shape, prms, model_class=DPN131):
+    def __init__(self, in_shape, out_shape, prm):
         super(Net, self).__init__()
-
-        # Extract in_shape and out_shape values
-        self.batch = in_shape[0]
+        model_class = DPN131
         self.channel_number = in_shape[1]
-        self.image_size = in_shape[2]  # Assuming square images (height == width)
-        self.class_number = out_shape[0]  # Number of classes for classification
-
-        # Use extracted values in the model
+        self.image_size = in_shape[2]
+        self.class_number = out_shape[0]
         self.model = model_class(self.channel_number, self.class_number, num_blocks=3, growth_rate=32)
 
-        # Hyperparameters
-        self.learning_rate = prms['lr']
-        self.momentum = prms['momentum']
-        self.dropout = prms['dropout']
+        self.learning_rate = prm['lr']
+        self.momentum = prm['momentum']
 
     def forward(self, x):
         return self.model(x)
 
-    def train_setup(self, device, prms):
+    def train_setup(self, device, prm):
         self.device = device
         self.criteria = nn.CrossEntropyLoss().to(device)
         self.optimizer = optim.SGD(self.parameters(), lr=self.learning_rate, momentum=self.momentum)

@@ -32,13 +32,13 @@ class Net(nn.Module):
             nn.utils.clip_grad_norm_(self.parameters(), 3)
             self.optimizer.step()
 
-    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
+    def __init__(self, in_shape: tuple, out_shape: tuple, prm: dict) -> None:
         super().__init__()
         num_classes: int = out_shape[0]
         transform_input: bool = False
         inception_blocks: Optional[List[Callable[..., nn.Module]]] = None
         init_weights: Optional[bool] = None
-        dropout: float = args['dropout']
+        dropout: float = prm['dropout']
         if inception_blocks is None:
             inception_blocks = [BasicConv2d, InceptionA, InceptionB, InceptionC, InceptionD, InceptionE, InceptionAux]
         if init_weights is None:
@@ -53,7 +53,7 @@ class Net(nn.Module):
         inception_e = inception_blocks[5]
         inception_aux = inception_blocks[6]
 
-        self.aux_logits = False
+        self.aux_logits = True
         self.transform_input = transform_input
         self.Conv2d_1a_3x3 = conv_block(in_shape[1], 32, kernel_size=3, stride=2)
         self.Conv2d_2a_3x3 = conv_block(32, 32, kernel_size=3)

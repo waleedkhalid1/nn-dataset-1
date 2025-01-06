@@ -97,7 +97,7 @@ class Net(nn.Module):
             nn.utils.clip_grad_norm_(self.parameters(), 3)
             self.optimizer.step()
 
-    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
+    def __init__(self, in_shape: tuple, out_shape: tuple, prm: dict) -> None:
         super().__init__()
         stages_repeats = None
         stages_out_channels = None

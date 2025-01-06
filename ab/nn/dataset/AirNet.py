@@ -19,7 +19,7 @@ class AirInitBlock(nn.Module):
         return self.layers(x)
 
 class AirUnit(nn.Module):
-    def __init__(self, in_channels, out_channels, stride, ratio):
+    def __init__(self, in_channels, out_channels, stride):
         super().__init__()
         self.layers = nn.Sequential(
             nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=stride, padding=1),
@@ -42,34 +42,28 @@ class AirUnit(nn.Module):
         return self.relu(x + residual)
 
 class Net(nn.Module):
-    def __init__(self, in_shape, out_shape, prms):
+    def __init__(self, in_shape, out_shape, prm):
         super().__init__()
-        # Extract parameters from in_shape and out_shape
         self.in_channels = in_shape[1]
         self.image_size = in_shape[2]
         self.num_classes = out_shape[0]
-        self.learning_rate = prms.get('lr', 0.01)
-        self.momentum = prms.get('momentum', 0.9)
-        ratio = prms.get('ratio', 2)
+        self.learning_rate = prm['lr']
+        self.momentum = prm['momentum']
 
-        # Default channel configuration
         channels = [64, 128, 256, 512]
         init_block_channels = 64
         
-        # Build layers
-        self.features = self.build_features(init_block_channels, channels, ratio)
+        self.features = self.build_features(init_block_channels, channels)
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.classifier = nn.Linear(channels[-1], self.num_classes)
 
-    def build_features(self, init_block_channels, channels, ratio):
+    def build_features(self, init_block_channels, channels):
         layers = [AirInitBlock(self.in_channels, init_block_channels)]
         for i, out_channels in enumerate(channels):
             layers.append(AirUnit(
                 in_channels=init_block_channels if i == 0 else channels[i - 1],
                 out_channels=out_channels,
-                stride=1 if i == 0 else 2,
-                ratio=ratio
-            ))
+                stride=1 if i == 0 else 2))
         return nn.Sequential(*layers)
 
     def forward(self, x):

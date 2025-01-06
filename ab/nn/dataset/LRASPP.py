@@ -274,7 +274,7 @@ class Net(nn.Module):
             nn.utils.clip_grad_norm_(self.parameters(), 3)
             self.optimizer.step()
 
-    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
+    def __init__(self, in_shape: tuple, out_shape: tuple, prm: dict) -> None:
         super().__init__()
         num_classes: int = out_shape[0]
         backbone: MobileNetV3 | nn.Module = MobileNetV3(in_shape[1], *_mobilenet_v3_conf("mobilenet_v3_large"), num_classes=100)

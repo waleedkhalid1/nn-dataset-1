@@ -210,10 +210,10 @@ class Net(nn.Module):
             nn.utils.clip_grad_norm_(self.parameters(), 3)
             self.optimizer.step()
 
-    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
+    def __init__(self, in_shape: tuple, out_shape: tuple, prm: dict) -> None:
         super().__init__()
         inverted_residual_setting: Sequence[Union[MBConvConfig, FusedMBConvConfig]] = None
-        dropout: float = args['dropout']
+        dropout: float = prm['dropout']
         stochastic_depth_prob: float = 0.2
         num_classes: int = out_shape[0]
         norm_layer: Optional[Callable[..., nn.Module]] = None

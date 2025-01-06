@@ -84,7 +84,7 @@ class Net(nn.Module):
             loss.backward()
             self.optimizer.step()
 
-    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict):
+    def __init__(self, in_shape: tuple, out_shape: tuple, prm: dict):
         super(Net, self).__init__()
         num_classes = out_shape[0]
         self.n_channels = in_shape[1]

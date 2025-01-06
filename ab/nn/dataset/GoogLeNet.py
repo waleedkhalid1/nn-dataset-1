@@ -35,13 +35,13 @@ class Net(nn.Module):
 
     __constants__ = ["aux_logits", "transform_input"]
 
-    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
+    def __init__(self, in_shape: tuple, out_shape: tuple, prm: dict) -> None:
         super().__init__()
         transform_input: bool = False
         blocks: Optional[List[Callable[..., nn.Module]]] = None
         num_classes: int = out_shape[0]
-        dropout = args['dropout']
-        dropout_aux: float = args['dropout_aux']
+        dropout = prm['dropout']
+        dropout_aux: float = prm['dropout_aux']
 
         if blocks is None:
             blocks = [BasicConv2d, Inception, InceptionAux]

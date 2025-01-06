@@ -54,14 +54,11 @@ class BagNetUnit(nn.Module):
 
     def forward(self, x):
         identity = x
-        # If resizing is needed, apply the 1x1 convolution to match output dimensions
         if self.resize_identity:
             identity = self.identity_conv(x)
 
-        # Get output from the main body (which has bottleneck layers)
         x = self.body(x)
 
-        # Ensure both tensors match spatial dimensions before addition
         if x.size(2) != identity.size(2) or x.size(3) != identity.size(3):
             identity = nn.functional.interpolate(identity, size=(x.size(2), x.size(3)), mode='bilinear', align_corners=False)
 
@@ -70,24 +67,19 @@ class BagNetUnit(nn.Module):
 
 
 class Net(nn.Module):
-    def __init__(self, in_shape, out_shape, prms):
+    def __init__(self, in_shape, out_shape, prm):
         super().__init__()
-
-        # Extract parameters from the inputs
-        batch = in_shape[0]
         channel_number = in_shape[1]
         image_size = in_shape[2]
         class_number = out_shape[0]
-        learning_rate = prms['lr']
-        momentum = prms['momentum']
-        dropout = prms['dropout']
+        learning_rate = prm['lr']
+        momentum = prm['momentum']
+        dropout = prm['dropout']
 
-        # Default channels if not provided
         self.channels = [[64, 64, 64], [128, 128, 128], [256, 256, 256], [512, 512, 512]]
         self.in_size = image_size
         self.num_classes = class_number
 
-        # Define the feature extraction part of the network
         self.features = nn.Sequential(
             nn.Conv2d(channel_number, 64, kernel_size=7, stride=2, padding=3, bias=False),
             nn.BatchNorm2d(64),
@@ -107,7 +99,6 @@ class Net(nn.Module):
         self.features.add_module("final_pool", nn.AdaptiveAvgPool2d(1))
         self.output = nn.Linear(in_channels, self.num_classes)
 
-        # Hyperparameters
         self.learning_rate = learning_rate
         self.momentum = momentum
         self.dropout = dropout
@@ -117,25 +108,21 @@ class Net(nn.Module):
         x = torch.flatten(x, 1)
         return self.output(x)
 
-    def train_setup(self, device, prms):
-        """ Initializes the loss function and optimizer """
+    def train_setup(self, device, prm):
         self.device = device
         self.to(device)
         self.criteria = nn.CrossEntropyLoss().to(device)
         
-        # Initialize optimizer with SGD
         self.optimizer = torch.optim.SGD(
             self.parameters(),
-            lr=prms.get('lr', 0.01),
-            momentum=prms.get('momentum', 0.9),
+            lr=prm['lr'],
+            momentum=prm['momentum'],
         )
         
-        # Optionally, include dropout if needed (though not used in the model architecture here)
         if self.dropout > 0:
             self.dropout_layer = nn.Dropout(self.dropout)
 
     def learn(self, train_data):
-        """ Perform training on the model using the provided data """
         self.train()
         for inputs, labels in train_data:
             inputs, labels = inputs.to(self.device), labels.to(self.device)

@@ -789,7 +789,7 @@
         "dropout": 0.2,
         "lr": 0.0061,
         "momentum": 0.7549,
-        "time": 304128277129,
+        "duration": 304128277129,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -830,7 +830,7 @@
         "dropout": 0.2,
         "lr": 0.0061,
         "momentum": 0.7549,
-        "time": 186027193066,
+        "duration": 186027193066,
         "transform": "echo"
     },
     {
@@ -839,7 +839,7 @@
         "dropout": 0.2,
         "lr": 0.0061,
         "momentum": 0.7549,
-        "time": 144457790515,
+        "duration": 144457790515,
         "transform": "cifar-10_norm_32"
     },
     {

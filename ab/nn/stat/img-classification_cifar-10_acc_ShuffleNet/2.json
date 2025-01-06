@@ -669,7 +669,7 @@
         "batch": 4,
         "lr": 0.0061,
         "momentum": 0.7549,
-        "time": 215857833313,
+        "duration": 215857833313,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -719,7 +719,7 @@
         "momentum": 0.7549,
         "batch": 4,
         "transform": "cifar-10_norm_299",
-        "time": 274876463627,
+        "duration": 274876463627,
         "accuracy": 0.5087,
         "epoch": 2
     },

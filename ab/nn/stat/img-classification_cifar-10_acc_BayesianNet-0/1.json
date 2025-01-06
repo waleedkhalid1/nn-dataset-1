@@ -144,7 +144,7 @@
         "batch": 4,
         "lr": 0.0061,
         "momentum": 0.7549,
-        "time": 56328540518,
+        "duration": 56328540518,
         "transform": "echo"
     },
     {
@@ -166,7 +166,7 @@
         "batch": 4,
         "lr": 0.0061,
         "momentum": 0.7549,
-        "time": 56625945508,
+        "duration": 56625945508,
         "transform": "echo"
     },
     {
@@ -195,7 +195,7 @@
         "batch": 4,
         "lr": 0.0061,
         "momentum": 0.7549,
-        "time": 57595950900,
+        "duration": 57595950900,
         "transform": "echo"
     },
     {
@@ -210,7 +210,7 @@
         "batch": 4,
         "lr": 0.0061,
         "momentum": 0.7549,
-        "time": 69770413798,
+        "duration": 69770413798,
         "transform": "echo"
     },
     {
@@ -225,7 +225,7 @@
         "batch": 4,
         "lr": 0.0061,
         "momentum": 0.7549,
-        "time": 209926873976,
+        "duration": 209926873976,
         "transform": "echo"
     },
     {
@@ -464,7 +464,7 @@
         "batch": 128,
         "lr": 0.06554931007245787,
         "momentum": 0.7153930785799071,
-        "time": 11012363128,
+        "duration": 11012363128,
         "transform": "echo"
     },
     {
@@ -640,7 +640,7 @@
         "batch": 64,
         "lr": 0.2762480182705128,
         "momentum": 0.48692235076818213,
-        "time": 15135227499,
+        "duration": 15135227499,
         "transform": "cifar-10_norm_32"
     },
     {
@@ -662,7 +662,7 @@
         "batch": 2,
         "lr": 0.0011915131926892079,
         "momentum": 0.24708965687580287,
-        "time": 110162206858,
+        "duration": 110162206858,
         "transform": "echo"
     },
     {
@@ -712,7 +712,7 @@
         "momentum": 0.6233348491156319,
         "batch": 4,
         "transform": "cifar-10_norm_32",
-        "time": 233507675028,
+        "duration": 233507675028,
         "accuracy": 0.1863,
         "epoch": 1
     },
@@ -875,7 +875,7 @@
         "batch": 4096,
         "lr": 0.0029173820651467136,
         "momentum": 0.4872612297172576,
-        "time": 12103026972,
+        "duration": 12103026972,
         "transform": "echo"
     },
     {

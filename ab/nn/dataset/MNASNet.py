@@ -82,11 +82,11 @@ class Net(nn.Module):
 
     _version = 2
 
-    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
+    def __init__(self, in_shape: tuple, out_shape: tuple, prm: dict) -> None:
         super().__init__()
         alpha: float = 0.75
         num_classes: int = out_shape[0]
-        dropout: float = args['dropout']
+        dropout: float = prm['dropout']
         if alpha <= 0.0:
             raise ValueError(f"alpha should be greater than 0.0 instead of {alpha}")
         self.alpha = alpha

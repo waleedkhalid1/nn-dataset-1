@@ -4,7 +4,7 @@
         "batch": 4,
         "lr": 0.0061,
         "momentum": 0.7549,
-        "time": 1641347638289,
+        "duration": 1641347638289,
         "transform": "echo"
     },
     {
@@ -12,7 +12,7 @@
         "batch": 4,
         "lr": 0.0061,
         "momentum": 0.7549,
-        "time": 1662263353653,
+        "duration": 1662263353653,
         "transform": "echo"
     }
 ]

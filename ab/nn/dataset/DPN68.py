@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 def supported_hyperparameters():
-    return {'lr', 'momentum', 'dropout'}
+    return {'lr', 'momentum'}
 class DPNBlock(nn.Module):
     def __init__(self, in_channels, out_channels):
         super(DPNBlock, self).__init__()
@@ -23,7 +23,6 @@ class DPNBlock(nn.Module):
         out = out + residual
         return self.relu(out)
 
-# Simplified and optimized DPN68 model
 class DPN68(nn.Module):
     def __init__(self, in_channels, num_classes, num_blocks, growth_rate):
         super(DPN68, self).__init__()
@@ -49,30 +48,21 @@ class DPN68(nn.Module):
         return x
 
 class Net(nn.Module):
-    def __init__(self, in_shape, out_shape, prms, model_class=DPN68):
+    def __init__(self, in_shape, out_shape, prm):
         super(Net, self).__init__()
-
-        # Extract in_shape and out_shape values
-        self.batch = in_shape[0]
+        model_class = DPN68
         self.channel_number = in_shape[1]
-        self.image_size = in_shape[2]  # Assuming square images (height == width)
-        self.class_number = out_shape[0]  # Number of classes for classification
-
-        # Use extracted values in the model
+        self.image_size = in_shape[2]
+        self.class_number = out_shape[0]
         self.model = model_class(self.channel_number, self.class_number, num_blocks=3, growth_rate=32)
-
-        # Hyperparameters
-        self.learning_rate = prms['lr']
-        self.momentum = prms['momentum']
-        self.dropout = prms['dropout']
 
     def forward(self, x):
         return self.model(x)
 
-    def train_setup(self, device, prms):
+    def train_setup(self, device, prm):
         self.device = device
         self.criteria = nn.CrossEntropyLoss().to(device)
-        self.optimizer = optim.SGD(self.parameters(), lr=self.learning_rate, momentum=self.momentum)
+        self.optimizer = optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
 
     def learn(self, train_data):
         self.train()

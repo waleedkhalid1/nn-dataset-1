@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 def supported_hyperparameters():
-    return {'lr', 'momentum', 'dropout'}
+    return {'lr', 'momentum'}
 
 # Define DPNBlock with Group Convolutions
 class DPNBlock(nn.Module):
@@ -55,27 +55,21 @@ class DPN107(nn.Module):
         return x
 
 class Net(nn.Module):
-    def __init__(self, in_shape, out_shape, prms, model_class=DPN107):
+    def __init__(self, in_shape, out_shape, prm):
         super(Net, self).__init__()
-
-        # Extract in_shape and out_shape values
-        self.batch = in_shape[0]
+        model_class = DPN107
         self.channel_number = in_shape[1]
-        self.image_size = in_shape[2]  # Assuming square images (height == width)
-        self.class_number = out_shape[0]  # Number of classes for classification
+        self.image_size = in_shape[2]
+        self.class_number = out_shape[0]
 
-        # Use extracted values in the model
         self.model = model_class(self.channel_number, self.class_number, num_blocks=3, growth_rate=32)
-
-        # Hyperparameters
-        self.learning_rate = prms['lr']
-        self.momentum = prms['momentum']
-        self.dropout = prms['dropout']
+        self.learning_rate = prm['lr']
+        self.momentum = prm['momentum']
 
     def forward(self, x):
         return self.model(x)
 
-    def train_setup(self, device, prms):
+    def train_setup(self, device, prm):
         self.device = device
         self.criteria = nn.CrossEntropyLoss().to(device)
         self.optimizer = optim.SGD(self.parameters(), lr=self.learning_rate, momentum=self.momentum)
@@ -84,7 +78,7 @@ class Net(nn.Module):
         self.train()
         for inputs, labels in train_data:
             inputs, labels = inputs.to(self.device), labels.to(self.device)
-            inputs = inputs.float()  # Ensure inputs are of type float
+            inputs = inputs.float()
             self.optimizer.zero_grad()
             outputs = self(inputs)
             loss = self.criteria(outputs, labels)

@@ -7,7 +7,7 @@
         "momentum": 0.6028528025306858,
         "norm_eps": 0.23452012489901297,
         "norm_momentum": 0.3190423410122333,
-        "time": 10878785955,
+        "duration": 10878785955,
         "transform": "echo"
     },
     {
@@ -18,7 +18,7 @@
         "momentum": 0.1263761292782838,
         "norm_eps": 0.957135735383862,
         "norm_momentum": 0.8841376367647261,
-        "time": 329521928857,
+        "duration": 329521928857,
         "transform": "cifar-10_norm_32"
     },
     {
@@ -29,7 +29,7 @@
         "momentum": 0.2072145163359428,
         "norm_eps": 0.6581878905104798,
         "norm_momentum": 0.17358080173217938,
-        "time": 5948742060,
+        "duration": 5948742060,
         "transform": "cifar-10_norm_32"
     },
     {
@@ -40,7 +40,7 @@
         "momentum": 0.5114135436039989,
         "norm_eps": 0.40866399545065346,
         "norm_momentum": 0.7723999360551266,
-        "time": 84948489500,
+        "duration": 84948489500,
         "transform": "echo"
     }
 ]

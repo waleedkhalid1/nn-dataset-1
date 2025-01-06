@@ -71,7 +71,7 @@ class Net(nn.Module):
             nn.utils.clip_grad_norm_(self.parameters(), 3)
             self.optimizer.step()
 
-    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
+    def __init__(self, in_shape: tuple, out_shape: tuple, prm: dict) -> None:
         super().__init__()
         num_classes: int = out_shape[0]
         width_mult: float = 1.0
@@ -79,7 +79,7 @@ class Net(nn.Module):
         round_nearest: int = 8
         block: Optional[Callable[..., nn.Module]] = None
         norm_layer: Optional[Callable[..., nn.Module]] = None
-        dropout: float = args['dropout']
+        dropout: float = prm['dropout']
         if block is None:
             block = InvertedResidual
 

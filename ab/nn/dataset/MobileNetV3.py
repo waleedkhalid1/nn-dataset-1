@@ -117,7 +117,7 @@ class Net(nn.Module):
             nn.utils.clip_grad_norm_(self.parameters(), 3)
             self.optimizer.step()
 
-    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
+    def __init__(self, in_shape: tuple, out_shape: tuple, prm: dict) -> None:
         super().__init__()
         reduce_divider = 2
         width_mult = 1.0
@@ -128,7 +128,7 @@ class Net(nn.Module):
         num_classes: int = out_shape[0]
         block: Optional[Callable[..., nn.Module]] = None
         norm_layer: Optional[Callable[..., nn.Module]] = None
-        dropout: float = args['dropout']
+        dropout: float = prm['dropout']
 
         if inverted_residual_setting is None:
             bneck_conf = partial(InvertedResidualConfig, width_mult=width_mult)
@@ -159,7 +159,7 @@ class Net(nn.Module):
         if block is None:
             block = InvertedResidual
         if norm_layer is None:
-            norm_layer = partial(nn.BatchNorm2d, eps=args['norm_eps'], momentum=args['norm_momentum'])
+            norm_layer = partial(nn.BatchNorm2d, eps=prm['norm_eps'], momentum=prm['norm_momentum'])
 
         layers: List[nn.Module] = []
 

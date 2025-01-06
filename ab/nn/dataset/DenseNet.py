@@ -133,14 +133,14 @@ class Net(nn.Module):
             nn.utils.clip_grad_norm_(self.parameters(), 3)
             self.optimizer.step()
 
-    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
+    def __init__(self, in_shape: tuple, out_shape: tuple, prm: dict) -> None:
         super().__init__()
         num_classes: int = out_shape[0]
         growth_rate: int = 32
         block_config: Tuple[int, int, int, int] = (6, 12, 24, 16)
         num_init_features: int = 64
         bn_size: int = in_shape[0]
-        drop_rate: float = args['dropout']
+        drop_rate: float = prm['dropout']
         memory_efficient: bool = False
         self.features = nn.Sequential(
             OrderedDict(

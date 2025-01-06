@@ -7,7 +7,7 @@
         "lr": 0.0061,
         "momentum": 0.7549,
         "stochastic_depth_prob": 0.1,
-        "time": 152695113327,
+        "duration": 152695113327,
         "transform": "cifar-10_norm_32"
     },
     {
@@ -18,7 +18,7 @@
         "lr": 0.0061,
         "momentum": 0.7549,
         "stochastic_depth_prob": 0.1,
-        "time": 151012092084,
+        "duration": 151012092084,
         "transform": "echo"
     },
     {
@@ -29,7 +29,7 @@
         "lr": 0.0061,
         "momentum": 0.7549,
         "stochastic_depth_prob": 0.1,
-        "time": 151317824573,
+        "duration": 151317824573,
         "transform": "echo"
     },
     {
@@ -40,7 +40,7 @@
         "lr": 0.00128188467293258,
         "momentum": 0.8557936714376815,
         "stochastic_depth_prob": 0.6188162296103398,
-        "time": 45163214756,
+        "duration": 45163214756,
         "transform": "echo"
     },
     {
@@ -81,7 +81,7 @@
         "lr": 0.026103484946253946,
         "momentum": 0.8941073573911092,
         "stochastic_depth_prob": 0.024870379951814403,
-        "time": 241805951799,
+        "duration": 241805951799,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -92,7 +92,7 @@
         "lr": 0.03542211637342984,
         "momentum": 0.7310134036877429,
         "stochastic_depth_prob": 0.5008919465660199,
-        "time": 13224795455,
+        "duration": 13224795455,
         "transform": "cifar-10_norm_32"
     },
     {
@@ -103,7 +103,7 @@
         "lr": 0.0061,
         "momentum": 0.7549,
         "stochastic_depth_prob": 0.1,
-        "time": 242968711786,
+        "duration": 242968711786,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -164,7 +164,7 @@
         "lr": 0.0061,
         "momentum": 0.7549,
         "stochastic_depth_prob": 0.1,
-        "time": 243265804743,
+        "duration": 243265804743,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -225,7 +225,7 @@
         "lr": 0.0008889145952358457,
         "momentum": 0.4115400601692323,
         "stochastic_depth_prob": 0.13036198515754727,
-        "time": 254259268037,
+        "duration": 254259268037,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -236,7 +236,7 @@
         "lr": 0.0061,
         "momentum": 0.7549,
         "stochastic_depth_prob": 0.1,
-        "time": 242353479718,
+        "duration": 242353479718,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -257,7 +257,7 @@
         "lr": 0.0061,
         "momentum": 0.7549,
         "stochastic_depth_prob": 0.1,
-        "time": 366880409309,
+        "duration": 366880409309,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -508,7 +508,7 @@
         "lr": 0.00949051146089835,
         "momentum": 0.3694612507623808,
         "stochastic_depth_prob": 0.8138216677561734,
-        "time": 254294112766,
+        "duration": 254294112766,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -649,7 +649,7 @@
         "lr": 0.00010574305217574806,
         "momentum": 0.48076973934210554,
         "stochastic_depth_prob": 0.8279562002669918,
-        "time": 89787608043,
+        "duration": 89787608043,
         "transform": "cifar-10_norm_32"
     },
     {
@@ -1200,7 +1200,7 @@
         "lr": 0.17638001437680892,
         "momentum": 0.5723282909015623,
         "stochastic_depth_prob": 0.1,
-        "time": 245741748202,
+        "duration": 245741748202,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -1211,7 +1211,7 @@
         "lr": 0.1503518838210641,
         "momentum": 0.6554188689847641,
         "stochastic_depth_prob": 0.29909737770579436,
-        "time": 407072731238,
+        "duration": 407072731238,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -1222,7 +1222,7 @@
         "lr": 0.00990807618095221,
         "momentum": 0.926020584606735,
         "stochastic_depth_prob": 0.07216984218502454,
-        "time": 695877513999,
+        "duration": 695877513999,
         "transform": "cifar-10_norm_32"
     },
     {
@@ -1233,7 +1233,7 @@
         "lr": 0.4691297170914054,
         "momentum": 0.45196289215132746,
         "stochastic_depth_prob": 0.22210876901343712,
-        "time": 357465974319,
+        "duration": 357465974319,
         "transform": "cifar-10_norm_32"
     },
     {

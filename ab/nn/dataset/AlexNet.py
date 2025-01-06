@@ -3,7 +3,7 @@ import torch.nn as nn
 
 
 def supported_hyperparameters():
-    return {'lr', 'momentum', 'dropout'}  # 'dropout' = 0.5
+    return {'lr', 'momentum', 'dropout'}
 
 class Net(nn.Module):
 
@@ -23,7 +23,7 @@ class Net(nn.Module):
             self.optimizer.step()
 
 
-    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
+    def __init__(self, in_shape: tuple, out_shape: tuple, prm: dict) -> None:
         super().__init__()
         self.features = nn.Sequential(
             nn.Conv2d(in_shape[1], 64, kernel_size=11, stride=4, padding=2),
@@ -40,7 +40,7 @@ class Net(nn.Module):
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=2),
         )
-        dropout: float = args['dropout']
+        dropout: float = prm['dropout']
         self.avgpool = nn.AdaptiveAvgPool2d((6, 6))
         self.classifier = nn.Sequential(
             nn.Dropout(p=dropout),

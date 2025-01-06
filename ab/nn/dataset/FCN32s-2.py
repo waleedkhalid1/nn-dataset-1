@@ -318,6 +318,7 @@ def supported_hyperparameters():
 
 class Net(nn.Module):
 
+
     def train_setup(self, device, prm):
         self.device = device
         self.criteria = (nn.CrossEntropyLoss(ignore_index=-1).to(device),)
@@ -336,11 +337,11 @@ class Net(nn.Module):
             nn.utils.clip_grad_norm_(self.parameters(), 3)
             self.optimizer.step()
 
-    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
+    def __init__(self, in_shape: tuple, out_shape: tuple, prm: dict) -> None:
         super().__init__()
-        dropout = args['dropout']
+        dropout = prm['dropout']
         num_classes = out_shape[0]
-        backbone : List[nn.Module] = [VGG(make_layers(vgg_cfgs["D"]),num_classes=100),FCNHead(512, num_classes, dropout)]
+        backbone : List[nn.Module] = [ResNet(Bottleneck, [3, 4, 23, 3], num_classes = 100, replace_stride_with_dilation=[False, True, True]),FCNHead(2048, num_classes, dropout)]
         self.backbone = backbone[0].features
         self.classifier = backbone[1]
         self.__setattr__('exclusive',['classifier'])

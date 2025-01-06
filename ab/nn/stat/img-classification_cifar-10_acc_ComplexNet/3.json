@@ -4,7 +4,7 @@
         "batch": 4,
         "lr": 0.0061,
         "momentum": 0.7549,
-        "time": 226785437784,
+        "duration": 226785437784,
         "transform": "cifar-10_complex_32"
     },
     {
@@ -12,7 +12,7 @@
         "batch": 4,
         "lr": 0.0061,
         "momentum": 0.7549,
-        "time": 406219206452,
+        "duration": 406219206452,
         "transform": "cifar-10_complex_32"
     },
     {
@@ -20,7 +20,7 @@
         "momentum": 0.8948120528742699,
         "batch": 32,
         "transform": "cifar-10_complex_32",
-        "time": 44301504970,
+        "duration": 44301504970,
         "accuracy": 0.264,
         "epoch": 3
     }

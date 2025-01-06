@@ -255,7 +255,7 @@ class Net(nn.Module):
             nn.utils.clip_grad_norm_(self.parameters(), 3)
             self.optimizer.step()
 
-    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict):
+    def __init__(self, in_shape: tuple, out_shape: tuple, prm: dict):
         super(Net, self).__init__()
         self.conv1 = ComplexConv2d(in_shape[1], 10, 5, 1)
         self.bn  = ComplexBatchNorm2d(10)

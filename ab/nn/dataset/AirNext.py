@@ -61,15 +61,11 @@ class AirNeXtUnit(nn.Module):
 
 
 class Net(nn.Module):
-    def __init__(self, in_shape, out_shape, prms):
+    def __init__(self, in_shape, out_shape, prm):
         super(Net, self).__init__()
-        batch = in_shape[0]
         channel_number = in_shape[1]
         image_size = in_shape[2]
         class_number = out_shape[0]
-        learning_rate = prms['lr']
-        momentum = prms['momentum']
-        dropout = prms['dropout']
 
         channels = [[64, 64, 64], [128, 128, 128], [256, 256, 256], [512, 512, 512]]
         init_block_channels = 64
@@ -104,12 +100,10 @@ class Net(nn.Module):
         x = self.output(x)
         return x
 
-    def train_setup(self, device, prms):
+    def train_setup(self, device, prm):
         self.device = device
         self.criteria = nn.CrossEntropyLoss().to(device)
-        self.optimizer = torch.optim.Adam(self.parameters(), lr=prms['lr'], weight_decay=1e-4)
-
-        # Learning Rate Scheduler
+        self.optimizer = torch.optim.Adam(self.parameters(), lr=prm['lr'], weight_decay=1e-4)
         self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=5, gamma=0.5)
 
     def learn(self, train_data):
@@ -122,8 +116,6 @@ class Net(nn.Module):
             loss.backward()
             nn.utils.clip_grad_norm_(self.parameters(), 3)
             self.optimizer.step()
-
-        # Step the scheduler to update the learning rate
         self.scheduler.step()
 
 def supported_hyperparameters():
