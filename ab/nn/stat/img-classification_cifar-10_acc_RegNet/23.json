@@ -4,7 +4,7 @@
         "batch": 4,
         "lr": 0.0061,
         "momentum": 0.7549,
-        "duration": 3266876932986,
+        "time": 3266876932986,
         "transform": "cifar-10_norm_299"
     }
 ]

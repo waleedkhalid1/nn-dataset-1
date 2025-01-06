@@ -4,15 +4,16 @@
         "momentum": 0.7549,
         "batch": 4,
         "transform": "cifar-10_norm_299",
-        "duration": 509593511849,
-        "accuracy": 0.5657
+        "time": 509593511849,
+        "accuracy": 0.5657,
+        "epoch": 3
     },
     {
         "accuracy": 0.5312,
         "batch": 4,
         "lr": 0.0061,
         "momentum": 0.7549,
-        "duration": 424818022129,
+        "time": 424818022129,
         "transform": "cifar-10_norm_299"
     }
 ]
