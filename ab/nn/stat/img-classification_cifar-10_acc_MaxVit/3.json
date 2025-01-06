@@ -7,7 +7,7 @@
         "lr": 0.0061,
         "momentum": 0.7549,
         "stochastic_depth_prob": 0.2,
-        "duration": 1697009245363,
+        "time": 1697009245363,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -18,7 +18,7 @@
         "lr": 0.0061,
         "momentum": 0.7549,
         "stochastic_depth_prob": 0.2,
-        "duration": 1189745762093,
+        "time": 1189745762093,
         "transform": "cifar-10_norm_299"
     },
     {
@@ -29,18 +29,7 @@
         "lr": 0.0061,
         "momentum": 0.7549,
         "stochastic_depth_prob": 0.2,
-        "duration": 1191284716544,
+        "time": 1191284716544,
         "transform": "cifar-10_norm_299"
-    },
-    {
-        "accuracy": 0.2244,
-        "attention_dropout": 0.5570800108324728,
-        "batch": 2,
-        "dropout": 0.39939526390598457,
-        "duration": 2042831535232,
-        "lr": 0.0004935958553570921,
-        "momentum": 0.7061701346354543,
-        "stochastic_depth_prob": 0.4239057709728352,
-        "transform": "echo"
     }
 ]

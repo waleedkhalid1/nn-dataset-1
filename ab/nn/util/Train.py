@@ -7,13 +7,12 @@ from os.path import join
 import torch
 from tqdm import tqdm
 
-from ab.nn.util.stat.DB import save_results
+from ab.nn.util.Stat import save_results
 from ab.nn.util.Util import nn_mod, merge_prm, get_attr
 
 
 class Train:
-    def __init__(self, config, out_shape: tuple, batch: int, model_name, model_stat_dir, task,
-                 train_dataset, test_dataset, metric, prms: dict):
+    def __init__(self, config, out_shape: tuple, batch: int, model_name, model_stat_dir, task, train_dataset, test_dataset, metric, prms: dict):
         """
         Universal class for training CV, Text Generation and other models.
         :param config: Config (Task, Dataset, Metric, and Model name).
@@ -44,7 +43,7 @@ class Train:
         self.test_loader = torch.utils.data.DataLoader(self.test_dataset, batch_size=self.batch, shuffle=False, num_workers=2)
 
         for input_tensor, _ in self.train_loader:
-            self.in_shape = np.array(input_tensor).shape # Model input tensor shape (e.g., (8, 3, 32, 32) for a batch size 8, RGB image 32x32 px).
+            self.in_shape = np.array(input_tensor).shape # Model input tensor shape (e.g., (32, 32, 3) for a 32x32 px RGB image).
             break
 
         # Load model
@@ -79,7 +78,7 @@ class Train:
     def train_n_eval(self, num_epochs):
         """ Training and evaluation """
 
-        duration = time_f.time_ns()
+        time = time_f.time_ns()
         self.model.train_setup(self.device, self.prms)
         accuracy = None
         for epoch in range(1, num_epochs + 1):
@@ -88,7 +87,7 @@ class Train:
             self.model.learn(tqdm(self.train_loader))
             accuracy = self.eval(self.test_loader)
             accuracy = 0.0 if math.isnan(accuracy) or math.isinf(accuracy) else accuracy
-            prms = merge_prm(self.prms, {'duration': time_f.time_ns() - duration,
+            prms = merge_prm(self.prms, {'time': time_f.time_ns() - time,
                         'accuracy': accuracy})
             save_results(self.config, join(self.model_stat_dir, f"{epoch}.json"), prms)
 

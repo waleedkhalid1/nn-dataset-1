@@ -68,15 +68,15 @@ class CNBlockConfig:
 
 
 def supported_hyperparameters():
-    return {'lr', 'momentum', 'stochastic_depth_prob', 'norm_eps', 'norm_std'}
+    return {'lr', 'momentum', 'stochastic_depth_prob'}
 
 
 class Net(nn.Module):
 
-    def train_setup(self, device, prms):
+    def train_setup(self, device, prm):
         self.device = device
         self.criteria = (nn.CrossEntropyLoss().to(device),)
-        self.optimizer = torch.optim.SGD(self.parameters(), lr=prms['lr'], momentum=prms['momentum'])
+        self.optimizer = torch.optim.SGD(self.parameters(), lr=prm['lr'], momentum=prm['momentum'])
 
     def learn(self, train_data):
         for inputs, labels in train_data:
@@ -87,10 +87,10 @@ class Net(nn.Module):
             loss.backward()
             self.optimizer.step()
 
-    def __init__(self, in_shape: tuple, out_shape: tuple, prms: dict) -> None:
+    def __init__(self, in_shape: tuple, out_shape: tuple, args: dict) -> None:
         super().__init__()
         num_classes: int = out_shape[0]
-        stochastic_depth_prob: float = prms['stochastic_depth_prob']
+        stochastic_depth_prob: float = 0.0
         layer_scale: float = 1e-6
         block_setting = None
         block: Optional[Callable[..., nn.Module]] = None
@@ -110,7 +110,7 @@ class Net(nn.Module):
         if block is None:
             block = CNBlock
         if norm_layer is None:
-            norm_layer = partial(LayerNorm2d, eps=prms['norm_eps'])
+            norm_layer = partial(LayerNorm2d, eps=1e-6)
         layers: List[nn.Module] = []
         firstconv_output_channels = block_setting[0].input_channels
         layers.append(
@@ -156,7 +156,7 @@ class Net(nn.Module):
 
         for m in self.modules():
             if isinstance(m, (nn.Conv2d, nn.Linear)):
-                nn.init.trunc_normal_(m.weight, std=prms['norm_std'])
+                nn.init.trunc_normal_(m.weight, std=0.02)
                 if m.bias is not None:
                     nn.init.zeros_(m.bias)
 
