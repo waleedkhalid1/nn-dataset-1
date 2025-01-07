@@ -6,7 +6,7 @@ from ab.nn.util.Loader import Loader
 from ab.nn.util.Train import Train
 from ab.nn.util.Util import merge_prm, get_attr, conf_to_names, max_batch, CudaOutOfMemory, ModelException, args
 from ab.nn.util.db.Calc import patterns_to_configs
-from ab.nn.util.db.Read import remaining_trials
+from ab.nn.util.db.Read import supported_transformers, remaining_trials
 
 
 def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
@@ -14,7 +14,7 @@ def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
          min_batch_binary_power: int = default_min_batch_power, max_batch_binary_power: int = default_max_batch_power,
          min_learning_rate: float = default_min_lr, max_learning_rate: float = default_max_lr,
          min_momentum: float = default_min_momentum, max_momentum: float = default_max_momentum,
-         transform: str = None, nn_fail_attempts: int = default_nn_fail_attempts, random_config_order:bool = default_random_config_order):
+         transform: str | tuple = None, nn_fail_attempts: int = default_nn_fail_attempts, random_config_order:bool = default_random_config_order):
     """
     Main function for training models using Optuna optimization.
     :param config: Configuration specifying the model training pipelines. The default value for all configurations.
@@ -37,7 +37,7 @@ def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
 
     # Determine configurations based on the provided config
     sub_configs = patterns_to_configs(config, random_config_order)
-
+    transform = (transform,) if isinstance(transform, tuple) else transform
     print(f"Training configurations ({n_epochs} epochs):")
     for idx, sub_config in enumerate(sub_configs, start=1):
         print(f"{idx}. {sub_config}")
@@ -73,7 +73,7 @@ def main(config: str | tuple = default_config, n_epochs: int = default_epochs,
                                         prms[prm] = trial.suggest_float(prm, 0.0, 1.0, log=False)
                                 batch = trial.suggest_categorical('batch', [max_batch(x) for x in range(min_batch_binary_power, max_batch_binary_power_local + 1)])
                                 transform_name = trial.suggest_categorical('transform',
-                                                                           [transform] if transform is not None else ['cifar-10_complex_32', 'cifar-10_norm_32', 'cifar-10_norm_299', 'cifar-10_norm_512', 'echo'])
+                                                                           transform if transform is not None else supported_transformers())
                                 prms = merge_prm(prms, {'batch': batch, 'transform': transform_name})
                                 prm_str = ''
                                 for k, v in prms.items():

@@ -94,6 +94,10 @@ def remaining_trials(trial_file, model_name, n_optuna_trials):
     return n_remaining_trials
 
 
+def supported_transformers():
+    return ['cifar-10_complex_32', 'cifar-10_norm_32', 'cifar-10_norm_299', 'cifar-10_norm_512', 'echo']
+
+
 # todo: Request from the database unique names of all configures corresponding to config-patterns
 # once the database is loaded, the function will be updated
 def unique_configs(patterns) -> list[str]:
