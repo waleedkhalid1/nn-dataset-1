@@ -74,7 +74,6 @@ def json_n_code_to_db():
     stat_base_path = Path(stat_dir)
     sub_configs = [d.name for d in stat_base_path.iterdir() if d.is_dir()]
 
-    cursor = conn.cursor()
     for sub_config in sub_configs:
         model_stat_dir = stat_base_path / sub_config
 
@@ -105,11 +104,16 @@ def save_results(config: str, epoch: int, model_stat_file: str, prm: dict):
     """
     task, dataset, metric, nn = conf_to_names(config)
     # Save results to SQLite DB
-    conn = sqlite3.connect(db_file)
-    cursor = conn.cursor()
+    conn, cursor = sql_conn()
     save_stat(task, dataset, nn, metric, epoch, prm, cursor)
-    conn.commit()
-    conn.close()
+    close_conn(conn)
+
+
+def save_nn(nn_code : str, task : str, dataset : str, metric : str):
+    name = uuid4()
+    conn, cursor = sql_conn()
+    # todo: implement saving of NN model into database (its name generated with uuid4())
+    close_conn(conn)
+    return name
 
 init_population()
-
