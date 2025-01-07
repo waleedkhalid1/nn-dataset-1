@@ -36,6 +36,15 @@
         "transform": "cifar-10_norm_299"
     },
     {
+        "accuracy": 0.2464,
+        "batch": 1,
+        "dropout": 0.298380455645222,
+        "duration": 94604292753,
+        "lr": 0.0029792357177947297,
+        "momentum": 0.643755026478517,
+        "transform": "echo"
+    },
+    {
         "accuracy": 0.2091,
         "batch": 2,
         "dropout": 0.6145526635834738,
@@ -43,5 +52,59 @@
         "momentum": 0.9724242600534099,
         "duration": 436213058336,
         "transform": "cifar-10_norm_32"
+    },
+    {
+        "accuracy": 0.1705,
+        "batch": 32,
+        "dropout": 0.956267954930154,
+        "duration": 397382775395,
+        "lr": 0.04237215718203475,
+        "momentum": 0.1942549234071339,
+        "transform": "cifar-10_norm_512"
+    },
+    {
+        "accuracy": 0.1209,
+        "batch": 1,
+        "dropout": 0.9497187981744308,
+        "duration": 362336900525,
+        "lr": 3.755292453142913e-05,
+        "momentum": 0.8977168724171074,
+        "transform": "cifar-10_norm_512"
+    },
+    {
+        "accuracy": 0.103,
+        "batch": 64,
+        "dropout": 0.6700762304412733,
+        "duration": 138572393699,
+        "lr": 0.0002642046213400131,
+        "momentum": 0.8011061074169225,
+        "transform": "cifar-10_norm_299"
+    },
+    {
+        "accuracy": 0.1001,
+        "batch": 4,
+        "dropout": 0.41070002004193407,
+        "duration": 24638623248,
+        "lr": 2.9069811134450875e-05,
+        "momentum": 0.6474608850050969,
+        "transform": "cifar-10_norm_32"
+    },
+    {
+        "accuracy": 0.1,
+        "batch": 512,
+        "dropout": 0.4010541201611827,
+        "duration": 1885994013,
+        "lr": 0.006284438979375102,
+        "momentum": 0.9419469881802682,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.1,
+        "batch": 64,
+        "dropout": 0.7244972354158115,
+        "duration": 2025484060,
+        "lr": 0.00010328975713844757,
+        "momentum": 0.42043871072826877,
+        "transform": "echo"
     }
 ]

@@ -1,5 +1,14 @@
 [
     {
+        "accuracy": 0.3213,
+        "batch": 16,
+        "dropout": 0.8710206160007462,
+        "duration": 98487653034,
+        "lr": 0.013880377098018697,
+        "momentum": 0.4220839020484709,
+        "transform": "cifar-10_norm_512"
+    },
+    {
         "accuracy": 0.3002,
         "batch": 64,
         "dropout": 0.747226434095692,
@@ -36,6 +45,15 @@
         "transform": "cifar-10_norm_512"
     },
     {
+        "accuracy": 0.188,
+        "batch": 512,
+        "dropout": 0.6603515577778057,
+        "duration": 2352225853,
+        "lr": 0.06814097716710169,
+        "momentum": 0.575269987650548,
+        "transform": "cifar-10_norm_32"
+    },
+    {
         "accuracy": 0.1738,
         "batch": 64,
         "dropout": 0.17497488715628162,
@@ -43,6 +61,15 @@
         "momentum": 0.8864689130174163,
         "duration": 3203637163,
         "transform": "cifar-10_norm_32"
+    },
+    {
+        "accuracy": 0.1648,
+        "batch": 4,
+        "dropout": 0.02680153522408868,
+        "duration": 39450180773,
+        "lr": 0.0001467232120453356,
+        "momentum": 0.777409846780057,
+        "transform": "echo"
     },
     {
         "accuracy": 0.164,
@@ -61,6 +88,15 @@
         "momentum": 0.2851775090682561,
         "duration": 2286908381,
         "transform": "cifar-10_norm_32"
+    },
+    {
+        "accuracy": 0.1031,
+        "batch": 32,
+        "dropout": 0.1623600666360876,
+        "duration": 5441759900,
+        "lr": 0.00010201171965333003,
+        "momentum": 0.45010899036328444,
+        "transform": "echo"
     },
     {
         "accuracy": 0.1,
@@ -106,6 +142,24 @@
         "momentum": 0.5438707031095623,
         "duration": 209756418434,
         "transform": "cifar-10_norm_512"
+    },
+    {
+        "accuracy": 0.1,
+        "batch": 256,
+        "dropout": 0.26226253586801906,
+        "duration": 1296477266,
+        "lr": 0.046415655053046956,
+        "momentum": 0.9815858698006582,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.1,
+        "batch": 8,
+        "dropout": 0.37668264573670507,
+        "duration": 19555473361,
+        "lr": 0.5448191108043224,
+        "momentum": 0.10890496810752626,
+        "transform": "echo"
     },
     {
         "accuracy": 0.0962,
