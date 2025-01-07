@@ -1,0 +1,74 @@
+[
+    {
+        "accuracy": 0.6047,
+        "batch": 4,
+        "dropout": 0.08694112216399175,
+        "duration": 335576277962,
+        "lr": 6.878754066597879e-05,
+        "momentum": 0.8266030451935059,
+        "transform": "cifar-10_norm_32"
+    },
+    {
+        "accuracy": 0.5396,
+        "batch": 32,
+        "dropout": 0.04310776866310262,
+        "lr": 0.00018014319834211488,
+        "momentum": 0.9081552075508904,
+        "duration": 44818652218,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.4406,
+        "batch": 128,
+        "dropout": 0.9672821663480031,
+        "lr": 2.4464511249367444e-05,
+        "momentum": 0.8784643807092166,
+        "duration": 170912753156,
+        "transform": "cifar-10_norm_299"
+    },
+    {
+        "accuracy": 0.2249,
+        "batch": 32,
+        "dropout": 0.8642415660505861,
+        "lr": 0.0006375649143574843,
+        "momentum": 0.7488161739410057,
+        "duration": 41495848407,
+        "transform": "cifar-10_norm_32"
+    },
+    {
+        "accuracy": 0.1453,
+        "batch": 128,
+        "dropout": 0.07596451832185624,
+        "lr": 0.00113615394281783,
+        "momentum": 0.3483850624842293,
+        "duration": 419333123666,
+        "transform": "cifar-10_norm_512"
+    },
+    {
+        "accuracy": 0.119,
+        "batch": 32,
+        "dropout": 0.2563467749691105,
+        "lr": 1.0303834905400847e-05,
+        "momentum": 0.5948830093230719,
+        "duration": 153624801508,
+        "transform": "cifar-10_norm_299"
+    },
+    {
+        "accuracy": 0.1,
+        "batch": 512,
+        "dropout": 0.444058349265228,
+        "duration": 14331723914,
+        "lr": 0.06529817818000394,
+        "momentum": 0.4266572639332763,
+        "transform": "cifar-10_norm_32"
+    },
+    {
+        "accuracy": 0.1,
+        "batch": 2,
+        "dropout": 0.3574534466978567,
+        "duration": 522001486157,
+        "lr": 0.08878179102090168,
+        "momentum": 0.2801510545477893,
+        "transform": "cifar-10_norm_32"
+    }
+]

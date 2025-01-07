@@ -11,7 +11,7 @@ pip install git+https://github.com/ABrain-One/nn-dataset --upgrade --force
 ### Pip package manager
 Create a virtual environment, activate it, and run the following command to install all the project dependencies:
 ```bash
-pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu124
+pip install -r requirements.txt
 ```
 
 ### Docker
@@ -25,33 +25,42 @@ docker run -v /a/mm:<nn-dataset path> abrainone/ai-linux bash -c "PYTHONPATH=/a/
 The primary goal of NN-Dataset project is to provide flexibility for dynamically combining various datasets, metrics, and models. It is designed to facilitate the verification of neural network performance under various combinations of training hyperparameters and data transformation algorithms, by automatically generating performance statistics. It is primarily developed to support the <a href="https://github.com/ABrain-One/nn-gen"> NN-Gen</a> project.
 
 Standard use cases:
-1. Add a new neural network model into the `ab/nn/dataset` directory.
+1. Add a new neural network model into the `ab/nn/nn` directory.
 2. Run the automated training process for this model (e.g., a new ComplexNet training pipeline configuration):
 ```bash
-python -m ab.nn.train -c img_classification-cifar10-acc-cifar10_complex-ComplexNet
+python -m ab.nn.train -c img-classification_cifar-10_acc_ComplexNet
 ```
 or for all image segmentation models using a fixed range of training parameters and transformer:
 ```bash
-python run.py -c img_segmentation -f echo --min_learning_rate 1e-4 -l 1e-2 --min_momentum 0.8 -m 0.99 --min_batch_binary_power 2 -b 6 --epochs 1 --trials -1
+python run.py -c img-segmentation -f echo --min_learning_rate 1e-4 -l 1e-2 --min_momentum 0.8 -m 0.99 --min_batch_binary_power 2 -b 6
 ```
 To reproduce the previous result, set the minimum and maximum to the same desired values:
 ```bash
-python run.py -c img_classification-cifar10-acc-AlexNet --min_learning_rate 0.0061 -l 0.0061 --min_momentum 0.7549 -m 0.7549 --min_batch_binary_power 2 -b 2 -f cifar10_norm --epochs 1 --trials -1
+python run.py -c img-classification_cifar-10_acc_AlexNet --min_learning_rate 0.0061 -l 0.0061 --min_momentum 0.7549 -m 0.7549 --min_batch_binary_power 2 -b 2 -f cifar-10_norm_299
+```
+To view supported flags:
+```bash
+python run.py -h
 ```
 
 ## Contribution
 
-To add more neural network models to the dataset, the following criteria must be met:
-1. The code for each model must be provided in a respective ".py" file for the model in the directory <strong>/ab/nn/dataset</strong>. This file must be named after the name of the model structure.
-2. The main class for each model must be named <strong>Net</strong>.
-3. The implementation of this <strong>Net</strong> class must provide non-mutable default parameters for its constructor.
-4. For each pull request involving a new neural network, please generate and submit training statistics for 100 Optuna trials (or at least 3 trials for very large models) in the <strong>ab/nn/stat</strong> directory. The trials should cover 1, 2, and 5 epochs of training. Ensure that this statistics is included along with the model in your pull request. For example, the statistics for the ComplexNet model are stored in three separate folders, each containing two files - <strong>trials.json</strong> and <strong>best_trials.json</strong>:<br/>
-img_classification-cifar10-acc-cifar10_complex-ComplexNet/1<br/>
-img_classification-cifar10-acc-cifar10_complex-ComplexNet/2<br/>
-img_classification-cifar10-acc-cifar10_complex-ComplexNet/5<br/>
+To contribute a new neural network (NN) model to the NN-Dataset, please ensure the following criteria are met:
 
-
-For examples, see the models in the <strong>/ab/nn/dataset</strong> directory and statistics in the <strong>ab/nn/stat</strong> directory.
+1. The code for each model is provided in a respective ".py" file within the <strong>/ab/nn/nn</strong> directory, and the file is named after the name of the model's structure.
+2. The main class for each model is named <strong>Net</strong>.
+3. The constructor of the <strong>Net</strong> class takes the following parameters:
+   - <strong>in_shape</strong> (tuple): The shape of the first tensor from the dataset iterator. For images it is structured as `(batch, channel, height, width)`.
+   - <strong>out_shape</strong> (tuple): Provided by the dataset loader, it describes the shape of the output tensor. For a classification task, this could be `(number of classes,)`.
+   - <strong>prms</strong> (dict): A dictionary of hyperparameters, e.g., `{'lr': 0.24, 'momentum': 0.93, 'dropout': 0.51}`.
+4. All external information required for the correct building and training of the NN model for a specific dataset/transformer, as well as the list of hyperparameters, is extracted from <strong>in_shape</strong>, <strong>out_shape</strong> or <strong>prms</strong>, e.g.: </br>`batch = in_shape[0]` </br>`channel_number = in_shape[1]` </br>`image_size = in_shape[2]` </br>`class_number = out_shape[0]` </br>`learning_rate = prms['lr']` </br>`momentum = prms['momentum']` </br>`dropout = prms['dropout']`.
+5. Every model script has function returning set of supported hyperparameters, e.g.: </br>`def supported_hyperparameters(): return {'lr', 'momentum', 'dropout'}`</br> The value of each hyperparameter lies within the range of 0.0 to 1.0.
+6. Every class <strong>Net</strong> implements two functions: </br>`train_setup(self, device, prms)`</br> and </br>`learn(self, train_data)`</br> The first function initializes the `criteria` and `optimizer`, while the second implements the training pipeline. See a simple implementation in the <a href="https://github.com/ABrain-One/nn-dataset/blob/main/ab/nn/nn/AlexNet.py">AlexNet model</a>.
+7. For each pull request involving a new NN model, please generate and submit training statistics for 100 Optuna trials (or at least 3 trials for very large models) in the <strong>ab/nn/stat</strong> directory. The trials should cover 5 epochs of training. Ensure that this statistics is included along with the model in your pull request. For example, the statistics for the ComplexNet model are stored in files <strong>&#x003C;epoch number&#x003E;.json</strong> inside folder <strong>img-classification_cifar-10_acc_ComplexNet</strong>, and can be generated by:<br/>
+```bash
+python run.py -c img-classification_cifar-10_acc_ComplexNet -t 100 -e 5
+```
+<p>See more examples of models in <code>/ab/nn/nn</code> and generated statistics in <code>/ab/nn/stat</code>.</p>
 
 ### Available Modules
 
@@ -59,7 +68,7 @@ The `nn-dataset` package includes the following key modules:
 
 1. **Dataset**:
    - Predefined neural network architectures such as `AlexNet`, `ResNet`, `VGG`, and more.
-   - Located in `ab.nn.dataset`.
+   - Located in `ab.nn.nn`.
 
 2. **Loaders**:
    - Data loaders for datasets such as CIFAR-10 and COCO.

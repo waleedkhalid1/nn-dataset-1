@@ -1,0 +1,92 @@
+[
+    {
+        "accuracy": 0.4687,
+        "batch": 256,
+        "dropout": 0.9047739180460171,
+        "lr": 0.01727760576260895,
+        "momentum": 0.815087331431093,
+        "duration": 6094032029,
+        "transform": "cifar-10_norm_32"
+    },
+    {
+        "accuracy": 0.4116,
+        "batch": 2,
+        "dropout": 0.42946180430696024,
+        "duration": 199906619171,
+        "lr": 0.018194064369062877,
+        "momentum": 0.07572858875025323,
+        "transform": "cifar-10_norm_512"
+    },
+    {
+        "accuracy": 0.2875,
+        "batch": 32,
+        "dropout": 0.022684219037927944,
+        "duration": 8208573494,
+        "lr": 0.0005007088064902165,
+        "momentum": 0.39198926227829156,
+        "transform": "cifar-10_norm_32"
+    },
+    {
+        "accuracy": 0.2517,
+        "batch": 128,
+        "dropout": 0.8985601853555654,
+        "duration": 112339732636,
+        "lr": 0.09195664495622792,
+        "momentum": 0.7853765483391896,
+        "transform": "cifar-10_norm_512"
+    },
+    {
+        "accuracy": 0.2364,
+        "batch": 1024,
+        "dropout": 0.20252711000541013,
+        "lr": 0.010117573189626665,
+        "momentum": 0.26963631029278345,
+        "duration": 6155304745,
+        "transform": "cifar-10_norm_32"
+    },
+    {
+        "accuracy": 0.16,
+        "batch": 2048,
+        "dropout": 0.9866654901896065,
+        "lr": 0.7783429332897582,
+        "momentum": 0.6645550030572149,
+        "duration": 7830472361,
+        "transform": "cifar-10_norm_32"
+    },
+    {
+        "accuracy": 0.1509,
+        "batch": 64,
+        "dropout": 0.9313239252643307,
+        "lr": 0.00022451269266315904,
+        "momentum": 0.24079160509565545,
+        "duration": 7459932215,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.1478,
+        "batch": 4,
+        "dropout": 0.586614810662534,
+        "lr": 6.1043267457435e-05,
+        "momentum": 0.5055913501100581,
+        "duration": 65079609427,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.1269,
+        "batch": 1,
+        "dropout": 0.5272248901335115,
+        "lr": 0.00035122791805596184,
+        "momentum": 0.2740087044995374,
+        "duration": 306257877779,
+        "transform": "cifar-10_norm_512"
+    },
+    {
+        "accuracy": 0.102,
+        "batch": 2048,
+        "dropout": 0.05055482611085094,
+        "duration": 7897246968,
+        "lr": 1.1543848331421243e-05,
+        "momentum": 0.999270134299765,
+        "transform": "cifar-10_norm_32"
+    }
+]

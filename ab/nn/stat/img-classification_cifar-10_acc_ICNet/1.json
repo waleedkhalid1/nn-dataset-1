@@ -1,0 +1,82 @@
+[
+    {
+        "accuracy": 0.3315,
+        "batch": 4,
+        "lr": 0.04125814380941478,
+        "momentum": 0.7907764166332059,
+        "duration": 151174054821,
+        "transform": "cifar-10_norm_299"
+    },
+    {
+        "accuracy": 0.2991,
+        "batch": 32,
+        "duration": 103016599691,
+        "lr": 0.06291379830934198,
+        "momentum": 0.618377698886336,
+        "transform": "cifar-10_norm_512"
+    },
+    {
+        "accuracy": 0.2174,
+        "batch": 16,
+        "duration": 35902672457,
+        "lr": 0.007956219690072918,
+        "momentum": 0.561968027625272,
+        "transform": "cifar-10_norm_299"
+    },
+    {
+        "accuracy": 0.1752,
+        "batch": 4,
+        "duration": 106652701147,
+        "lr": 0.12147147163658185,
+        "momentum": 0.6802117487592122,
+        "transform": "cifar-10_norm_512"
+    },
+    {
+        "accuracy": 0.1547,
+        "batch": 32,
+        "duration": 109590557872,
+        "lr": 0.0023725165181022333,
+        "momentum": 0.5007022795379206,
+        "transform": "cifar-10_norm_512"
+    },
+    {
+        "accuracy": 0.1016,
+        "batch": 16,
+        "duration": 35989085179,
+        "lr": 1.940121738721665e-05,
+        "momentum": 0.10089696549130078,
+        "transform": "cifar-10_norm_299"
+    },
+    {
+        "accuracy": 0.1,
+        "batch": 2048,
+        "lr": 0.001769031613080266,
+        "momentum": 0.4801149609408333,
+        "duration": 6790431304,
+        "transform": "cifar-10_norm_32"
+    },
+    {
+        "accuracy": 0.1,
+        "batch": 1024,
+        "lr": 0.00014844287724280724,
+        "momentum": 0.1775750352506853,
+        "duration": 2224316527,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.1,
+        "batch": 512,
+        "duration": 2351810767,
+        "lr": 4.594079960798987e-05,
+        "momentum": 0.8489096054690934,
+        "transform": "cifar-10_norm_32"
+    },
+    {
+        "accuracy": 0.096,
+        "batch": 2,
+        "duration": 43087131167,
+        "lr": 1.3231392649029153e-05,
+        "momentum": 0.010208071813942676,
+        "transform": "cifar-10_norm_32"
+    }
+]

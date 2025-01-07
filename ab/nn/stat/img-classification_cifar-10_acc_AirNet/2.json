@@ -1,0 +1,82 @@
+[
+    {
+        "accuracy": 0.6827,
+        "batch": 128,
+        "duration": 3350648381,
+        "lr": 0.22281633488992622,
+        "momentum": 0.6524748330865693,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.5654,
+        "batch": 2048,
+        "duration": 4658091740,
+        "lr": 0.06276040074308879,
+        "momentum": 0.7478815086222148,
+        "transform": "cifar-10_norm_32"
+    },
+    {
+        "accuracy": 0.5444,
+        "batch": 64,
+        "duration": 5168682083,
+        "lr": 0.005129522952067677,
+        "momentum": 0.24203947219518462,
+        "transform": "cifar-10_norm_32"
+    },
+    {
+        "accuracy": 0.483,
+        "batch": 1024,
+        "lr": 0.014806966004239142,
+        "momentum": 0.3569158631543261,
+        "duration": 5650959418,
+        "transform": "cifar-10_norm_32"
+    },
+    {
+        "accuracy": 0.4493,
+        "batch": 2,
+        "lr": 0.0321149916249234,
+        "momentum": 0.03354331395635213,
+        "duration": 184784527549,
+        "transform": "cifar-10_norm_299"
+    },
+    {
+        "accuracy": 0.2947,
+        "batch": 4096,
+        "lr": 0.34072754232563773,
+        "momentum": 0.8228823772741695,
+        "duration": 6108152999,
+        "transform": "cifar-10_norm_32"
+    },
+    {
+        "accuracy": 0.271,
+        "batch": 1,
+        "duration": 241114977590,
+        "lr": 0.005060778559944889,
+        "momentum": 0.908252988381435,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.2616,
+        "batch": 2048,
+        "duration": 2858895629,
+        "lr": 0.003076823770595887,
+        "momentum": 0.012349634980593271,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.2454,
+        "batch": 512,
+        "lr": 2.390563935417446e-05,
+        "momentum": 0.9615289952347973,
+        "duration": 3038022692,
+        "transform": "echo"
+    },
+    {
+        "accuracy": 0.1507,
+        "batch": 8,
+        "duration": 31845908070,
+        "lr": 1.0530564333562261e-05,
+        "momentum": 0.5891811893449823,
+        "transform": "cifar-10_norm_32"
+    }
+]
